@@ -63,13 +63,17 @@ int universe::find(int x) {
     int y = x;
     while (y != elts[y].p)
         y = elts[y].p;
+    // could merge several times, so there exist some a lot of parents,
+    /**
+     * a is merged from b, b is merged from c, etc
+     */
     elts[x].p = y;
     return y;
 }
 
 void universe::join(int x, int y) {
     if (elts[x].rank > elts[y].rank) {
-        elts[y].p = x;
+        elts[y].p = x;// belongs to somebody
         elts[x].size += elts[y].size;
     } else {
         elts[x].p = y;

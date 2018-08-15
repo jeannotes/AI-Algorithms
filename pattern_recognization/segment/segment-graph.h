@@ -56,7 +56,7 @@ universe *segment_graph(int num_vertices, int num_edges, edge *edges,
     // init thresholds
     float *threshold = new float[num_vertices];
     for (int i = 0; i < num_vertices; i++)
-        threshold[i] = THRESHOLD(1, c);
+        threshold[i] = THRESHOLD(1, c);     //(c/size)
 
     // for each edge, in non-decreasing weight order...
     for (int i = 0; i < num_edges; i++) {
@@ -69,7 +69,7 @@ universe *segment_graph(int num_vertices, int num_edges, edge *edges,
             if ((pedge->w <= threshold[a]) &&
                     (pedge->w <= threshold[b])) {
                 u->join(a, b);
-                a = u->find(a);
+                a = u->find(a);// doesn't matter, we alwayes find the root parent
                 threshold[a] = pedge->w + THRESHOLD(u->size(a), c);
             }
         }

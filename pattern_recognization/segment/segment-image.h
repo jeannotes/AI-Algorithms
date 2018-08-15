@@ -57,7 +57,8 @@ static inline float diff(image<float> *r, image<float> *g, image<float> *b,
  * num_ccs: number of connected components in the segmentation.
  */
 image<rgb> *segment_image(image<rgb> *im, float sigma, float c, int min_size,
-                          int *num_ccs) {
+                          int *num_ccs) {// 0.5 500 20
+    // input, sigma, k, min_size, &num_ccs
     int width = im->width();
     int height = im->height();
 
@@ -65,7 +66,7 @@ image<rgb> *segment_image(image<rgb> *im, float sigma, float c, int min_size,
     image<float> *g = new image<float>(width, height);
     image<float> *b = new image<float>(width, height);
 
-    // smooth each color channel
+    // new data & copy data
     for (int y = 0; y < height; y++) {
         for (int x = 0; x < width; x++) {
             imRef(r, x, y) = imRef(im, x, y).r;
@@ -73,7 +74,9 @@ image<rgb> *segment_image(image<rgb> *im, float sigma, float c, int min_size,
             imRef(b, x, y) = imRef(im, x, y).b;
         }
     }
-    image<float> *smooth_r = smooth(r, sigma);
+
+    // smooth each color channel
+    image<float> *smooth_r = smooth(r, sigma);//float
     image<float> *smooth_g = smooth(g, sigma);
     image<float> *smooth_b = smooth(b, sigma);
     delete r;
@@ -86,29 +89,47 @@ image<rgb> *segment_image(image<rgb> *im, float sigma, float c, int min_size,
     for (int y = 0; y < height; y++) {
         for (int x = 0; x < width; x++) {
             if (x < width - 1) {
-                edges[num].a = y * width + x;
-                edges[num].b = y * width + (x + 1);
+                /**
+                 *   ***** to the right
+                */
+                edges[num].a = y * width + x;// sequence, start from first line
+                edges[num].b = y * width + (x + 1);// for right direction
                 edges[num].w = diff(smooth_r, smooth_g, smooth_b, x, y, x + 1, y);
                 num++;
             }
 
             if (y < height - 1) {
+                /**
+                 *  *
+                 *  *
+                 *  *
+                 */
                 edges[num].a = y * width + x;
-                edges[num].b = (y + 1) * width + x;
+                edges[num].b = (y + 1) * width + x;// for downward direction
                 edges[num].w = diff(smooth_r, smooth_g, smooth_b, x, y, x, y + 1);
                 num++;
             }
 
             if ((x < width - 1) && (y < height - 1)) {
+                /**
+                 * *
+                 *   *
+                 *     *
+                 */
                 edges[num].a = y * width + x;
-                edges[num].b = (y + 1) * width + (x + 1);
+                edges[num].b = (y + 1) * width + (x + 1);// downward-triangle direction
                 edges[num].w = diff(smooth_r, smooth_g, smooth_b, x, y, x + 1, y + 1);
                 num++;
             }
 
             if ((x < width - 1) && (y > 0)) {
+                /**
+                 *      *
+                 *    *
+                 *  *
+                 */
                 edges[num].a = y * width + x;
-                edges[num].b = (y - 1) * width + (x + 1);
+                edges[num].b = (y - 1) * width + (x + 1);// up-triangle direction
                 edges[num].w = diff(smooth_r, smooth_g, smooth_b, x, y, x + 1, y - 1);
                 num++;
             }
@@ -119,13 +140,13 @@ image<rgb> *segment_image(image<rgb> *im, float sigma, float c, int min_size,
     delete smooth_b;
 
     // segment
-    universe *u = segment_graph(width * height, num, edges, c);
+    universe *u = segment_graph(width * height, num, edges, c);// c is k
 
     // post process small components
     for (int i = 0; i < num; i++) {
         int a = u->find(edges[i].a);
         int b = u->find(edges[i].b);
-        if ((a != b) && ((u->size(a) < min_size) || (u->size(b) < min_size)))
+        if ((a != b) && ((u->size(a) < min_size) || (u->size(b) < min_size)))// just merge small components
             u->join(a, b);
     }
     delete [] edges;

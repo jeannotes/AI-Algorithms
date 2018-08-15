@@ -24,6 +24,9 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 #include "segment-image.h"
 
 int main(int argc, char **argv) {
+    /* typical argument
+     * ./segment 0.5 500 20 emir.ppm 1.ppm
+     */
     if (argc != 6) {
         fprintf(stderr, "usage: %s sigma k min input(ppm) output(ppm)\n", argv[0]);
         return 1;
@@ -38,7 +41,7 @@ int main(int argc, char **argv) {
 
     printf("processing\n");
     int num_ccs;
-    image<rgb> *seg = segment_image(input, sigma, k, min_size, &num_ccs);
+    image<rgb> *seg = segment_image(input, sigma, k, min_size, &num_ccs);// 0.5 500 20
     savePPM(seg, argv[5]);
 
     printf("got %d components\n", num_ccs);
