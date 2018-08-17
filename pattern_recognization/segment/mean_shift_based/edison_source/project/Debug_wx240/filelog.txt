@@ -1,0 +1,23 @@
+Image C:\Documents and Settings\smittal\Desktop\Over the Merced\red1.jpg loaded
+Input parameters:
+	Spatial Bandwidth	=    7
+	Color Bandwidth	=  6.5
+	Minimum Region	=   20
+timer start...
+done.
+Applying mean shift (Using Lattice) ... done.(  0.59 sec)
+Connecting regions         ...done. (  0.00 seconds, numRegions =   1031)
+Applying transitive closure...done. (  0.00 seconds, numRegions =      3)
+Pruning spurious regions   ...done. (  0.02 seconds, numRegions =      2)
+timer stop, elapsed 0.64 seconds.
+Input parameters:
+	Spatial Bandwidth	=    1
+	Color Bandwidth	=  1.0
+	Minimum Region	=   20
+timer start...
+done.
+Applying mean shift (Using Lattice) ... done.(  0.03 sec)
+Connecting regions         ...done. (  0.00 seconds, numRegions =   8894)
+Applying transitive closure...done. (  0.02 seconds, numRegions =   5551)
+Pruning spurious regions   ...done. (  0.01 seconds, numRegions =    261)
+timer stop, elapsed 0.9 seconds.

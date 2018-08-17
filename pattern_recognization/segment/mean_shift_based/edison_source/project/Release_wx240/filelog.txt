@@ -1,0 +1,10 @@
+Image C:\Documents and Settings\smittal\Desktop\Over the Merced\christmastrees1.bmp loaded
+Creating angle lookup table
+Start edge detection...
+...smooth-differentiation filtering
+...subspace estimate
+...edge strengths
+...computing ranks
+...nonmaxima supression: arc
+...hysteresis thresholding, high: box  low: arc
+Done edge detection.
