@@ -1,0 +1,38 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+../cli/../lib/graph_segmentation.h
+opencv2/opencv.hpp
+-
+image_graph.h
+../cli/../lib/image_graph.h
+
+../cli/../lib/image_graph.h
+assert.h
+-
+vector
+-
+map
+-
+algorithm
+-
+
+/home/jean/Documents/learning/AI-Algorithms/pattern_recognization/segment/graph_based/graph-based-image-segmentation/cli/main.cpp
+fstream
+-
+assert.h
+-
+opencv2/opencv.hpp
+-
+boost/filesystem.hpp
+-
+boost/program_options.hpp
+-
+graph_segmentation.h
+/home/jean/Documents/learning/AI-Algorithms/pattern_recognization/segment/graph_based/graph-based-image-segmentation/cli/graph_segmentation.h
+

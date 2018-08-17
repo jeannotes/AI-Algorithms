@@ -1,0 +1,8 @@
+/home/jean/Documents/learning/AI-Algorithms/pattern_recognization/segment/graph_based/graph-based-image-segmentation/build/CMakeFiles/edit_cache.dir
+/home/jean/Documents/learning/AI-Algorithms/pattern_recognization/segment/graph_based/graph-based-image-segmentation/build/CMakeFiles/rebuild_cache.dir
+/home/jean/Documents/learning/AI-Algorithms/pattern_recognization/segment/graph_based/graph-based-image-segmentation/build/lib/CMakeFiles/edit_cache.dir
+/home/jean/Documents/learning/AI-Algorithms/pattern_recognization/segment/graph_based/graph-based-image-segmentation/build/lib/CMakeFiles/rebuild_cache.dir
+/home/jean/Documents/learning/AI-Algorithms/pattern_recognization/segment/graph_based/graph-based-image-segmentation/build/lib/CMakeFiles/refh.dir
+/home/jean/Documents/learning/AI-Algorithms/pattern_recognization/segment/graph_based/graph-based-image-segmentation/build/cli/CMakeFiles/edit_cache.dir
+/home/jean/Documents/learning/AI-Algorithms/pattern_recognization/segment/graph_based/graph-based-image-segmentation/build/cli/CMakeFiles/rebuild_cache.dir
+/home/jean/Documents/learning/AI-Algorithms/pattern_recognization/segment/graph_based/graph-based-image-segmentation/build/cli/CMakeFiles/refh_cli.dir
