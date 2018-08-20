@@ -192,6 +192,7 @@ int main (int argc, char ** argv) {
     }
 
     float threshold = parameters["threshold"].as<float>();
+    std::cout << "threshold :  " << threshold << std::endl;
     int minimum_segment_size = parameters["minimum-size"].as<int>();
 
     std::multimap<std::string, boost::filesystem::path> images;
@@ -212,7 +213,7 @@ int main (int argc, char ** argv) {
         segmenter.buildGraph(image);
         segmenter.oversegmentGraph();
         segmenter.enforceMinimumSegmentSize(minimum_segment_size);
-
+        std::cout << minimum_segment_size << std::endl;
         cv::Mat labels = segmenter.deriveLabels();
 
         boost::filesystem::path csv_file(output_dir
