@@ -1,2 +1,0 @@
-/usr/bin/ar qc librefh.a  CMakeFiles/refh.dir/graph_segmentation.cpp.o
-/usr/bin/ranlib librefh.a
