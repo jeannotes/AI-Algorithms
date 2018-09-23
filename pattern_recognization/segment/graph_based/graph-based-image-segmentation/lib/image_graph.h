@@ -116,9 +116,9 @@ public:
         */
         S_m.l = S_n.id;
         S_n.n += S_m.n;
-		if(S_m.id > S_n.id){
-			S_n.l = S_m.l;
-		}
+        if (S_m.id > S_n.id) {
+            S_n.l = S_m.l;
+        }
         // Update maximum weight.
         S_n.max_w = std::max(std::max(S_n.max_w, S_m.max_w), e.w);
         K--;
