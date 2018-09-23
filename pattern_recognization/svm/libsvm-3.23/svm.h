@@ -10,13 +10,13 @@ extern "C" {
 extern int libsvm_version;
 
 struct svm_node {
-    int index;
-    double value;
+    int index;//i-th attribute
+    double value;// i-th value
 };
 
 struct svm_problem {
-    int l;
-    double *y;
+    int l;// number of traning data
+    double *y;// the training data's target value, like class - 1, class - 2
     struct svm_node **x;
 };
 
