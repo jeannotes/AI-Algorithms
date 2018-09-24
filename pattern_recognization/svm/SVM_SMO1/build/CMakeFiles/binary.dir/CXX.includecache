@@ -1,0 +1,26 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/jean/Documents/Cpp/SVM_SMO/smo.cpp
+smo.h
+/home/jean/Documents/Cpp/SVM_SMO/smo.h
+
+/home/jean/Documents/Cpp/SVM_SMO/smo.h
+iostream
+-
+fstream
+-
+ctype.h
+/home/jean/Documents/Cpp/SVM_SMO/ctype.h
+math.h
+/home/jean/Documents/Cpp/SVM_SMO/math.h
+stdlib.h
+/home/jean/Documents/Cpp/SVM_SMO/stdlib.h
+time.h
+/home/jean/Documents/Cpp/SVM_SMO/time.h
+
