@@ -1,0 +1,22 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/jean/Documents/AI-Algorithms/pattern_recognization/svm/SVM_example/svm.h
+
+/home/jean/Documents/AI-Algorithms/pattern_recognization/svm/SVM_example/svm_test.cpp
+svm.h
+/home/jean/Documents/AI-Algorithms/pattern_recognization/svm/SVM_example/svm.h
+ctype.h
+-
+stdlib.h
+-
+vector
+-
+iostream
+-
+

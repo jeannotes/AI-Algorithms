@@ -1,0 +1,2 @@
+/usr/bin/ar qc lib_svm_test_svm_lib.a  CMakeFiles/svm_lib.dir/svm.cpp.o
+/usr/bin/ranlib lib_svm_test_svm_lib.a

@@ -1,0 +1,4 @@
+/home/jean/Documents/AI-Algorithms/pattern_recognization/svm/SVM_example/build/CMakeFiles/edit_cache.dir
+/home/jean/Documents/AI-Algorithms/pattern_recognization/svm/SVM_example/build/CMakeFiles/rebuild_cache.dir
+/home/jean/Documents/AI-Algorithms/pattern_recognization/svm/SVM_example/build/CMakeFiles/svm_test.dir
+/home/jean/Documents/AI-Algorithms/pattern_recognization/svm/SVM_example/build/CMakeFiles/svm_lib.dir
