@@ -23,18 +23,16 @@
 
 ------------------------------------------------------------------------------*/
 
-
 #ifndef SVG_H
 #define SVG_H
 
 #include "polygon.h"
 #include "ring.h"
 
-FILE *init_svg( char *filename, unsigned int xsize, unsigned int ysize );
-void fclose_svg( FILE *fsvg );
-void write_svg_poly( FILE *fsvg, Polygon *poly );
-void write_svg_circ_arc( FILE *fsvg, Ring *cring );
-void write_svg_ell_arc( FILE *fsvg, Ring *ering );
+FILE* init_svg( char* filename, unsigned int xsize, unsigned int ysize );
+void fclose_svg( FILE* fsvg );
+void write_svg_poly( FILE* fsvg, Polygon* poly );
+void write_svg_circ_arc( FILE* fsvg, Ring* cring );
+void write_svg_ell_arc( FILE* fsvg, Ring* ering );
 
 #endif
-

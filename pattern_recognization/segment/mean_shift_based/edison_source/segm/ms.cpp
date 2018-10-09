@@ -42,18 +42,18 @@ and they are is available at:
 Implemented by Chris M. Christoudias, Bogdan Georgescu
 ********************************************************/
 
+// Include Needed Libraries
 
-//Include Needed Libraries
-
-#include	"ms.h"
-#include	<string.h>
-#include	<stdlib.h>
-#include    <stdio.h>
-#include	<math.h>
+#include "ms.h"
+#include <math.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 /*@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@*/
 /*@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@*/
-/*@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@      PUBLIC METHODS     @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@*/
+/*@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@      PUBLIC METHODS
+ * @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@*/
 /*@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@*/
 /*@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@*/
 
@@ -70,57 +70,55 @@ Implemented by Chris M. Christoudias, Bogdan Georgescu
 /*******************************************************/
 
 MeanShift::MeanShift( void ) {
+    // intialize input data set parameters...
+    P  = NULL;
+    L  = 0;
+    N  = 0;
+    kp = 0;
 
-    //intialize input data set parameters...
-    P							= NULL;
-    L							= 0;
-    N							= 0;
-    kp							= 0;
+    // initialize input data set storage structures...
+    data = NULL;
 
-    //initialize input data set storage structures...
-    data						= NULL;
+    // initialize input data set kd-tree
+    root   = NULL;
+    forest = NULL;
+    range  = NULL;
 
-    //initialize input data set kd-tree
-    root						= NULL;
-    forest						= NULL;
-    range						= NULL;
+    // intialize lattice structure...
+    height = 0;
+    width  = 0;
 
-    //intialize lattice structure...
-    height						= 0;
-    width						= 0;
+    // intialize kernel strucuture...
+    h             = NULL;
+    kernel        = NULL;
+    w             = NULL;
+    offset        = NULL;
+    increment     = NULL;
+    uniformKernel = false;
 
-    //intialize kernel strucuture...
-    h							= NULL;
-    kernel						= NULL;
-    w							= NULL;
-    offset						= NULL;
-    increment					= NULL;
-    uniformKernel				= false;
+    // initialize weight function linked list...
+    head = cur = NULL;
 
-    //initialize weight function linked list...
-    head						= cur	= NULL;
+    // intialize mean shift processing data structures...
+    uv = NULL;
 
-    //intialize mean shift processing data structures...
-    uv							= NULL;
+    // set lattice weight map to null
+    weightMap = NULL;
 
-    //set lattice weight map to null
-    weightMap					= NULL;
+    // indicate that the lattice weight map is undefined
+    weightMapDefined = false;
 
-    //indicate that the lattice weight map is undefined
-    weightMapDefined			= false;
+    // allocate memory for error message buffer...
+    ErrorMessage = new char[256];
 
-    //allocate memory for error message buffer...
-    ErrorMessage				= new char [256];
+    // initialize error status to OKAY
+    ErrorStatus = EL_OKAY;
 
-    //initialize error status to OKAY
-    ErrorStatus					= EL_OKAY;
-
-    //Initialize class state...
-    class_state.INPUT_DEFINED	= false;
-    class_state.KERNEL_DEFINED	= false;
-    class_state.LATTICE_DEFINED	= false;
-    class_state.OUTPUT_DEFINED	= false;
-
+    // Initialize class state...
+    class_state.INPUT_DEFINED   = false;
+    class_state.KERNEL_DEFINED  = false;
+    class_state.LATTICE_DEFINED = false;
+    class_state.OUTPUT_DEFINED  = false;
 }
 
 /*******************************************************/
@@ -132,21 +130,18 @@ MeanShift::MeanShift( void ) {
 /*******************************************************/
 
 MeanShift::~MeanShift( void ) {
-    delete [] ErrorMessage;
-    if (weightMap) {
-        delete [] weightMap;
-    }
+    delete[] ErrorMessage;
+    if ( weightMap ) { delete[] weightMap; }
 
-    //de-allocate memory used to store
-    //user defined weight functions
+    // de-allocate memory used to store
+    // user defined weight functions
     ClearWeightFunctions();
 
-    //de-allocate memory used for kernel
+    // de-allocate memory used for kernel
     DestroyKernel();
 
-    //de-allocate memory used for input
+    // de-allocate memory used for input
     ResetInput();
-
 }
 
 /*/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\*/
@@ -175,47 +170,50 @@ MeanShift::~MeanShift( void ) {
 /*        by the mean shift procedure.                 */
 /*******************************************************/
 
-void MeanShift::DefineKernel(kernelType *kernel_, float *h_, int *P_, int kp_) {
-
+void MeanShift::DefineKernel( kernelType* kernel_, float* h_, int* P_, int kp_ ) {
     // Declare variables
     int i, kN;
 
-    //if a kernel has already been created then destroy it
-    if (kp)
-        DestroyKernel();
+    // if a kernel has already been created then destroy it
+    if ( kp ) DestroyKernel();
 
-    //Obtain kp...
-    if ((kp = kp_) <= 0) {
-        ErrorHandler("MeanShift", "CreateKernel", "Subspace count (kp) is zero or negative.");
+    // Obtain kp...
+    if ( ( kp = kp_ ) <= 0 ) {
+        ErrorHandler( "MeanShift", "CreateKernel", "Subspace count (kp) is zero or negative." );
         return;
     }
 
-    //Allocate memory for h, P, kernel, offset, and increment
-    if ((!(P = new int [kp])) || (!(h = new float [kp])) || (!(kernel = new kernelType [kp])) ||
-            (!(offset = new float [kp])) || (!(increment = new double [kp]))) {
-        ErrorHandler("MeanShift", "CreateKernel", "Not enough memory available to create kernel.");
+    // Allocate memory for h, P, kernel, offset, and increment
+    if ( ( !( P = new int[kp] ) ) || ( !( h = new float[kp] ) ) ||
+         ( !( kernel = new kernelType[kp] ) ) || ( !( offset = new float[kp] ) ) ||
+         ( !( increment = new double[kp] ) ) ) {
+        ErrorHandler( "MeanShift", "CreateKernel", "Not enough memory available to create "
+                                                   "kernel." );
         return;
     }
 
-    //Populate h, P and kernel, also use P to calculate
-    //the dimension (N_) of the potential input data set x
+    // Populate h, P and kernel, also use P to calculate
+    // the dimension (N_) of the potential input data set x
     kN = 0;
-    for (i = 0; i < kp; i++) {
-        if ((h[i] = h_[i]) <= 0) {
-            ErrorHandler("MeanShift", "CreateKernel", "Negative or zero valued bandwidths are prohibited.");
+    for ( i = 0; i < kp; i++ ) {
+        if ( ( h[i] = h_[i] ) <= 0 ) {
+            ErrorHandler( "MeanShift", "CreateKernel", "Negative or zero valued bandwidths are "
+                                                       "prohibited." );
             return;
         }
-        if ((P[i] = P_[i]) <= 0) {
-            ErrorHandler("MeanShift", "CreateKernel", "Negative or zero valued subspace dimensions are prohibited.");
+        if ( ( P[i] = P_[i] ) <= 0 ) {
+            ErrorHandler( "MeanShift", "CreateKernel", "Negative or zero valued subspace "
+                                                       "dimensions are prohibited." );
             return;
         }
         kernel[i] = kernel_[i];
-        kN	   += P[i];
+        kN += P[i];
     }
 
-    //Allocate memory for range vector and uv using N_
-    if ((!(range = new float [2 * kN])) || (!(uv = new double [kN]))) {
-        ErrorHandler("MeanShift", "CreateKernel", "Not enough memory available to create kernel.");
+    // Allocate memory for range vector and uv using N_
+    if ( ( !( range = new float[2 * kN] ) ) || ( !( uv = new double[kN] ) ) ) {
+        ErrorHandler( "MeanShift", "CreateKernel", "Not enough memory available to create "
+                                                   "kernel." );
         return;
     }
 
@@ -224,16 +222,14 @@ void MeanShift::DefineKernel(kernelType *kernel_, float *h_, int *P_, int kp_) {
     // defined weight function list
     generateLookupTable();
 
-    //check for errors
-    if (ErrorStatus == EL_ERROR)
-        return;
+    // check for errors
+    if ( ErrorStatus == EL_ERROR ) return;
 
-    //indicate that the kernel has been defined
-    class_state.KERNEL_DEFINED	= true;
+    // indicate that the kernel has been defined
+    class_state.KERNEL_DEFINED = true;
 
-    //done.
+    // done.
     return;
-
 }
 
 /*******************************************************/
@@ -261,10 +257,10 @@ void MeanShift::DefineKernel(kernelType *kernel_, float *h_, int *P_, int kp_) {
 /*        function for this subspace has been replaced.*/
 /*******************************************************/
 
-void MeanShift::AddWeightFunction(double g(double), float halfWindow, int sampleNumber, int subspace) {
-
+void MeanShift::AddWeightFunction( double g( double ), float halfWindow, int sampleNumber,
+                                   int subspace ) {
     // Declare Variables
-    int   i;
+    int i;
     double increment;
 
     // Search to see if a weight function has already been
@@ -273,13 +269,12 @@ void MeanShift::AddWeightFunction(double g(double), float halfWindow, int sample
     // replace entry
 
     // Perform Search
-    cur = head;
-    while ((cur) && (cur->subspace != subspace))
-        cur = cur->next;
+    cur                                                    = head;
+    while ( ( cur ) && ( cur->subspace != subspace ) ) cur = cur->next;
 
     // Entry Exists - Replace It!
     // Otherwise insert at the head of the the weight functon list
-    if (cur)
+    if ( cur )
         delete cur->w;
     else {
         cur       = new userWeightFunct;
@@ -288,20 +283,18 @@ void MeanShift::AddWeightFunction(double g(double), float halfWindow, int sample
     }
 
     // Generate lookup table
-    increment = halfWindow / (double)(sampleNumber);
+    increment = halfWindow / (double) ( sampleNumber );
 
-    cur->w = new double [sampleNumber + 1];
-    for (i = 0; i <= sampleNumber; i++)
-        cur->w[i] = g((double)(i * increment));
+    cur->w = new double[sampleNumber + 1];
+    for ( i = 0; i <= sampleNumber; i++ ) cur->w[i] = g( (double) ( i * increment ) );
 
     // Set weight function parameters
     cur->halfWindow   = halfWindow;
     cur->sampleNumber = sampleNumber;
     cur->subspace     = subspace;
 
-    //done.
+    // done.
     return;
-
 }
 
 /*******************************************************/
@@ -317,14 +310,12 @@ void MeanShift::AddWeightFunction(double g(double), float halfWindow, int sample
 /*******************************************************/
 
 void MeanShift::ClearWeightFunctions( void ) {
-
-    while (head) {
+    while ( head ) {
         delete head->w;
         cur  = head;
         head = head->next;
         delete cur;
     }
-
 }
 
 /*/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\*/
@@ -346,40 +337,37 @@ void MeanShift::ClearWeightFunctions( void ) {
 /*        has been undefined.                          */
 /*******************************************************/
 
-void MeanShift::DefineInput(float *x, int L_, int N_) {
+void MeanShift::DefineInput( float* x, int L_, int N_ ) {
+    // if input data is defined de-allocate memory, and
+    // re-initialize the input data structure
+    if ( ( class_state.INPUT_DEFINED ) || ( class_state.LATTICE_DEFINED ) ) ResetInput();
 
-
-    //if input data is defined de-allocate memory, and
-    //re-initialize the input data structure
-    if ((class_state.INPUT_DEFINED) || (class_state.LATTICE_DEFINED))
-        ResetInput();
-
-    //make sure x is not NULL...
-    if (!x) {
-        ErrorHandler("MeanShift", "UploadInput", "Input data set is NULL.");
+    // make sure x is not NULL...
+    if ( !x ) {
+        ErrorHandler( "MeanShift", "UploadInput", "Input data set is NULL." );
         return;
     }
 
-    //Obtain L and N
-    if (((L = L_) <= 0) || ((N = N_) <= 0)) {
-        ErrorHandler("MeanShift", "UploadInput", "Input data set has negative or zero length or dimension.");
+    // Obtain L and N
+    if ( ( ( L = L_ ) <= 0 ) || ( ( N = N_ ) <= 0 ) ) {
+        ErrorHandler( "MeanShift", "UploadInput", "Input data set has negative or zero length or "
+                                                  "dimension." );
         return;
     }
 
-    //Allocate memory for data
-    if (!(data = new float [L * N])) {
-        ErrorHandler("MeanShift", "UploadInput", "Not enough memory.");
+    // Allocate memory for data
+    if ( !( data = new float[L * N] ) ) {
+        ErrorHandler( "MeanShift", "UploadInput", "Not enough memory." );
         return;
     }
 
-    //Allocate memory for input data set, and copy
-    //x into the private data members of the mean
-    //shift class
-    InitializeInput(x);
+    // Allocate memory for input data set, and copy
+    // x into the private data members of the mean
+    // shift class
+    InitializeInput( x );
 
-    //check for errors
-    if (ErrorStatus == EL_ERROR)
-        return;
+    // check for errors
+    if ( ErrorStatus == EL_ERROR ) return;
 
     // Load x into the MeanShift object using
     // using a kd-tree, resulting in better
@@ -388,14 +376,13 @@ void MeanShift::DefineInput(float *x, int L_, int N_) {
     // msRawData
     CreateBST();
 
-    //indicate that the input has been recently defined
-    class_state.INPUT_DEFINED	= true;
-    class_state.LATTICE_DEFINED	= false;
-    class_state.OUTPUT_DEFINED	= false;
+    // indicate that the input has been recently defined
+    class_state.INPUT_DEFINED   = true;
+    class_state.LATTICE_DEFINED = false;
+    class_state.OUTPUT_DEFINED  = false;
 
-    //done.
+    // done.
     return;
-
 }
 
 /*******************************************************/
@@ -415,56 +402,54 @@ void MeanShift::DefineInput(float *x, int L_, int N_) {
 /*        equal the product ht*wt.                     */
 /*******************************************************/
 
-void MeanShift::DefineLInput(float *x, int ht, int wt, int N_) {
+void MeanShift::DefineLInput( float* x, int ht, int wt, int N_ ) {
+    // if input data is defined de-allocate memory, and
+    // re-initialize the input data structure
+    if ( ( class_state.INPUT_DEFINED ) || ( class_state.LATTICE_DEFINED ) ) ResetInput();
 
-    //if input data is defined de-allocate memory, and
-    //re-initialize the input data structure
-    if ((class_state.INPUT_DEFINED) || (class_state.LATTICE_DEFINED))
-        ResetInput();
-
-    //Obtain lattice height and width
-    if (((height	= ht) <= 0) || ((width	= wt) <= 0)) {
-        ErrorHandler("MeanShift", "DefineLInput", "Lattice defined using zero or negative height and/or width.");
+    // Obtain lattice height and width
+    if ( ( ( height = ht ) <= 0 ) || ( ( width = wt ) <= 0 ) ) {
+        ErrorHandler( "MeanShift", "DefineLInput", "Lattice defined using zero or negative height "
+                                                   "and/or width." );
         return;
     }
 
-    //Obtain input data dimension
-    if ((N = N_) <= 0) {
-        ErrorHandler("MeanShift", "DefineInput", "Input defined using zero or negative dimension.");
+    // Obtain input data dimension
+    if ( ( N = N_ ) <= 0 ) {
+        ErrorHandler( "MeanShift", "DefineInput", "Input defined using zero or negative "
+                                                  "dimension." );
         return;
     }
 
-    //compute the data length, L, of input data set
-    //using height and width
-    L		= height * width;
+    // compute the data length, L, of input data set
+    // using height and width
+    L = height * width;
 
-    //Allocate memory for input data set, and copy
-    //x into the private data members of the mean
-    //shift class
-    InitializeInput(x);
+    // Allocate memory for input data set, and copy
+    // x into the private data members of the mean
+    // shift class
+    InitializeInput( x );
 
-    //check for errors
-    if (ErrorStatus == EL_ERROR)
-        return;
+    // check for errors
+    if ( ErrorStatus == EL_ERROR ) return;
 
-    //allocate memory for weight map
-    if (!(weightMap = new float [L])) {
-        ErrorHandler("MeanShift", "InitializeInput", "Not enough memory.");
+    // allocate memory for weight map
+    if ( !( weightMap = new float[L] ) ) {
+        ErrorHandler( "MeanShift", "InitializeInput", "Not enough memory." );
         return;
     }
 
-    //initialize weightMap to an array of zeros
-    memset(weightMap, 0, L * (sizeof(float)));
+    // initialize weightMap to an array of zeros
+    memset( weightMap, 0, L * ( sizeof( float ) ) );
 
-    //Indicate that a lattice input has recently been
-    //defined
-    class_state.LATTICE_DEFINED	= true;
-    class_state.INPUT_DEFINED	= false;
-    class_state.OUTPUT_DEFINED	= false;
+    // Indicate that a lattice input has recently been
+    // defined
+    class_state.LATTICE_DEFINED = true;
+    class_state.INPUT_DEFINED   = false;
+    class_state.OUTPUT_DEFINED  = false;
 
-    //done.
+    // done.
     return;
-
 }
 
 /*******************************************************/
@@ -482,26 +467,23 @@ void MeanShift::DefineLInput(float *x, int ht, int wt, int N_) {
 /*        weight map.                                  */
 /*******************************************************/
 
-void MeanShift::SetLatticeWeightMap(float *wm) {
-    //make sure wm is not NULL
-    if (!wm) {
-        ErrorHandler("MeanShift", "SetWeightMap", "Specified weight map is NULL.");
+void MeanShift::SetLatticeWeightMap( float* wm ) {
+    // make sure wm is not NULL
+    if ( !wm ) {
+        ErrorHandler( "MeanShift", "SetWeightMap", "Specified weight map is NULL." );
         return;
     }
 
-    //populate weightMap using wm
+    // populate weightMap using wm
     int i;
-    for (i = 0; i < L; i++)
-        weightMap[i] = wm[i];
+    for ( i = 0; i < L; i++ ) weightMap[i] = wm[i];
 
-    //indicate that a lattice weight map has been specified
-    weightMapDefined	= true;
+    // indicate that a lattice weight map has been specified
+    weightMapDefined = true;
 
-    //done.
+    // done.
     return;
-
 }
-
 
 /*******************************************************/
 /*Remove Lattice Weight Map                            */
@@ -514,24 +496,21 @@ void MeanShift::SetLatticeWeightMap(float *wm) {
 /*        flagged.                                     */
 /*******************************************************/
 
-void MeanShift::RemoveLatticeWeightMap(void) {
+void MeanShift::RemoveLatticeWeightMap( void ) {
+    // only remove weight map if it exists, otherwise
+    // do nothing...
+    if ( weightMapDefined ) {
+        // set values of lattice weight map to zero
+        memset( weightMap, 0, L * sizeof( float ) );
 
-    //only remove weight map if it exists, otherwise
-    //do nothing...
-    if (weightMapDefined) {
-        //set values of lattice weight map to zero
-        memset(weightMap, 0, L * sizeof(float));
-
-        //indicate that a lattice weight map is no longer
-        //defined
-        weightMapDefined	= false;
+        // indicate that a lattice weight map is no longer
+        // defined
+        weightMapDefined = false;
     }
 
-    //done.
+    // done.
     return;
-
 }
-
 
 /*/\/\/\/\/\/\/\/\/\/\/\/\/\/\*/
 /*** Mean Shift Operations  ***/
@@ -553,26 +532,24 @@ void MeanShift::RemoveLatticeWeightMap(void) {
 /*        calculated and stored in and returned by Mh. */
 /*******************************************************/
 
-void MeanShift::msVector(double *Mh, double *yk) {
-
-    //make sure that Mh and/or yk are not NULL...
-    if ((!Mh) || (!yk)) {
-        ErrorHandler("MeanShift", "msVector", "Invalid argument(s) passed to this method.");
+void MeanShift::msVector( double* Mh, double* yk ) {
+    // make sure that Mh and/or yk are not NULL...
+    if ( ( !Mh ) || ( !yk ) ) {
+        ErrorHandler( "MeanShift", "msVector", "Invalid argument(s) passed to this method." );
         return;
     }
 
-    //make sure that a kernel has been created, data has
-    //been uploaded, and that they are consistent with one
-    //another...
-    classConsistencyCheck(N, false);
+    // make sure that a kernel has been created, data has
+    // been uploaded, and that they are consistent with one
+    // another...
+    classConsistencyCheck( N, false );
 
-    //calculate mean shift vector at yk using created kernel
-    //and uploaded data set
-    MSVector(Mh, yk);
+    // calculate mean shift vector at yk using created kernel
+    // and uploaded data set
+    MSVector( Mh, yk );
 
-    //done.
+    // done.
     return;
-
 }
 
 /*******************************************************/
@@ -596,26 +573,24 @@ void MeanShift::msVector(double *Mh, double *yk) {
 /*        lattice.                                     */
 /*******************************************************/
 
-void MeanShift::latticeMSVector(double *Mh, double *yk) {
-
-    //make sure that Mh and/or yk are not NULL...
-    if ((!Mh) || (!yk)) {
-        ErrorHandler("MeanShift", "lmsVector", "Invalid argument(s) passed to this method.");
+void MeanShift::latticeMSVector( double* Mh, double* yk ) {
+    // make sure that Mh and/or yk are not NULL...
+    if ( ( !Mh ) || ( !yk ) ) {
+        ErrorHandler( "MeanShift", "lmsVector", "Invalid argument(s) passed to this method." );
         return;
     }
 
-    //make sure that a kernel has been created, data has
-    //been uploaded, and that they are consistent with one
-    //another...
-    classConsistencyCheck(N + 2, true);
+    // make sure that a kernel has been created, data has
+    // been uploaded, and that they are consistent with one
+    // another...
+    classConsistencyCheck( N + 2, true );
 
-    //calculate mean shift vector at yk using created kernel
-    //and uploaded data set
-    LatticeMSVector(Mh, yk);
+    // calculate mean shift vector at yk using created kernel
+    // and uploaded data set
+    LatticeMSVector( Mh, yk );
 
-    //done.
+    // done.
     return;
-
 }
 
 /*******************************************************/
@@ -633,67 +608,59 @@ void MeanShift::latticeMSVector(double *Mh, double *yk) {
 /*        stored in mode.                              */
 /*******************************************************/
 
-void MeanShift::FindMode(double *mode, double *yk) {
-
-    //make sure that mode and/or yk are not NULL...
-    if ((!mode) || (!yk)) {
-        ErrorHandler("MeanShift", "FindMode", "Invalid argument(s) passed to this method.");
+void MeanShift::FindMode( double* mode, double* yk ) {
+    // make sure that mode and/or yk are not NULL...
+    if ( ( !mode ) || ( !yk ) ) {
+        ErrorHandler( "MeanShift", "FindMode", "Invalid argument(s) passed to this method." );
         return;
     }
 
-    //make sure that a kernel has been created, data has
-    //been uploaded, and that they are consistent with one
-    //another...
-    classConsistencyCheck(N, false);
+    // make sure that a kernel has been created, data has
+    // been uploaded, and that they are consistent with one
+    // another...
+    classConsistencyCheck( N, false );
 
-    //allocate memory for Mh
-    double	*Mh	= new double [N];
+    // allocate memory for Mh
+    double* Mh = new double[N];
 
-    //copy yk into mode
+    // copy yk into mode
     int i;
-    for (i = 0; i < N; i++)
-        mode[i] = yk[i];
+    for ( i = 0; i < N; i++ ) mode[i] = yk[i];
 
-    //calculate mean shift vector at yk
-    MSVector(Mh, yk);
+    // calculate mean shift vector at yk
+    MSVector( Mh, yk );
 
-    //calculate mvAbs = |Mh|^2
+    // calculate mvAbs = |Mh|^2
     double mvAbs = 0;
-    for (i = 0; i < N; i++)
-        mvAbs	+= Mh[i] * Mh[i];
+    for ( i = 0; i < N; i++ ) mvAbs += Mh[i] * Mh[i];
 
-    //shift mode until convergence (mvAbs = 0)...
+    // shift mode until convergence (mvAbs = 0)...
     int iterationCount = 1;
-    while ((mvAbs >= EPSILON) && (iterationCount < LIMIT)) {
-        //shift mode...
-        for (i = 0; i < N; i++)
-            mode[i]	+= Mh[i];
+    while ( ( mvAbs >= EPSILON ) && ( iterationCount < LIMIT ) ) {
+        // shift mode...
+        for ( i = 0; i < N; i++ ) mode[i] += Mh[i];
 
-        //re-calculate mean shift vector at new
-        //window location have center defined by
-        //mode
-        MSVector(Mh, mode);
+        // re-calculate mean shift vector at new
+        // window location have center defined by
+        // mode
+        MSVector( Mh, mode );
 
-        //calculate mvAbs = |Mh|^2
+        // calculate mvAbs = |Mh|^2
         mvAbs = 0;
-        for (i = 0; i < N; i++)
-            mvAbs	+= Mh[i] * Mh[i];
+        for ( i = 0; i < N; i++ ) mvAbs += Mh[i] * Mh[i];
 
-        //increment interation count...
+        // increment interation count...
         iterationCount++;
-
     }
 
-    //shift mode...
-    for (i = 0; i < N; i++)
-        mode[i]	+= Mh[i];
+    // shift mode...
+    for ( i = 0; i < N; i++ ) mode[i] += Mh[i];
 
-    //de-allocate memory
-    delete [] Mh;
+    // de-allocate memory
+    delete[] Mh;
 
-    //done.
+    // done.
     return;
-
 }
 
 /*******************************************************/
@@ -717,81 +684,74 @@ void MeanShift::FindMode(double *mode, double *yk) {
 /*        lattice.                                     */
 /*******************************************************/
 
-void MeanShift::FindLMode(double *mode, double *yk) {
-
-    //make sure that mode and/or yk are not NULL...
-    if ((!mode) || (!yk)) {
-        ErrorHandler("MeanShift", "FindLMode", "Invalid argument(s) passed to this method.");
+void MeanShift::FindLMode( double* mode, double* yk ) {
+    // make sure that mode and/or yk are not NULL...
+    if ( ( !mode ) || ( !yk ) ) {
+        ErrorHandler( "MeanShift", "FindLMode", "Invalid argument(s) passed to this method." );
         return;
     }
 
-    //make sure the lattice height and width have been defined...
-    if (!height) {
-        ErrorHandler("MeanShift", "FindLMode", "Lattice height and width is undefined.");
+    // make sure the lattice height and width have been defined...
+    if ( !height ) {
+        ErrorHandler( "MeanShift", "FindLMode", "Lattice height and width is undefined." );
         return;
     }
 
-    //make sure that a kernel has been created, data has
-    //been uploaded, and that they are consistent with one
-    //another...
-    classConsistencyCheck(N + 2, true);
+    // make sure that a kernel has been created, data has
+    // been uploaded, and that they are consistent with one
+    // another...
+    classConsistencyCheck( N + 2, true );
 
-    //define gridN
+    // define gridN
     int gridN = N + 2;
 
-    //allocate memory for Mh
-    double	*Mh	= new double [gridN];
+    // allocate memory for Mh
+    double* Mh = new double[gridN];
 
-    //copy yk into mode
+    // copy yk into mode
     int i;
-    for (i = 0; i < gridN; i++)
-        mode[i] = yk[i];
+    for ( i = 0; i < gridN; i++ ) mode[i] = yk[i];
 
-    //calculate mean shift vector at yk
-    LatticeMSVector(Mh, mode);
+    // calculate mean shift vector at yk
+    LatticeMSVector( Mh, mode );
 
-    //calculate mvAbs = |Mh|^2
+    // calculate mvAbs = |Mh|^2
     double mvAbs = 0;
-    for (i = 0; i < gridN; i++)
-        mvAbs	+= Mh[i] * Mh[i];
+    for ( i = 0; i < gridN; i++ ) mvAbs += Mh[i] * Mh[i];
 
-    //shift mode until convergence (mvAbs = 0)...
+    // shift mode until convergence (mvAbs = 0)...
     int iterationCount = 1;
-    while ((mvAbs >= EPSILON) && (iterationCount < LIMIT)) {
-        //shift mode...
-        for (i = 0; i < gridN; i++)
-            mode[i]	+= Mh[i];
+    while ( ( mvAbs >= EPSILON ) && ( iterationCount < LIMIT ) ) {
+        // shift mode...
+        for ( i = 0; i < gridN; i++ ) mode[i] += Mh[i];
 
-        //re-calculate mean shift vector at new
-        //window location have center defined by
-        //mode
-        LatticeMSVector(Mh, mode);
+        // re-calculate mean shift vector at new
+        // window location have center defined by
+        // mode
+        LatticeMSVector( Mh, mode );
 
-        //calculate mvAbs = |Mh|^2
+        // calculate mvAbs = |Mh|^2
         mvAbs = 0;
-        for (i = 0; i < gridN; i++)
-            mvAbs	+= Mh[i] * Mh[i];
+        for ( i = 0; i < gridN; i++ ) mvAbs += Mh[i] * Mh[i];
 
-        //increment interation count...
+        // increment interation count...
         iterationCount++;
-
     }
 
-    //shift mode...
-    for (i = 0; i < gridN; i++)
-        mode[i]	+= Mh[i];
+    // shift mode...
+    for ( i = 0; i < gridN; i++ ) mode[i] += Mh[i];
 
-    //de-allocate memory
-    delete [] Mh;
+    // de-allocate memory
+    delete[] Mh;
 
-    //done.
+    // done.
     return;
-
 }
 
 /*@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@*/
 /*@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@*/
-/*@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@    PROTECTED METHODS    @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@*/
+/*@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@    PROTECTED METHODS
+ * @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@*/
 /*@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@*/
 /*@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@*/
 
@@ -819,14 +779,12 @@ void MeanShift::FindLMode(double *mode, double *yk) {
 /*        or a uniform kernel is returned              */
 /*******************************************************/
 
-void MeanShift::MSVector(double *Mh_ptr, double *yk_ptr) {
-
+void MeanShift::MSVector( double* Mh_ptr, double* yk_ptr ) {
     // Declare Variables
     int i, j;
 
     // Initialize mean shift vector
-    for (i = 0; i < N; i++)
-        Mh_ptr[i] = 0;
+    for ( i = 0; i < N; i++ ) Mh_ptr[i] = 0;
 
     // Initialize wsum to zero, the sum of the weights of each
     // data point found to lie within the search window (sphere)
@@ -839,19 +797,21 @@ void MeanShift::MSVector(double *Mh_ptr, double *yk_ptr) {
     // The flag uniformKernel is used to determine which
     // kernel function is to be used in the calculation
     // of the mean shift vector
-    if (uniformKernel) {
-        for (i = 0; i < kp; i++) {
-            for (j = 0; j < P[i]; j++) {
-                range[2 * (s + j)  ] = (float)(yk_ptr[s + j] - h[i]);
-                range[2 * (s + j) + 1] = (float)(yk_ptr[s + j] + h[i]);
+    if ( uniformKernel ) {
+        for ( i = 0; i < kp; i++ ) {
+            for ( j = 0; j < P[i]; j++ ) {
+                range[2 * ( s + j )]     = (float) ( yk_ptr[s + j] - h[i] );
+                range[2 * ( s + j ) + 1] = (float) ( yk_ptr[s + j] + h[i] );
             }
             s += P[i];
         }
     } else {
-        for (i = 0; i < kp; i++) {
-            for (j = 0; j < P[i]; j++) {
-                range[2 * (s + j)  ] = (float)(yk_ptr[s + j] - h[i] * float(sqrt(offset[i])));
-                range[2 * (s + j) + 1] = (float)(yk_ptr[s + j] + h[i] * float(sqrt(offset[i])));
+        for ( i = 0; i < kp; i++ ) {
+            for ( j = 0; j < P[i]; j++ ) {
+                range[2 * ( s + j )] =
+                    (float) ( yk_ptr[s + j] - h[i] * float( sqrt( offset[i] ) ) );
+                range[2 * ( s + j ) + 1] =
+                    (float) ( yk_ptr[s + j] + h[i] * float( sqrt( offset[i] ) ) );
             }
             s += P[i];
         }
@@ -862,25 +822,22 @@ void MeanShift::MSVector(double *Mh_ptr, double *yk_ptr) {
     // the search window (sphere) using a general,
     // user defined kernel or uniform kernel depending
     // on the uniformKernel flag
-    if (uniformKernel)
-        uniformSearch(root, 0, Mh_ptr, yk_ptr);
+    if ( uniformKernel )
+        uniformSearch( root, 0, Mh_ptr, yk_ptr );
     else
-        generalSearch(root, 0, Mh_ptr, yk_ptr);
+        generalSearch( root, 0, Mh_ptr, yk_ptr );
 
     // Calculate the mean shift vector using Mh and wsum
-    for (i = 0; i < N; i++) {
-
+    for ( i = 0; i < N; i++ ) {
         // Divide Sum by wsum
         Mh_ptr[i] /= wsum;
 
         // Calculate mean shift vector: Mh(yk) = y(k+1) - y(k)
         Mh_ptr[i] -= yk_ptr[i];
-
     }
 
-    //done.
+    // done.
     return;
-
 }
 
 /*/\/\/\/\/\/\/\/\/\/\/\/\/\/\*/
@@ -905,12 +862,10 @@ void MeanShift::MSVector(double *Mh_ptr, double *yk_ptr) {
 /*        Mh_ptr                                       */
 /*******************************************************/
 
-void MeanShift::LatticeMSVector(double *Mh_ptr, double *yk_ptr) {
-
+void MeanShift::LatticeMSVector( double* Mh_ptr, double* yk_ptr ) {
     // Initialize mean shift vector
     register int i;
-    for (i = 0; i < N + 2; i++)
-        Mh_ptr[i] = 0;
+    for ( i = 0; i < N + 2; i++ ) Mh_ptr[i] = 0;
 
     // Initialize wsum
     wsum = 0;
@@ -918,27 +873,24 @@ void MeanShift::LatticeMSVector(double *Mh_ptr, double *yk_ptr) {
     // Perform lattice search summing
     // all the points that lie within the search
     // window defined using the kernel specified
-    //by uniformKernel
-    if (uniformKernel)
-        uniformLSearch(Mh_ptr, yk_ptr);
+    // by uniformKernel
+    if ( uniformKernel )
+        uniformLSearch( Mh_ptr, yk_ptr );
     else
-        generalLSearch(Mh_ptr, yk_ptr);
+        generalLSearch( Mh_ptr, yk_ptr );
 
     // Compute mean shift vector using sum computed
     // by lattice search, wsum, and yk_ptr:
     // Mh = Mh/wsum - yk_ptr
 
-    if (wsum > 0) {
-        for (i = 0; i < N + 2; i++)
-            Mh_ptr[i] = Mh_ptr[i] / wsum - yk_ptr[i];
+    if ( wsum > 0 ) {
+        for ( i = 0; i < N + 2; i++ ) Mh_ptr[i] = Mh_ptr[i] / wsum - yk_ptr[i];
     } else {
-        for (i = 0; i < N + 2; i++)
-            Mh_ptr[i] = 0;
+        for ( i = 0; i < N + 2; i++ ) Mh_ptr[i] = 0;
     }
 
     // done.
     return;
-
 }
 
 /*******************************************************/
@@ -965,12 +917,10 @@ void MeanShift::LatticeMSVector(double *Mh_ptr, double *yk_ptr) {
 /*        ion data structure.                          */
 /*******************************************************/
 
-void MeanShift::OptLatticeMSVector(double *Mh_ptr, double *yk_ptr) {
-
+void MeanShift::OptLatticeMSVector( double* Mh_ptr, double* yk_ptr ) {
     // Initialize mean shift vector
     register int i;
-    for (i = 0; i < N + 2; i++)
-        Mh_ptr[i] = 0;
+    for ( i = 0; i < N + 2; i++ ) Mh_ptr[i] = 0;
 
     // Initialize wsum
     wsum = 0;
@@ -978,27 +928,24 @@ void MeanShift::OptLatticeMSVector(double *Mh_ptr, double *yk_ptr) {
     // Perform lattice search summing
     // all the points that lie within the search
     // window defined using the kernel specified
-    //by uniformKernel
-    if (uniformKernel)
-        optUniformLSearch(Mh_ptr, yk_ptr);
+    // by uniformKernel
+    if ( uniformKernel )
+        optUniformLSearch( Mh_ptr, yk_ptr );
     else
-        optGeneralLSearch(Mh_ptr, yk_ptr);
+        optGeneralLSearch( Mh_ptr, yk_ptr );
 
     // Compute mean shift vector using sum computed
     // by lattice search, wsum, and yk_ptr:
     // Mh = Mh/wsum - yk_ptr
 
-    if (wsum > 0) {
-        for (i = 0; i < N + 2; i++)
-            Mh_ptr[i] = Mh_ptr[i] / wsum - yk_ptr[i];
+    if ( wsum > 0 ) {
+        for ( i = 0; i < N + 2; i++ ) Mh_ptr[i] = Mh_ptr[i] / wsum - yk_ptr[i];
     } else {
-        for (i = 0; i < N + 2; i++)
-            Mh_ptr[i] = 0;
+        for ( i = 0; i < N + 2; i++ ) Mh_ptr[i] = 0;
     }
 
     // done.
     return;
-
 }
 
 /*/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\*/
@@ -1022,43 +969,41 @@ void MeanShift::OptLatticeMSVector(double *Mh_ptr, double *yk_ptr) {
 /*        the kernel a fatal error is flagged.         */
 /*******************************************************/
 
-void MeanShift::classConsistencyCheck(int iN, bool usingLattice) {
-
-    //make sure that kernel has been created...
-    if (class_state.KERNEL_DEFINED == false) {
-        ErrorHandler("MeanShift", "classConsistencyCheck", "Kernel not created.");
+void MeanShift::classConsistencyCheck( int iN, bool usingLattice ) {
+    // make sure that kernel has been created...
+    if ( class_state.KERNEL_DEFINED == false ) {
+        ErrorHandler( "MeanShift", "classConsistencyCheck", "Kernel not created." );
         return;
     }
 
-    //make sure input data set has been loaded into mean shift object...
-    if ((class_state.INPUT_DEFINED == false) && (!usingLattice)) {
-        ErrorHandler("MeanShift", "classConsistencyCheck", "No input data specified.");
+    // make sure input data set has been loaded into mean shift object...
+    if ( ( class_state.INPUT_DEFINED == false ) && ( !usingLattice ) ) {
+        ErrorHandler( "MeanShift", "classConsistencyCheck", "No input data specified." );
         return;
     }
 
-    //make sure that the lattice is defined if it is being used
-    if ((class_state.LATTICE_DEFINED == false) && (usingLattice)) {
-        ErrorHandler("MeanShift", "classConsistencyCheck", "Latice not created.");
+    // make sure that the lattice is defined if it is being used
+    if ( ( class_state.LATTICE_DEFINED == false ) && ( usingLattice ) ) {
+        ErrorHandler( "MeanShift", "classConsistencyCheck", "Latice not created." );
         return;
     }
 
-    //make sure that dimension of the kernel and the input data set
-    //agree
+    // make sure that dimension of the kernel and the input data set
+    // agree
 
-    //calculate dimension of kernel (kN)
-    int i, kN	= 0;
-    for (i = 0; i < kp; i++)
-        kN	+= P[i];
+    // calculate dimension of kernel (kN)
+    int i, kN = 0;
+    for ( i = 0; i < kp; i++ ) kN += P[i];
 
-    //perform comparison...
-    if (iN != kN) {
-        ErrorHandler("MeanShift", "classConsitencyCheck", "Kernel dimension does not match defined input data dimension.");
+    // perform comparison...
+    if ( iN != kN ) {
+        ErrorHandler( "MeanShift", "classConsitencyCheck", "Kernel dimension does not match "
+                                                           "defined input data dimension." );
         return;
     }
 
-    //done.
+    // done.
     return;
-
 }
 
 /*/\/\/\/\/\/\/\/\/\/\/\/\/\*/
@@ -1089,26 +1034,24 @@ void MeanShift::classConsistencyCheck(int iN, bool usingLattice) {
 /*            (ErrorStatus = 1)                        */
 /*******************************************************/
 
-void MeanShift::ErrorHandler(char *className, char *methodName, char* errmsg) {
+void MeanShift::ErrorHandler( char* className, char* methodName, char* errmsg ) {
+    // store trace into error message
+    strcpy( ErrorMessage, className );
+    strcat( ErrorMessage, "::" );
+    strcat( ErrorMessage, methodName );
+    strcat( ErrorMessage, " Error: " );
 
-    //store trace into error message
-    strcpy(ErrorMessage, className);
-    strcat(ErrorMessage, "::");
-    strcat(ErrorMessage, methodName);
-    strcat(ErrorMessage, " Error: ");
+    // store message into error message
+    strcat( ErrorMessage, errmsg );
 
-    //store message into error message
-    strcat(ErrorMessage, errmsg);
-
-    //set error status to ERROR
+    // set error status to ERROR
     ErrorStatus = EL_ERROR;
-
-
 }
 
 /*@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@*/
 /*@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@*/
-/*@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@     PRIVATE METHODS     @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@*/
+/*@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@     PRIVATE METHODS
+ * @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@*/
 /*@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@*/
 /*@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@*/
 
@@ -1142,7 +1085,6 @@ void MeanShift::ErrorHandler(char *className, char *methodName, char* errmsg) {
 /*******************************************************/
 
 void MeanShift::generateLookupTable( void ) {
-
     // Declare Variables
     int i, j;
 
@@ -1155,78 +1097,73 @@ void MeanShift::generateLookupTable( void ) {
     // Assume kernel is uniform
     uniformKernel = true;
 
-    for (i = 0; i < kp; i++) {
-        switch (kernel[i]) {
-        // *Uniform Kernel* has weight funciton w(u) = 1
-        // therefore, a weight funciton lookup table is
-        // not needed for this kernel --> w[i] = NULL indicates
-        // this
-        case Uniform:
+    for ( i = 0; i < kp; i++ ) {
+        switch ( kernel[i] ) {
+            // *Uniform Kernel* has weight funciton w(u) = 1
+            // therefore, a weight funciton lookup table is
+            // not needed for this kernel --> w[i] = NULL indicates
+            // this
+            case Uniform:
 
-            w        [i] = NULL;  //weight function not needed for this kernel
-            offset   [i] =    1;  //uniform kernel has u < 1.0
-            increment[i] =    1;  //has no meaning
-            break;
+                w[i]         = NULL;   // weight function not needed for this kernel
+                offset[i]    = 1;      // uniform kernel has u < 1.0
+                increment[i] = 1;      // has no meaning
+                break;
 
-        // *Gaussian Kernel* has weight function w(u) = constant*exp(-u^2/[2h[i]^2])
-        case Gaussian:
+            // *Gaussian Kernel* has weight function w(u) = constant*exp(-u^2/[2h[i]^2])
+            case Gaussian:
 
-            // Set uniformKernel to false
-            uniformKernel = false;
+                // Set uniformKernel to false
+                uniformKernel = false;
 
-            // generate weight function using expression,
-            // exp(-u/2), where u = norm(xi - x)^2/h^2
+                // generate weight function using expression,
+                // exp(-u/2), where u = norm(xi - x)^2/h^2
 
-            // Allocate memory for weight table
-            w[i] = new double [GAUSS_NUM_ELS + 1];
+                // Allocate memory for weight table
+                w[i] = new double[GAUSS_NUM_ELS + 1];
 
-            for (j = 0; j <= GAUSS_NUM_ELS; j++)
-                w[i][j] = exp(-j * GAUSS_INCREMENT / 2);
+                for ( j = 0; j <= GAUSS_NUM_ELS; j++ ) w[i][j] = exp( -j * GAUSS_INCREMENT / 2 );
 
-            // Set offset = offset^2, and set increment
-            offset   [i] = (float)(GAUSS_LIMIT * GAUSS_LIMIT);
-            increment[i] = GAUSS_INCREMENT;
+                // Set offset = offset^2, and set increment
+                offset[i]    = (float) ( GAUSS_LIMIT * GAUSS_LIMIT );
+                increment[i] = GAUSS_INCREMENT;
 
-            // done
-            break;
+                // done
+                break;
 
-        // *User Define Kernel* uses the weight function wf(u)
-        case UserDefined:
+            // *User Define Kernel* uses the weight function wf(u)
+            case UserDefined:
 
-            // Set uniformKernel to false
-            uniformKernel = false;
+                // Set uniformKernel to false
+                uniformKernel = false;
 
-            // Search for user defined weight function
-            // defined for subspace (i+1)
-            cur = head;
-            while ((cur) && (cur->subspace != (i + 1)))
-                cur = cur->next;
+                // Search for user defined weight function
+                // defined for subspace (i+1)
+                cur                                                     = head;
+                while ( ( cur ) && ( cur->subspace != ( i + 1 ) ) ) cur = cur->next;
 
-            // If a user defined subspace has not been found
-            // for this subspace, flag an error
-            if (cur == NULL) {
-                fprintf(stderr, "\ngenerateLookupTable Fatal Error: User defined kernel for subspace %d undefined.\n\nAborting Program.\n\n", i + 1);
-                exit(1);
-            }
+                // If a user defined subspace has not been found
+                // for this subspace, flag an error
+                if ( cur == NULL ) {
+                    fprintf( stderr, "\ngenerateLookupTable Fatal Error: User defined kernel for "
+                                     "subspace %d undefined.\n\nAborting Program.\n\n",
+                             i + 1 );
+                    exit( 1 );
+                }
 
-            // Otherwise, copy weight function lookup table to w[i]
-            w[i] = new double [cur->sampleNumber + 1];
-            for (j = 0; j <= cur->sampleNumber; j++)
-                w[i][j] = cur->w[j];
+                // Otherwise, copy weight function lookup table to w[i]
+                w[i] = new double[cur->sampleNumber + 1];
+                for ( j = 0; j <= cur->sampleNumber; j++ ) w[i][j] = cur->w[j];
 
-            // Set offset and increment accordingly
-            offset   [i] = (float)(cur->halfWindow);
-            increment[i] = cur->halfWindow / (float)(cur->sampleNumber);
+                // Set offset and increment accordingly
+                offset[i]    = (float) ( cur->halfWindow );
+                increment[i] = cur->halfWindow / (float) ( cur->sampleNumber );
 
-            // done
-            break;
+                // done
+                break;
 
-        default:
-
-            ErrorHandler("MeanShift", "generateLookupTable", "Unknown kernel type.");
-
+            default: ErrorHandler( "MeanShift", "generateLookupTable", "Unknown kernel type." );
         }
-
     }
 }
 
@@ -1242,41 +1179,38 @@ void MeanShift::generateLookupTable( void ) {
 /*******************************************************/
 
 void MeanShift::DestroyKernel( void ) {
+    // de-allocate memory...
+    if ( kernel ) delete[] kernel;
+    if ( h ) delete[] h;
+    if ( P ) delete[] P;
+    if ( range ) delete[] range;
 
-    //de-allocate memory...
-    if (kernel)	delete	[] kernel;
-    if     (h)	delete	[] h;
-    if     (P)	delete	[] P;
-    if (range)	delete	[] range;
+    if ( uv ) delete[] uv;
+    if ( increment ) delete[] increment;
+    if ( offset ) delete[] offset;
 
-    if (uv) delete [] uv;
-    if (increment) delete [] increment;
-    if (offset) delete [] offset;
-
-    if (kp > 0) {
-        if (w) {
+    if ( kp > 0 ) {
+        if ( w ) {
             int i;
-            for (i = 0; i < kp; i++)
-                delete [] w[i];
-            delete [] w;
+            for ( i = 0; i < kp; i++ ) delete[] w[i];
+            delete[] w;
         }
         w = NULL;
     }
 
-    //intialize kernel for re-use...
-    kp		= 0;
-    kernel	= NULL;
-    h		= NULL;
-    P		= NULL;
-    range	= NULL;
+    // intialize kernel for re-use...
+    kp     = 0;
+    kernel = NULL;
+    h      = NULL;
+    P      = NULL;
+    range  = NULL;
 
     increment = NULL;
-    uv = NULL;
-    offset = NULL;
+    uv        = NULL;
+    offset    = NULL;
 
-    //done.
+    // done.
     return;
-
 }
 
 /*/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\*/
@@ -1298,7 +1232,6 @@ void MeanShift::DestroyKernel( void ) {
 /*******************************************************/
 
 void MeanShift::CreateBST( void ) {
-
     // Create BST using data....
 
     // Allocate memory for tree
@@ -1307,7 +1240,7 @@ void MeanShift::CreateBST( void ) {
     // Populate 'forest' of tree's with
     // the values stored in x
     int i;
-    for (i = 0; i < L; i++) {
+    for ( i = 0; i < L; i++ ) {
         forest[i].x      = &data[i * N];
         forest[i].right  = NULL;
         forest[i].left   = NULL;
@@ -1318,11 +1251,10 @@ void MeanShift::CreateBST( void ) {
     // forest of trees generated above
     // retaining the root of this tree
 
-    root = BuildKDTree(forest, L, 0, NULL);
+    root = BuildKDTree( forest, L, 0, NULL );
 
-    //done.
+    // done.
     return;
-
 }
 
 /*******************************************************/
@@ -1341,22 +1273,19 @@ void MeanShift::CreateBST( void ) {
 /*        structure.                                   */
 /*******************************************************/
 
-void MeanShift::InitializeInput(float *x) {
-
-    //allocate memory for input data set
-    if (!(data = new float [L * N])) {
-        ErrorHandler("MeanShift", "InitializeInput", "Not enough memory.");
+void MeanShift::InitializeInput( float* x ) {
+    // allocate memory for input data set
+    if ( !( data = new float[L * N] ) ) {
+        ErrorHandler( "MeanShift", "InitializeInput", "Not enough memory." );
         return;
     }
 
-    //copy x into data
+    // copy x into data
     int i;
-    for (i = 0; i < L * N; i++)
-        data[i]	= x[i];
+    for ( i = 0; i < L * N; i++ ) data[i] = x[i];
 
-    //done.
+    // done.
     return;
-
 }
 
 /*******************************************************/
@@ -1372,25 +1301,23 @@ void MeanShift::InitializeInput(float *x) {
 /*******************************************************/
 
 void MeanShift::ResetInput( void ) {
+    // de-allocate memory of input data structure (BST)
+    if ( data ) delete[] data;
+    if ( forest ) delete[] forest;
 
-    //de-allocate memory of input data structure (BST)
-    if (data)	delete [] data;
-    if (forest)	delete [] forest;
+    // initialize input data structure for re-use
+    data   = NULL;
+    forest = NULL;
+    root   = NULL;
+    L      = 0;
+    N      = 0;
+    width  = 0;
+    height = 0;
 
-    //initialize input data structure for re-use
-    data	= NULL;
-    forest	= NULL;
-    root	= NULL;
-    L		= 0;
-    N		= 0;
-    width	= 0;
-    height	= 0;
-
-    //re-set class input to indicate that
-    //an input is not longer stored by
-    //the private data members of this class
-    class_state.INPUT_DEFINED	= class_state.LATTICE_DEFINED = false;
-
+    // re-set class input to indicate that
+    // an input is not longer stored by
+    // the private data members of this class
+    class_state.INPUT_DEFINED = class_state.LATTICE_DEFINED = false;
 }
 
 /*/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\*/
@@ -1415,8 +1342,7 @@ void MeanShift::ResetInput( void ) {
 /*        been returned                                */
 /*******************************************************/
 
-tree *MeanShift::BuildKDTree(tree *subset, int length, int d, tree* parent) {
-
+tree* MeanShift::BuildKDTree( tree* subset, int length, int d, tree* parent ) {
     // If the subset is a single tree
     // then return this tree otherwise
     // partition the subset and place
@@ -1424,13 +1350,12 @@ tree *MeanShift::BuildKDTree(tree *subset, int length, int d, tree* parent) {
     // the left and right sub-trees having
     // their root specified by the median
     // of this subset in dimension d
-    if (length == 1) {
+    if ( length == 1 ) {
         subset->parent = parent;
         return subset;
-    } else if (length > 1) {
-
+    } else if ( length > 1 ) {
         // Sort Subset
-        QuickMedian(subset, 0, length - 1, d);
+        QuickMedian( subset, 0, length - 1, d );
 
         // Get Median of Subset and Partition
         // it into two sub-trees - create
@@ -1439,8 +1364,9 @@ tree *MeanShift::BuildKDTree(tree *subset, int length, int d, tree* parent) {
         // children being the medians of the subsets
         int median            = length / 2;
         subset[median].parent = parent;
-        subset[median].left   = BuildKDTree(subset, median, (d + 1) % N, &subset[median]);
-        subset[median].right  = BuildKDTree(&subset[median + 1], length - median - 1, (d + 1) % N, &subset[median]);
+        subset[median].left   = BuildKDTree( subset, median, ( d + 1 ) % N, &subset[median] );
+        subset[median].right =
+            BuildKDTree( &subset[median + 1], length - median - 1, ( d + 1 ) % N, &subset[median] );
 
         // Output tree structure
         return &subset[median];
@@ -1448,8 +1374,7 @@ tree *MeanShift::BuildKDTree(tree *subset, int length, int d, tree* parent) {
     } else
         return NULL;
 
-    //done.
-
+    // done.
 }
 
 /*******************************************************/
@@ -1477,7 +1402,7 @@ tree *MeanShift::BuildKDTree(tree *subset, int length, int d, tree* parent) {
 /*        otherwise they are located to the right      */
 /*******************************************************/
 
-void MeanShift::QuickMedian(tree *arr, int left, int right, int d) {
+void MeanShift::QuickMedian( tree* arr, int left, int right, int d ) {
     unsigned long k;
     unsigned long n;
     float* a;
@@ -1486,41 +1411,39 @@ void MeanShift::QuickMedian(tree *arr, int left, int right, int d) {
     k = n / 2 + 1;
     unsigned long i, ir, j, l, mid;
 
-    l = 1;
+    l  = 1;
     ir = n;
-    for (;;) {
-        if (ir <= l + 1) {
-            if (ir == l + 1 && arr[ir - 1].x[d] < arr[l - 1].x[d]) {
-                SWAP(arr[l - 1].x, arr[ir - 1].x)
+    for ( ;; ) {
+        if ( ir <= l + 1 ) {
+            if ( ir == l + 1 && arr[ir - 1].x[d] < arr[l - 1].x[d] ) {
+                SWAP( arr[l - 1].x, arr[ir - 1].x )
             }
             return;
         } else {
-            mid = (l + ir) >> 1;
-            SWAP(arr[mid - 1].x, arr[l + 1 - 1].x)
-            if (arr[l - 1].x[d] > arr[ir - 1].x[d]) {
-                SWAP(arr[l - 1].x, arr[ir - 1].x)
+            mid = ( l + ir ) >> 1;
+            SWAP( arr[mid - 1].x, arr[l + 1 - 1].x )
+            if ( arr[l - 1].x[d] > arr[ir - 1].x[d] ) { SWAP( arr[l - 1].x, arr[ir - 1].x ) }
+            if ( arr[l + 1 - 1].x[d] > arr[ir - 1].x[d] ) {
+                SWAP( arr[l + 1 - 1].x, arr[ir - 1].x )
             }
-            if (arr[l + 1 - 1].x[d] > arr[ir - 1].x[d]) {
-                SWAP(arr[l + 1 - 1].x, arr[ir - 1].x)
-            }
-            if (arr[l - 1].x[d] > arr[l + 1 - 1].x[d]) {
-                SWAP(arr[l - 1].x, arr[l + 1 - 1].x)
-            }
+            if ( arr[l - 1].x[d] > arr[l + 1 - 1].x[d] ) { SWAP( arr[l - 1].x, arr[l + 1 - 1].x ) }
             i = l + 1;
             j = ir;
             a = arr[l + 1 - 1].x;
-            for (;;) {
-                do i++;
-                while (arr[i - 1].x[d] < a[d]);
-                do j--;
-                while (arr[j - 1].x[d] > a[d]);
-                if (j < i) break;
-                SWAP(arr[i - 1].x, arr[j - 1].x)
+            for ( ;; ) {
+                do
+                    i++;
+                while ( arr[i - 1].x[d] < a[d] );
+                do
+                    j--;
+                while ( arr[j - 1].x[d] > a[d] );
+                if ( j < i ) break;
+                SWAP( arr[i - 1].x, arr[j - 1].x )
             }
             arr[l + 1 - 1].x = arr[j - 1].x;
-            arr[j - 1].x = a;
-            if (j >= k) ir = j - 1;
-            if (j <= k) l = i;
+            arr[j - 1].x     = a;
+            if ( j >= k ) ir = j - 1;
+            if ( j <= k ) l  = i;
         }
     }
 }
@@ -1549,88 +1472,83 @@ void MeanShift::QuickMedian(tree *arr, int left, int right, int d) {
 /*        kernel                                       */
 /*******************************************************/
 
-void MeanShift::uniformSearch(tree *gt, int gd, double *Mh_ptr, double *yk_ptr) {
+void MeanShift::uniformSearch( tree* gt, int gd, double* Mh_ptr, double* yk_ptr ) {
     tree* c_t;
     int c_d;
     int i;
     int actionType;
 
-    c_t = gt;
-    c_d = gd;
+    c_t        = gt;
+    c_d        = gd;
     actionType = 0;
 
     double el, diff;
     int k, j, s;
 
-    while (c_t != NULL) {
-        switch (actionType) {
-        case 0: // forward
-            if ((c_t->x[c_d] > range[2 * c_d]) && ((c_t->left) != NULL)) {
-                c_t = c_t->left;
-                c_d = (c_d + 1) % N;
-            } else {
-                actionType = 1;
-            }
-            break;
-        case 1: // backleft
+    while ( c_t != NULL ) {
+        switch ( actionType ) {
+            case 0:   // forward
+                if ( ( c_t->x[c_d] > range[2 * c_d] ) && ( ( c_t->left ) != NULL ) ) {
+                    c_t = c_t->left;
+                    c_d = ( c_d + 1 ) % N;
+                } else {
+                    actionType = 1;
+                }
+                break;
+            case 1:   // backleft
 
-            for (i = 0; i < N; i++) {
-                if ((c_t->x[i] < range[2 * i]) || (c_t->x[i] > range[2 * i + 1]))
-                    break;
-            }
+                for ( i = 0; i < N; i++ ) {
+                    if ( ( c_t->x[i] < range[2 * i] ) || ( c_t->x[i] > range[2 * i + 1] ) ) break;
+                }
 
-            if (i == N) {
+                if ( i == N ) {
+                    // ***     Visit Tree       ***
 
-                // ***     Visit Tree       ***
+                    // Check if xi is in the window centered about yk_ptr
+                    // If so - use it to compute y(k+1)
+                    diff = 0;
+                    j    = 0;
+                    s    = 0;
+                    while ( ( diff < 1.0 ) && ( j < kp ) ) {   // Partial Distortion Search (PDS)
 
-                // Check if xi is in the window centered about yk_ptr
-                // If so - use it to compute y(k+1)
-                diff = 0;
-                j = 0;
-                s = 0;
-                while ((diff < 1.0) && (j < kp)) { // Partial Distortion Search (PDS)
+                        // test each sub-dimension independently
+                        diff = 0;
+                        for ( k = 0; k < P[j]; k++ ) {
+                            el = ( c_t->x[s + k] - yk_ptr[s + k] ) / h[j];
+                            diff += el * el;
+                        }
 
-                    // test each sub-dimension independently
-                    diff  = 0;
-                    for (k = 0; k < P[j]; k++) {
-                        el = (c_t->x[s + k] - yk_ptr[s + k]) / h[j];
-                        diff += el * el;
+                        s += P[j];   // next subspace
+                        j++;
                     }
 
-                    s += P[j];                        // next subspace
-                    j++;
-
+                    if ( diff < 1.0 ) {
+                        wsum += 1;
+                        for ( j = 0; j < N; j++ ) Mh_ptr[j] += c_t->x[j];
+                    }
                 }
-
-                if (diff < 1.0) {
-                    wsum += 1;
-                    for (j = 0; j < N; j++)
-                        Mh_ptr[j] += c_t->x[j];
+                if ( ( c_t->x[c_d] < range[2 * c_d + 1] ) && ( ( c_t->right ) != NULL ) ) {
+                    c_t        = c_t->right;
+                    c_d        = ( c_d + 1 ) % N;
+                    actionType = 0;
+                } else {
+                    actionType = 2;
                 }
-
-            }
-            if ((c_t->x[c_d] < range[2 * c_d + 1]) && ((c_t->right) != NULL)) {
-                c_t = c_t->right;
-                c_d = (c_d + 1) % N;
-                actionType = 0;
-            } else {
-                actionType = 2;
-            }
-            break;
-        case 2: // backright
-            c_d = (c_d + N - 1) % N;
-
-            if (c_t->parent == NULL) {
-                c_t = NULL;
                 break;
-            }
+            case 2:   // backright
+                c_d = ( c_d + N - 1 ) % N;
 
-            if (c_t->parent->left == c_t)
-                actionType = 1;
-            else
-                actionType = 2;
-            c_t = c_t->parent;
-            break;
+                if ( c_t->parent == NULL ) {
+                    c_t = NULL;
+                    break;
+                }
+
+                if ( c_t->parent->left == c_t )
+                    actionType = 1;
+                else
+                    actionType = 2;
+                c_t            = c_t->parent;
+                break;
         }
     }
 }
@@ -1655,132 +1573,125 @@ void MeanShift::uniformSearch(tree *gt, int gd, double *Mh_ptr, double *yk_ptr) 
 /*        kernel                                       */
 /*******************************************************/
 
-void MeanShift::generalSearch(tree *gt, int gd, double *Mh_ptr, double *yk_ptr) {
+void MeanShift::generalSearch( tree* gt, int gd, double* Mh_ptr, double* yk_ptr ) {
     tree* c_t;
     int c_d;
     int i;
     int actionType;
 
-    c_t = gt;
-    c_d = gd;
+    c_t        = gt;
+    c_d        = gd;
     actionType = 0;
 
     double el, diff, u, tw, y0, y1;
     int k, j, s, x0, x1;
 
-    while (c_t != NULL) {
-        switch (actionType) {
-        case 0: // forward
-            if ((c_t->x[c_d] > range[2 * c_d]) && ((c_t->left) != NULL)) {
-                c_t = c_t->left;
-                c_d = (c_d + 1) % N;
-            } else {
-                actionType = 1;
-            }
-            break;
-        case 1: // backleft
-
-            for (i = 0; i < N; i++) {
-                if ((c_t->x[i] < range[2 * i]) || (c_t->x[i] > range[2 * i + 1]))
-                    break;
-            }
-
-            if (i == N) {
-
-                // ***      Visit Tree      ***
-
-                // Check if xi is in the window centered about yk_ptr
-                // If so - use it to compute y(k+1)
-                s = 0;
-                for (j = 0; j < kp; j++) {
-
-                    // test each sub-dimension independently
-                    diff  = 0;
-                    for (k = 0; k < P[j]; k++) {
-                        el = (c_t->x[s + k] - yk_ptr[s + k]) / h[j];
-                        diff += uv[s + k] = el * el;  // Update uv and diff
-                        if (diff >= offset[j])        // Partial Distortion Search (PDS)
-                            break;
-                    }
-
-                    if (diff >= offset[j])            // PDS
-                        break;
-
-                    s += P[j];                        // next subspace
-
+    while ( c_t != NULL ) {
+        switch ( actionType ) {
+            case 0:   // forward
+                if ( ( c_t->x[c_d] > range[2 * c_d] ) && ( ( c_t->left ) != NULL ) ) {
+                    c_t = c_t->left;
+                    c_d = ( c_d + 1 ) % N;
+                } else {
+                    actionType = 1;
                 }
-
-                // j == kp indicates that all subspaces passed the test:
-                // the data point is within the search window
-                if (j == kp) j--;
-                if (diff < offset[j]) {
-
-                    // Initialize total weight to 1
-                    tw = 1;
-
-                    // Calculate weight factor using weight function
-                    // lookup tables and uv
-                    s = 0;
-                    for (j = 0; j < kp; j++) {
-                        if (kernel[j]) { // not uniform kernel
-                            // Compute u[i]
-                            u = 0;
-                            for (k = 0; k < P[j]; k++)
-                                u += uv[s + k];
-
-                            // Accumulate tw using calculated u
-                            // and weight function lookup table
-
-                            // Linear interpolate values given by
-                            // lookup table
-
-                            // Calculate x0 and x1, the points surounding
-                            // u
-                            x0 = (int)(u / increment[j]);
-                            x1 = x0 + 1;
-
-                            // Get y0 and y1 from the lookup table
-                            y0 = w[j][x0];
-                            y1 = w[j][x1];
-
-                            // Accumulate tw using linear interpolation
-                            tw *= (((double)(x1) * increment[j] - u) * y0 + (u - (double)(x0) * increment[j]) * y1) / (double)(x1 * increment[j] - x0 * increment[j]);
-
-                        }
-                        s += P[j];                               // next subspace
-                    }
-
-                    // Perform weighted sum using xi
-                    for (j = 0; j < N; j++)
-                        Mh_ptr[j] += tw * c_t->x[j];
-
-                    // Increment wsum by tw
-                    wsum += tw;
-
-                }
-            }
-            if ((c_t->x[c_d] < range[2 * c_d + 1]) && ((c_t->right) != NULL)) {
-                c_t = c_t->right;
-                c_d = (c_d + 1) % N;
-                actionType = 0;
-            } else {
-                actionType = 2;
-            }
-            break;
-        case 2: // backright
-            c_d = (c_d + N - 1) % N;
-
-            if (c_t->parent == NULL) {
-                c_t = NULL;
                 break;
-            }
+            case 1:   // backleft
 
-            if (c_t->parent->left == c_t)
-                actionType = 1;
-            else
-                actionType = 2;
-            c_t = c_t->parent;
-            break;
+                for ( i = 0; i < N; i++ ) {
+                    if ( ( c_t->x[i] < range[2 * i] ) || ( c_t->x[i] > range[2 * i + 1] ) ) break;
+                }
+
+                if ( i == N ) {
+                    // ***      Visit Tree      ***
+
+                    // Check if xi is in the window centered about yk_ptr
+                    // If so - use it to compute y(k+1)
+                    s = 0;
+                    for ( j = 0; j < kp; j++ ) {
+                        // test each sub-dimension independently
+                        diff = 0;
+                        for ( k = 0; k < P[j]; k++ ) {
+                            el                = ( c_t->x[s + k] - yk_ptr[s + k] ) / h[j];
+                            diff += uv[s + k] = el * el;   // Update uv and diff
+                            if ( diff >= offset[j] )       // Partial Distortion Search (PDS)
+                                break;
+                        }
+
+                        if ( diff >= offset[j] )   // PDS
+                            break;
+
+                        s += P[j];   // next subspace
+                    }
+
+                    // j == kp indicates that all subspaces passed the test:
+                    // the data point is within the search window
+                    if ( j == kp ) j--;
+                    if ( diff < offset[j] ) {
+                        // Initialize total weight to 1
+                        tw = 1;
+
+                        // Calculate weight factor using weight function
+                        // lookup tables and uv
+                        s = 0;
+                        for ( j = 0; j < kp; j++ ) {
+                            if ( kernel[j] ) {   // not uniform kernel
+                                // Compute u[i]
+                                u = 0;
+                                for ( k = 0; k < P[j]; k++ ) u += uv[s + k];
+
+                                // Accumulate tw using calculated u
+                                // and weight function lookup table
+
+                                // Linear interpolate values given by
+                                // lookup table
+
+                                // Calculate x0 and x1, the points surounding
+                                // u
+                                x0 = (int) ( u / increment[j] );
+                                x1 = x0 + 1;
+
+                                // Get y0 and y1 from the lookup table
+                                y0 = w[j][x0];
+                                y1 = w[j][x1];
+
+                                // Accumulate tw using linear interpolation
+                                tw *= ( ( (double) (x1) *increment[j] - u ) * y0 +
+                                        ( u - (double) (x0) *increment[j] ) * y1 ) /
+                                      (double) ( x1 * increment[j] - x0 * increment[j] );
+                            }
+                            s += P[j];   // next subspace
+                        }
+
+                        // Perform weighted sum using xi
+                        for ( j = 0; j < N; j++ ) Mh_ptr[j] += tw * c_t->x[j];
+
+                        // Increment wsum by tw
+                        wsum += tw;
+                    }
+                }
+                if ( ( c_t->x[c_d] < range[2 * c_d + 1] ) && ( ( c_t->right ) != NULL ) ) {
+                    c_t        = c_t->right;
+                    c_d        = ( c_d + 1 ) % N;
+                    actionType = 0;
+                } else {
+                    actionType = 2;
+                }
+                break;
+            case 2:   // backright
+                c_d = ( c_d + N - 1 ) % N;
+
+                if ( c_t->parent == NULL ) {
+                    c_t = NULL;
+                    break;
+                }
+
+                if ( c_t->parent->left == c_t )
+                    actionType = 1;
+                else
+                    actionType = 2;
+                c_t            = c_t->parent;
+                break;
         }
     }
 }
@@ -1815,85 +1726,81 @@ void MeanShift::generalSearch(tree *gt, int gd, double *Mh_ptr, double *yk_ptr) 
 /*        and their count is stored by wsum.           */
 /*******************************************************/
 
-void MeanShift::uniformLSearch(double *Mh_ptr, double *yk_ptr) {
+void MeanShift::uniformLSearch( double* Mh_ptr, double* yk_ptr ) {
+    // Declare variables
+    register int i, j, k;
+    int s, p, dataPoint, lN;
+    double diff, el, dx, dy, tx, weight;
 
-    //Declare variables
-    register int	i, j, k;
-    int				s, p, dataPoint, lN;
-    double			diff, el, dx, dy, tx, weight;
+    // Define lattice data dimension...
+    lN = N + 2;
 
-    //Define lattice data dimension...
-    lN	= N + 2;
+    // Define bounds of lattice...
 
-    //Define bounds of lattice...
-
-    //the lattice is a 2dimensional subspace whose
-    //search window bandwidth is specified by
-    //h[0]:
+    // the lattice is a 2dimensional subspace whose
+    // search window bandwidth is specified by
+    // h[0]:
     tx = yk_ptr[0] - h[0] + DELTA + 0.99;
-    if (tx < 0)
+    if ( tx < 0 )
         LowerBoundX = 0;
     else
         LowerBoundX = (int) tx;
-    tx = yk_ptr[1] - h[0] + DELTA + 0.99;
-    if (tx < 0)
+    tx              = yk_ptr[1] - h[0] + DELTA + 0.99;
+    if ( tx < 0 )
         LowerBoundY = 0;
     else
         LowerBoundY = (int) tx;
-    tx = yk_ptr[0] + h[0] - DELTA;
-    if (tx >= width)
+    tx              = yk_ptr[0] + h[0] - DELTA;
+    if ( tx >= width )
         UpperBoundX = width - 1;
     else
         UpperBoundX = (int) tx;
-    tx = yk_ptr[1] + h[0] - DELTA;
-    if (tx >= height)
+    tx              = yk_ptr[1] + h[0] - DELTA;
+    if ( tx >= height )
         UpperBoundY = height - 1;
     else
         UpperBoundY = (int) tx;
 
-    //Perform search using lattice
-    for (i = LowerBoundY; i <= UpperBoundY; i++)
-        for (j = LowerBoundX; j <= UpperBoundX; j++) {
+    // Perform search using lattice
+    for ( i = LowerBoundY; i <= UpperBoundY; i++ )
+        for ( j = LowerBoundX; j <= UpperBoundX; j++ ) {
+            // get index into data array
+            dataPoint = N * ( i * width + j );
 
-            //get index into data array
-            dataPoint = N * (i * width + j);
-
-            //Determine if inside search window
-            k		= 1;
-            s		= 0;
-            dx      = j - yk_ptr[0];
-            dy      = i - yk_ptr[1];
-            diff	= (dx * dx + dy * dy) / (h[0] * h[0]);
-            while ((diff < 1.0) && (k != kp)) { // Partial Distortion Search
-                //Calculate distance squared of sub-space s
+            // Determine if inside search window
+            k    = 1;
+            s    = 0;
+            dx   = j - yk_ptr[0];
+            dy   = i - yk_ptr[1];
+            diff = ( dx * dx + dy * dy ) / ( h[0] * h[0] );
+            while ( ( diff < 1.0 ) && ( k != kp ) ) {   // Partial Distortion Search
+                // Calculate distance squared of sub-space s
                 diff = 0;
-                for (p = 0; p < P[k]; p++) {
-                    el    = (data[dataPoint + p + s] - yk_ptr[p + s + 2]) / h[k];
-                    if ((!p) && (yk_ptr[2] > 80))
+                for ( p = 0; p < P[k]; p++ ) {
+                    el = ( data[dataPoint + p + s] - yk_ptr[p + s + 2] ) / h[k];
+                    if ( ( !p ) && ( yk_ptr[2] > 80 ) )
                         diff += 4 * el * el;
                     else
                         diff += el * el;
                 }
 
-                //next subspace
+                // next subspace
                 s += P[k];
                 k++;
             }
 
-            //if its inside search window perform sum and count
-            if (diff < 1.0) {
+            // if its inside search window perform sum and count
+            if ( diff < 1.0 ) {
                 weight = 1 - weightMap[i * width + j];
                 Mh_ptr[0] += weight * j;
                 Mh_ptr[1] += weight * i;
-                for (k = 2; k < lN; k++)
-                    Mh_ptr[k] += weight * data[dataPoint + k - 2];
+                for ( k = 2; k < lN; k++ ) Mh_ptr[k] += weight * data[dataPoint + k - 2];
                 wsum += weight;
             }
-            //done.
+            // done.
         }
-    //done.
+    // done.
     return;
-
 }
 
 /*******************************************************/
@@ -1927,98 +1834,92 @@ void MeanShift::uniformLSearch(double *Mh_ptr, double *yk_ptr) {
 /*        ion data structure.                          */
 /*******************************************************/
 
-void MeanShift::optUniformLSearch(double *Mh_ptr, double *yk_ptr) {
+void MeanShift::optUniformLSearch( double* Mh_ptr, double* yk_ptr ) {
+    // Declare variables
+    register int i, j, k;
+    int s, p, dataPoint, pointIndx, lN;
+    double diff, el, dx, dy, tx, weight;
 
-    //Declare variables
-    register int	i, j, k;
-    int				s, p, dataPoint, pointIndx, lN;
-    double			diff, el, dx, dy, tx, weight;
+    // Define latice data dimension...
+    lN = N + 2;
 
-    //Define latice data dimension...
-    lN	= N + 2;
+    // Define bounds of latice...
 
-    //Define bounds of latice...
-
-    //the latice is a 2dimensional subspace whose
-    //search window bandwidth is specified by
-    //h[0]:
+    // the latice is a 2dimensional subspace whose
+    // search window bandwidth is specified by
+    // h[0]:
     tx = yk_ptr[0] - h[0] + DELTA + 0.99;
-    if (tx < 0)
+    if ( tx < 0 )
         LowerBoundX = 0;
     else
         LowerBoundX = (int) tx;
-    tx = yk_ptr[1] - h[0] + DELTA + 0.99;
-    if (tx < 0)
+    tx              = yk_ptr[1] - h[0] + DELTA + 0.99;
+    if ( tx < 0 )
         LowerBoundY = 0;
     else
         LowerBoundY = (int) tx;
-    tx = yk_ptr[0] + h[0] - DELTA;
-    if (tx >= width)
+    tx              = yk_ptr[0] + h[0] - DELTA;
+    if ( tx >= width )
         UpperBoundX = width - 1;
     else
         UpperBoundX = (int) tx;
-    tx = yk_ptr[1] + h[0] - DELTA;
-    if (tx >= height)
+    tx              = yk_ptr[1] + h[0] - DELTA;
+    if ( tx >= height )
         UpperBoundY = height - 1;
     else
         UpperBoundY = (int) tx;
 
-    //Perform search using latice
-    for (i = LowerBoundY; i <= UpperBoundY; i++)
-        for (j = LowerBoundX; j <= UpperBoundX; j++) {
+    // Perform search using latice
+    for ( i = LowerBoundY; i <= UpperBoundY; i++ )
+        for ( j = LowerBoundX; j <= UpperBoundX; j++ ) {
+            // get index into data array
+            pointIndx = i * width + j;
+            dataPoint = N * ( pointIndx );
 
-            //get index into data array
-            pointIndx	= i * width + j;
-            dataPoint	= N * (pointIndx);
-
-            //Determine if inside search window
-            k		= 1;
-            s		= 0;
-            dx      = j - yk_ptr[0];
-            dy      = i - yk_ptr[1];
-            diff	= (dx * dx + dy * dy) / (h[0] * h[0]);
-            while ((diff < 1.0) && (k != kp)) { // Partial Distortion Search
-                //Calculate distance squared of sub-space s
+            // Determine if inside search window
+            k    = 1;
+            s    = 0;
+            dx   = j - yk_ptr[0];
+            dy   = i - yk_ptr[1];
+            diff = ( dx * dx + dy * dy ) / ( h[0] * h[0] );
+            while ( ( diff < 1.0 ) && ( k != kp ) ) {   // Partial Distortion Search
+                // Calculate distance squared of sub-space s
                 diff = 0;
-                for (p = 0; p < P[k]; p++) {
-                    el    = (data[dataPoint + p + s] - yk_ptr[p + s + 2]) / h[k];
-                    if ((!p) && (yk_ptr[2] > 80))
+                for ( p = 0; p < P[k]; p++ ) {
+                    el = ( data[dataPoint + p + s] - yk_ptr[p + s + 2] ) / h[k];
+                    if ( ( !p ) && ( yk_ptr[2] > 80 ) )
                         diff += 4 * el * el;
                     else
                         diff += el * el;
                 }
 
-                //next subspace
+                // next subspace
                 s += P[k];
                 k++;
             }
 
-            //if its inside search window perform sum and count
-            if (diff < 1.0) {
+            // if its inside search window perform sum and count
+            if ( diff < 1.0 ) {
                 weight = 1 - weightMap[i * width + j];
                 Mh_ptr[0] += weight * j;
                 Mh_ptr[1] += weight * i;
-                for (k = 2; k < lN; k++)
-                    Mh_ptr[k] += weight * data[dataPoint + k - 2];
+                for ( k = 2; k < lN; k++ ) Mh_ptr[k] += weight * data[dataPoint + k - 2];
                 wsum += weight;
 
-                //set basin of attraction mode table
-                if (diff < 0.5) {
-                    if (modeTable[pointIndx] == 0) {
-                        pointList[pointCount++]	= pointIndx;
-                        modeTable[pointIndx]	= 2;
+                // set basin of attraction mode table
+                if ( diff < 0.5 ) {
+                    if ( modeTable[pointIndx] == 0 ) {
+                        pointList[pointCount++] = pointIndx;
+                        modeTable[pointIndx]    = 2;
                     }
                 }
-
             }
 
-            //done.
-
+            // done.
         }
 
-    //done.
+    // done.
     return;
-
 }
 
 /*******************************************************/
@@ -2043,85 +1944,81 @@ void MeanShift::optUniformLSearch(double *Mh_ptr, double *yk_ptr) {
 /*        and their count is stored by wsum            */
 /*******************************************************/
 
-void MeanShift::generalLSearch(double *Mh_ptr, double *yk_ptr) {
-
-    //Declare variables
+void MeanShift::generalLSearch( double* Mh_ptr, double* yk_ptr ) {
+    // Declare variables
     register int i, j, k;
-    int			 s, p, dataPoint, lN, x0, x1;
-    double		 diff, el, dx, dy, tw, u, y0, y1, tx;
+    int s, p, dataPoint, lN, x0, x1;
+    double diff, el, dx, dy, tw, u, y0, y1, tx;
 
-    //Define lattice data dimension...
-    lN	= N + 2;
+    // Define lattice data dimension...
+    lN = N + 2;
 
-    //Define bounds of lattice...
+    // Define bounds of lattice...
 
-    //the lattice is a 2dimensional subspace whose
-    //search window bandwidth is specified by
-    //h[0]:
+    // the lattice is a 2dimensional subspace whose
+    // search window bandwidth is specified by
+    // h[0]:
     tx = yk_ptr[0] - h[0] + DELTA + 0.99;
-    if (tx < 0)
+    if ( tx < 0 )
         LowerBoundX = 0;
     else
         LowerBoundX = (int) tx;
-    tx = yk_ptr[1] - h[0] + DELTA + 0.99;
-    if (tx < 0)
+    tx              = yk_ptr[1] - h[0] + DELTA + 0.99;
+    if ( tx < 0 )
         LowerBoundY = 0;
     else
         LowerBoundY = (int) tx;
-    tx = yk_ptr[0] + h[0] - DELTA;
-    if (tx >= width)
+    tx              = yk_ptr[0] + h[0] - DELTA;
+    if ( tx >= width )
         UpperBoundX = width - 1;
     else
         UpperBoundX = (int) tx;
-    tx = yk_ptr[1] + h[0] - DELTA;
-    if (tx >= height)
+    tx              = yk_ptr[1] + h[0] - DELTA;
+    if ( tx >= height )
         UpperBoundY = height - 1;
     else
         UpperBoundY = (int) tx;
 
-    //Perform search using lattice
-    for (i = LowerBoundY; i <= UpperBoundY; i++)
-        for (j = LowerBoundX; j <= UpperBoundX; j++) {
+    // Perform search using lattice
+    for ( i = LowerBoundY; i <= UpperBoundY; i++ )
+        for ( j = LowerBoundX; j <= UpperBoundX; j++ ) {
+            // get index into data array
+            dataPoint = N * ( i * width + j );
 
-            //get index into data array
-            dataPoint = N * (i * width + j);
-
-            //Determine if inside search window
-            k		= 1;
-            s		= 0;
-            dx      = j - yk_ptr[0];
-            dy      = i - yk_ptr[1];
-            uv[0]	= (dx * dx) / (h[0] * h[0]);
-            uv[1]	= (dy * dy) / (h[0] * h[0]);
-            diff	= uv[0] + uv[1];
-            while ((diff < offset[k - 1]) && (k != kp)) { // Partial Distortion Search
-                //Calculate distance squared of sub-space s
+            // Determine if inside search window
+            k     = 1;
+            s     = 0;
+            dx    = j - yk_ptr[0];
+            dy    = i - yk_ptr[1];
+            uv[0] = ( dx * dx ) / ( h[0] * h[0] );
+            uv[1] = ( dy * dy ) / ( h[0] * h[0] );
+            diff  = uv[0] + uv[1];
+            while ( ( diff < offset[k - 1] ) && ( k != kp ) ) {   // Partial Distortion Search
+                // Calculate distance squared of sub-space s
                 diff = 0;
-                for (p = 0; p < P[k]; p++) {
-                    el    = (data[dataPoint + p + s] - yk_ptr[p + s + 2]) / h[k];
+                for ( p = 0; p < P[k]; p++ ) {
+                    el                    = ( data[dataPoint + p + s] - yk_ptr[p + s + 2] ) / h[k];
                     diff += uv[p + s + 2] = el * el;
                 }
 
-                //next subspace
+                // next subspace
                 s += P[k];
                 k++;
             }
 
-            //if its inside search window perform weighted sum and count
-            if (diff < offset[k - 1]) {
-
+            // if its inside search window perform weighted sum and count
+            if ( diff < offset[k - 1] ) {
                 // Initialize total weight to 1
                 tw = 1;
 
                 // Calculate weight factor using weight function
                 // lookup tables and uv
                 s = 0;
-                for (k = 0; k < kp; k++) {
-                    if (kernel[k]) { // not uniform kernel
+                for ( k = 0; k < kp; k++ ) {
+                    if ( kernel[k] ) {   // not uniform kernel
                         // Compute u[i]
                         u = 0;
-                        for (p = 0; p < P[k]; p++)
-                            u += uv[s + p];
+                        for ( p = 0; p < P[k]; p++ ) u += uv[s + p];
 
                         // Accumulate tw using calculated u
                         // and weight function lookup table
@@ -2131,7 +2028,7 @@ void MeanShift::generalLSearch(double *Mh_ptr, double *yk_ptr) {
 
                         // Calculate x0 and x1, the points surounding
                         // u
-                        x0 = (int)(u / increment[k]);
+                        x0 = (int) ( u / increment[k] );
                         x1 = x0 + 1;
 
                         // Get y0 and y1 from the lookup table
@@ -2139,30 +2036,27 @@ void MeanShift::generalLSearch(double *Mh_ptr, double *yk_ptr) {
                         y1 = w[k][x1];
 
                         // Accumulate tw using linear interpolation
-                        tw *= (((double)(x1) * increment[k] - u) * y0 + (u - (double)(x0) * increment[k]) * y1) / (double)(x1 * increment[k] - x0 * increment[k]);
-
+                        tw *= ( ( (double) (x1) *increment[k] - u ) * y0 +
+                                ( u - (double) (x0) *increment[k] ) * y1 ) /
+                              (double) ( x1 * increment[k] - x0 * increment[k] );
                     }
-                    s += P[k];                               // next subspace
+                    s += P[k];   // next subspace
                 }
 
                 // Perform weighted sum using xi
-                Mh_ptr[0]	+= tw * j;
-                Mh_ptr[1]	+= tw * i;
-                for (k = 0; k < N; k++)
-                    Mh_ptr[k + 2] += tw * data[dataPoint + k];
+                Mh_ptr[0] += tw * j;
+                Mh_ptr[1] += tw * i;
+                for ( k = 0; k < N; k++ ) Mh_ptr[k + 2] += tw * data[dataPoint + k];
 
                 // Increment wsum by tw
                 wsum += tw;
-
             }
 
-            //done.
-
+            // done.
         }
 
-    //done.
+    // done.
     return;
-
 }
 
 /*******************************************************/
@@ -2192,86 +2086,82 @@ void MeanShift::generalLSearch(double *Mh_ptr, double *yk_ptr) {
 /*        attraction data structure.                   */
 /*******************************************************/
 
-void MeanShift::optGeneralLSearch(double *Mh_ptr, double *yk_ptr) {
+void MeanShift::optGeneralLSearch( double* Mh_ptr, double* yk_ptr ) {
+    // Declare variables
+    register int i, j, k;
+    int s, p, dataPoint, pointIndx, lN, x0, x1;
+    double diff, el, dx, dy, tw, u, y0, y1, tx;
 
-    //Declare variables
-    register int	i, j, k;
-    int				s, p, dataPoint, pointIndx, lN, x0, x1;
-    double			diff, el, dx, dy, tw, u, y0, y1, tx;
+    // Define lattice data dimension...
+    lN = N + 2;
 
-    //Define lattice data dimension...
-    lN	= N + 2;
+    // Define bounds of lattice...
 
-    //Define bounds of lattice...
-
-    //the lattice is a 2dimensional subspace whose
-    //search window bandwidth is specified by
-    //h[0]:
+    // the lattice is a 2dimensional subspace whose
+    // search window bandwidth is specified by
+    // h[0]:
     tx = yk_ptr[0] - h[0] + DELTA + 0.99;
-    if (tx < 0)
+    if ( tx < 0 )
         LowerBoundX = 0;
     else
         LowerBoundX = (int) tx;
-    tx = yk_ptr[1] - h[0] + DELTA + 0.99;
-    if (tx < 0)
+    tx              = yk_ptr[1] - h[0] + DELTA + 0.99;
+    if ( tx < 0 )
         LowerBoundY = 0;
     else
         LowerBoundY = (int) tx;
-    tx = yk_ptr[0] + h[0] - DELTA;
-    if (tx >= width)
+    tx              = yk_ptr[0] + h[0] - DELTA;
+    if ( tx >= width )
         UpperBoundX = width - 1;
     else
         UpperBoundX = (int) tx;
-    tx = yk_ptr[1] + h[0] - DELTA;
-    if (tx >= height)
+    tx              = yk_ptr[1] + h[0] - DELTA;
+    if ( tx >= height )
         UpperBoundY = height - 1;
     else
         UpperBoundY = (int) tx;
 
-    //Perform search using lattice
-    for (i = LowerBoundY; i <= UpperBoundY; i++)
-        for (j = LowerBoundX; j <= UpperBoundX; j++) {
+    // Perform search using lattice
+    for ( i = LowerBoundY; i <= UpperBoundY; i++ )
+        for ( j = LowerBoundX; j <= UpperBoundX; j++ ) {
+            // get index into data array
+            pointIndx = i * width + j;
+            dataPoint = N * ( i * width + j );
 
-            //get index into data array
-            pointIndx	= i * width + j;
-            dataPoint = N * (i * width + j);
-
-            //Determine if inside search window
-            k		= 1;
-            s		= 0;
-            dx      = j - yk_ptr[0];
-            dy      = i - yk_ptr[1];
-            uv[0]	= (dx * dx) / (h[0] * h[0]);
-            uv[1]	= (dy * dy) / (h[0] * h[0]);
-            diff	= uv[0] + uv[1];
-            while ((diff < offset[k - 1]) && (k != kp)) { // Partial Distortion Search
-                //Calculate distance squared of sub-space s
+            // Determine if inside search window
+            k     = 1;
+            s     = 0;
+            dx    = j - yk_ptr[0];
+            dy    = i - yk_ptr[1];
+            uv[0] = ( dx * dx ) / ( h[0] * h[0] );
+            uv[1] = ( dy * dy ) / ( h[0] * h[0] );
+            diff  = uv[0] + uv[1];
+            while ( ( diff < offset[k - 1] ) && ( k != kp ) ) {   // Partial Distortion Search
+                // Calculate distance squared of sub-space s
                 diff = 0;
-                for (p = 0; p < P[k]; p++) {
-                    el    = (data[dataPoint + p + s] - yk_ptr[p + s + 2]) / h[k];
+                for ( p = 0; p < P[k]; p++ ) {
+                    el                    = ( data[dataPoint + p + s] - yk_ptr[p + s + 2] ) / h[k];
                     diff += uv[p + s + 2] = el * el;
                 }
 
-                //next subspace
+                // next subspace
                 s += P[k];
                 k++;
             }
 
-            //if its inside search window perform weighted sum and count
-            if (diff < offset[k - 1]) {
-
+            // if its inside search window perform weighted sum and count
+            if ( diff < offset[k - 1] ) {
                 // Initialize total weight to 1
                 tw = 1;
 
                 // Calculate weight factor using weight function
                 // lookup tables and uv
                 s = 0;
-                for (k = 0; k < kp; k++) {
-                    if (kernel[k]) { // not uniform kernel
+                for ( k = 0; k < kp; k++ ) {
+                    if ( kernel[k] ) {   // not uniform kernel
                         // Compute u[i]
                         u = 0;
-                        for (p = 0; p < P[k]; p++)
-                            u += uv[s + p];
+                        for ( p = 0; p < P[k]; p++ ) u += uv[s + p];
 
                         // Accumulate tw using calculated u
                         // and weight function lookup table
@@ -2281,7 +2171,7 @@ void MeanShift::optGeneralLSearch(double *Mh_ptr, double *yk_ptr) {
 
                         // Calculate x0 and x1, the points surounding
                         // u
-                        x0 = (int)(u / increment[k]);
+                        x0 = (int) ( u / increment[k] );
                         x1 = x0 + 1;
 
                         // Get y0 and y1 from the lookup table
@@ -2289,42 +2179,38 @@ void MeanShift::optGeneralLSearch(double *Mh_ptr, double *yk_ptr) {
                         y1 = w[k][x1];
 
                         // Accumulate tw using linear interpolation
-                        tw *= (((double)(x1) * increment[k] - u) * y0 + (u - (double)(x0) * increment[k]) * y1) / (double)(x1 * increment[k] - x0 * increment[k]);
-
+                        tw *= ( ( (double) (x1) *increment[k] - u ) * y0 +
+                                ( u - (double) (x0) *increment[k] ) * y1 ) /
+                              (double) ( x1 * increment[k] - x0 * increment[k] );
                     }
-                    s += P[k];                               // next subspace
+                    s += P[k];   // next subspace
                 }
 
                 // Perform weighted sum using xi
-                Mh_ptr[0]	+= tw * j;
-                Mh_ptr[1]	+= tw * i;
-                for (k = 0; k < N; k++)
-                    Mh_ptr[k + 2] += tw * data[dataPoint + k];
+                Mh_ptr[0] += tw * j;
+                Mh_ptr[1] += tw * i;
+                for ( k = 0; k < N; k++ ) Mh_ptr[k + 2] += tw * data[dataPoint + k];
 
                 // Increment wsum by tw
                 wsum += tw;
 
-                //set basin of attraction mode table
-                if (modeTable[pointIndx] == 0) {
-                    pointList[pointCount++]	= pointIndx;
-                    modeTable[pointIndx]	= 2;
+                // set basin of attraction mode table
+                if ( modeTable[pointIndx] == 0 ) {
+                    pointList[pointCount++] = pointIndx;
+                    modeTable[pointIndx]    = 2;
                 }
-
             }
 
-            //done.
-
+            // done.
         }
 
-    //done.
+    // done.
     return;
-
 }
 
 /*@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@*/
 /*@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@*/
-/*@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ END OF CLASS DEFINITION @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@*/
+/*@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ END OF CLASS DEFINITION
+ * @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@*/
 /*@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@*/
 /*@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@*/
-
-

@@ -22,7 +22,6 @@
 
 ------------------------------------------------------------------------------*/
 
-
 #ifndef MISC_H
 #define MISC_H
 
@@ -35,7 +34,7 @@
 #endif /* !M_LN10 */
 
 #ifndef M_PI
-#define M_PI   3.14159265358979323846
+#define M_PI 3.14159265358979323846
 #endif /* !M_PI */
 
 #ifndef FALSE
@@ -46,49 +45,43 @@
 #define TRUE 1
 #endif /* !TRUE */
 
-#define NOTDEF         -1024.0
-#define M_3_2_PI       4.71238898038
-#define M_1_2_PI       1.57079632679
-#define M_2__PI        6.28318530718
-#define SQRT2          1.41421356237
-#define LOG10_2        0.30102999566
-#define LOG10_9        0.95424250944
+#define NOTDEF -1024.0
+#define M_3_2_PI 4.71238898038
+#define M_1_2_PI 1.57079632679
+#define M_2__PI 6.28318530718
+#define SQRT2 1.41421356237
+#define LOG10_2 0.30102999566
+#define LOG10_9 0.95424250944
 
 #define NOTUSED 0
 #define USED 1
 
-#define max(A, B) (((A)>(B))?(A):(B))
-#define min(A, B) (((A)<(B))?(A):(B))
-
+#define max( A, B ) ( ( ( A ) > ( B ) ) ? ( A ) : ( B ) )
+#define min( A, B ) ( ( ( A ) < ( B ) ) ? ( A ) : ( B ) )
 
 /*----------------------------------------------------------------------------*/
 /** Integer cartesian coordinates of a point.
  */
-typedef struct {
-    int x, y;
-} Point;
+typedef struct { int x, y; } Point;
 
 /*----------------------------------------------------------------------------*/
 /** Double cartesian coordinates of a point.
  */
-typedef struct {
-    double x, y;
-} PointD;
-
+typedef struct { double x, y; } PointD;
 
 /* various function prototypes */
-void error( char *msg );
-int double_equal( double a, double b);
+void error( char* msg );
+int double_equal( double a, double b );
 int sign( double val );
 double dist( double x1, double y1, double x2, double y2 );
 double angle_diff( double a, double b );
 double angle_diff_signed( double a, double b );
-void swap_int( int *a, int *b );
-void swap_double( double *a, double *b );
-void swap_ptr_pts( Point **a, Point **b );
-double min_array( double *v, int sz );
-double min_array_pos( double *v, int sz, int *pos );
-double max_array_pos( double *a, int sz, int *poz );
+void swap_int( int* a, int* b );
+void swap_double( double* a, double* b );
+void swap_ptr_pts( Point** a, Point** b );
+double min_array( double* v, int sz );
+double min_array_pos( double* v, int sz, int* pos );
+double max_array_pos( double* a, int sz, int* poz );
 int in_interval( double x, double a, double b );
 int is_aligned( double a, double theta, double prec );
 double norm_angle_diff( double a, double b );

@@ -38,13 +38,13 @@
 #if MRPT_HAS_OPENGL_GLUT
 #ifdef MRPT_OS_WINDOWS
 // WINDOWS:
-#if defined(_MSC_VER)
-#pragma warning(disable:4505)
+#if defined( _MSC_VER )
+#pragma warning( disable : 4505 )
 #endif
 #include <windows.h>
 
 #include <GL/glew.h>
-#endif	// MRPT_OS_WINDOWS
+#endif   // MRPT_OS_WINDOWS
 
 #include <GL/glut.h>
 
@@ -61,7 +61,6 @@
 #include <GL/freeglut_ext.h>
 #endif
 
-
 // gl-ext
 #ifdef MRPT_OS_WINDOWS
 #include "glext/glext.h"
@@ -69,6 +68,6 @@
 #include <GL/glext.h>
 #endif
 
-#endif // MRPT_HAS_OPENGL_GLUT
+#endif   // MRPT_HAS_OPENGL_GLUT
 
 #endif

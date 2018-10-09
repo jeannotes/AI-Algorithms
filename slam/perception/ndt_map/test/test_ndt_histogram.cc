@@ -1,13 +1,13 @@
 #include <ndt_map/ndt_histogram.h>
 //#include <ndt_map/oc_tree.h>
-#include <ndt_map/pointcloud_utils.h>
 #include <ndt_map/lazy_grid.h>
+#include <ndt_map/pointcloud_utils.h>
 
+#include <cstdio>
+#include "pcl/features/feature.h"
+#include "pcl/io/pcd_io.h"
 #include "pcl/point_cloud.h"
 #include "sensor_msgs/PointCloud2.h"
-#include "pcl/io/pcd_io.h"
-#include "pcl/features/feature.h"
-#include <cstdio>
 
 #include <fstream>
 
@@ -15,60 +15,59 @@
 
 using namespace std;
 
-int main (int argc, char** argv) {
-
-    if (argc != 3) {
+int main( int argc, char** argv ) {
+    if ( argc != 3 ) {
         cout << "usage: histTest point_cloud1 point_cloud2\n";
-        return (-1);
+        return ( -1 );
     }
-    pcl::PointCloud<pcl::PointXYZ> cloud, cloud2, cloud3;
-    pcl::PointCloud<pcl::PointXYZI> outCloud;
+    pcl::PointCloud< pcl::PointXYZ > cloud, cloud2, cloud3;
+    pcl::PointCloud< pcl::PointXYZI > outCloud;
 
     // lslgeneric::OctTree<pcl::PointXYZ> tr;
     // tr.BIG_CELL_SIZE = 2;
     // tr.SMALL_CELL_SIZE = 0.2;
-    perception_oru::LazyGrid tr(0.1);
+    perception_oru::LazyGrid tr( 0.1 );
 
 #ifdef FULLTESTER
-    // std::string fname_str = argv[1];
-    // int nclouds = atoi(argv[2]);
-    // //lslgeneric::AdaptiveOctTree::MIN_CELL_SIZE = 0.01;
+// std::string fname_str = argv[1];
+// int nclouds = atoi(argv[2]);
+// //lslgeneric::AdaptiveOctTree::MIN_CELL_SIZE = 0.01;
 
-    // ofstream logger ("similarity.m");
-    // logger<< "S = [";
-    // struct timeval tv_start, tv_end;
-    // gettimeofday(&tv_start,NULL);
-    // lslgeneric::NDTHistogram *array  = new lslgeneric::NDTHistogram[nclouds];
-    // for(int i=0; i<nclouds; i++){
-    //     char cloudname [500];
+// ofstream logger ("similarity.m");
+// logger<< "S = [";
+// struct timeval tv_start, tv_end;
+// gettimeofday(&tv_start,NULL);
+// lslgeneric::NDTHistogram *array  = new lslgeneric::NDTHistogram[nclouds];
+// for(int i=0; i<nclouds; i++){
+//     char cloudname [500];
 
-    //     lslgeneric::NDTMap nd(&tr);
-    //     nd.loadPointCloud(cloud);
-    //     nd.computeNDTCells();
-    //     array[i] = lslgeneric::NDTHistogram(nd);
-    // }
-    // gettimeofday(&tv_end,NULL);
-    // double avg_build = (tv_end.tv_sec-tv_start.tv_sec)*1000.+(tv_end.tv_usec-tv_start.tv_usec)/1000.;
-    // avg_build = avg_build/nclouds;
-    // cout<<"building histograms took "<<avg_build<<" msec per scan\n";
+//     lslgeneric::NDTMap nd(&tr);
+//     nd.loadPointCloud(cloud);
+//     nd.computeNDTCells();
+//     array[i] = lslgeneric::NDTHistogram(nd);
+// }
+// gettimeofday(&tv_end,NULL);
+// double avg_build = (tv_end.tv_sec-tv_start.tv_sec)*1000.+(tv_end.tv_usec-tv_start.tv_usec)/1000.;
+// avg_build = avg_build/nclouds;
+// cout<<"building histograms took "<<avg_build<<" msec per scan\n";
 
-    // gettimeofday(&tv_start,NULL);
-    // for(int i=0; i<nclouds; i++)
-    // {
-    //     for(int j=0; j<nclouds; j++)
-    //     {
-    //         logger<<array[j].getSimilarity(array[i])<<" ";
-    //     }
-    //     logger<<";\n";
-    //     cout<<" I "<<i<<endl;
-    // }
+// gettimeofday(&tv_start,NULL);
+// for(int i=0; i<nclouds; i++)
+// {
+//     for(int j=0; j<nclouds; j++)
+//     {
+//         logger<<array[j].getSimilarity(array[i])<<" ";
+//     }
+//     logger<<";\n";
+//     cout<<" I "<<i<<endl;
+// }
 
-    // gettimeofday(&tv_end,NULL);
-    // double avg_match = (tv_end.tv_sec-tv_start.tv_sec)*1000.+(tv_end.tv_usec-tv_start.tv_usec)/1000.;
-    // avg_match = avg_match/(nclouds*nclouds);
-    // cout<<"matching histograms took "<<avg_match<<" msec per scan\n";
+// gettimeofday(&tv_end,NULL);
+// double avg_match = (tv_end.tv_sec-tv_start.tv_sec)*1000.+(tv_end.tv_usec-tv_start.tv_usec)/1000.;
+// avg_match = avg_match/(nclouds*nclouds);
+// cout<<"matching histograms took "<<avg_match<<" msec per scan\n";
 
-    // logger<<"];\n";
+// logger<<"];\n";
 #else
 
 #if 0
@@ -120,31 +119,26 @@ int main (int argc, char** argv) {
     cout << "];\n";
 #endif
 
-    pcl::io::loadPCDFile<pcl::PointXYZ> (argv[1], cloud);
-    pcl::io::loadPCDFile<pcl::PointXYZ> (argv[2], cloud2);
-    perception_oru::NDTMap nd(&tr);
-    nd.loadPointCloud(cloud);
-    perception_oru::NDTMap nd2(&tr);
-    nd2.loadPointCloud(cloud2);
+    pcl::io::loadPCDFile< pcl::PointXYZ >( argv[1], cloud );
+    pcl::io::loadPCDFile< pcl::PointXYZ >( argv[2], cloud2 );
+    perception_oru::NDTMap nd( &tr );
+    nd.loadPointCloud( cloud );
+    perception_oru::NDTMap nd2( &tr );
+    nd2.loadPointCloud( cloud2 );
 
     nd.computeNDTCells();
     nd2.computeNDTCells();
 
-    perception_oru::NDTHistogram nh(nd, 1, 40, 10, 2, 5);
-    perception_oru::NDTHistogram nh2(nd2, 1, 40, 10, 2, 5);
+    perception_oru::NDTHistogram nh( nd, 1, 40, 10, 2, 5 );
+    perception_oru::NDTHistogram nh2( nd2, 1, 40, 10, 2, 5 );
 
-    Eigen::Transform<double, 3, Eigen::Affine, Eigen::ColMajor> T;
+    Eigen::Transform< double, 3, Eigen::Affine, Eigen::ColMajor > T;
 
-    nh2.bestFitToHistogram(nh, T, true);
+    nh2.bestFitToHistogram( nh, T, true );
 
-    cout << nh2.getSimilarity(nh) << endl;
+    cout << nh2.getSimilarity( nh ) << endl;
 
 #endif
 
-
-
-    return (0);
+    return ( 0 );
 }
-
-
-

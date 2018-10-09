@@ -23,58 +23,55 @@
 
 ------------------------------------------------------------------------------*/
 
-
+#include "polygon.h"
+#include <float.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <float.h>
 #include "misc.h"
 #include "rectangle.h"
-#include "polygon.h"
 
 /*----------------------------------------------------------------------------*/
 /** Add new rectangle to polygon.
  */
 PolyRect* new_polyrect( void ) {
     PolyRect* poly;
-    poly = (PolyRect*) malloc ( sizeof(PolyRect) );
-    poly->dim = 0;
-    poly->dim_max = 0;
-    poly->wmin = DBL_MAX;
-    poly->wmax = -DBL_MAX;
+    poly           = (PolyRect*) malloc( sizeof( PolyRect ) );
+    poly->dim      = 0;
+    poly->dim_max  = 0;
+    poly->wmin     = DBL_MAX;
+    poly->wmax     = -DBL_MAX;
     poly->rectlist = NULL;
     return poly;
 }
 
-
 /*----------------------------------------------------------------------------*/
 /** Reset a given polygon.
  */
-void clear_polyrect( PolyRect *poly ) {
+void clear_polyrect( PolyRect* poly ) {
     /* check parameters */
-    if ( poly == NULL ) error("clear_poly: polygon should be already malloc'ed.");
+    if ( poly == NULL ) error( "clear_poly: polygon should be already malloc'ed." );
 
-    poly->dim = 0;
+    poly->dim     = 0;
     poly->dim_max = 0;
-    poly->wmin = DBL_MAX;
-    poly->wmax = -DBL_MAX;
-    free(poly->rectlist);
+    poly->wmin    = DBL_MAX;
+    poly->wmax    = -DBL_MAX;
+    free( poly->rectlist );
     poly->rectlist = NULL;
 }
-
 
 /*----------------------------------------------------------------------------*/
 /** Add new rectangle to polygon.
  */
-void add_rect_to_polyrect( PolyRect *poly, Rectangle *r ) {
+void add_rect_to_polyrect( PolyRect* poly, Rectangle* r ) {
     /* if the pre-allocated size of the polygon is overpassed, double the size
        of the allocated region */
     if ( poly->dim > poly->dim_max ) {
-        poly->rectlist = (Rectangle *) realloc ( poly->rectlist, (2 * poly->dim) *
-                         sizeof(Rectangle) );
+        poly->rectlist =
+            (Rectangle*) realloc( poly->rectlist, ( 2 * poly->dim ) * sizeof( Rectangle ) );
         poly->dim_max *= 2;
     }
     /* add rectangle to polygon */
-    copy_rect( r, &(poly->rectlist[poly->dim - 1]) );
+    copy_rect( r, &( poly->rectlist[poly->dim - 1] ) );
 
     /* update polygon's widths wmin and wmax if new rectangle's wmin and wmax
        exceed them */
@@ -82,16 +79,13 @@ void add_rect_to_polyrect( PolyRect *poly, Rectangle *r ) {
     if ( poly->wmax < r->wmax ) poly->wmax = r->wmax;
 }
 
-
 /*----------------------------------------------------------------------------*/
 /** Write polygon to file; if file is NULL, write to stdout.
  */
-void write_polyrect( FILE *f, PolyRect *poly ) {
+void write_polyrect( FILE* f, PolyRect* poly ) {
     int i;
-    for ( i = 0; i < poly->dim; i++ )
-        write_rectangle( f, &(poly->rectlist[i]) );
+    for ( i = 0; i < poly->dim; i++ ) write_rectangle( f, &( poly->rectlist[i] ) );
 }
-
 
 /*----------------------------------------------------------------------------*/
 /** Detect continuity breaks (e.g. corners) in tangent space: represent each
@@ -127,27 +121,24 @@ void write_polyrect( FILE *f, PolyRect *poly ) {
   p[2].y = r2.theta;
 }*/
 
-
 /*----------------------------------------------------------------------------*/
 /** Given a polygon as a list of rectangles, extract only the ending points.
     A polygon with 'dim' segments will have '2*dim' ending points.
  */
-void polyrect2polygon( PolyRect *poly, Polygon *p ) {
+void polyrect2polygon( PolyRect* poly, Polygon* p ) {
     int i;
     /* check parameters */
-    if ( poly == NULL || p == NULL )
-        error("polyrect2polygon: invalid input.");
+    if ( poly == NULL || p == NULL ) error( "polyrect2polygon: invalid input." );
 
     /* allocate memory for polygon */
     p->dim = 2 * poly->dim;
-    p->pts = (PointD *) malloc ( p->dim * sizeof(PointD) );
-    if ( p->pts == NULL )
-        error("polyrect2polygon: not enough memory.");
+    p->pts = (PointD*) malloc( p->dim * sizeof( PointD ) );
+    if ( p->pts == NULL ) error( "polyrect2polygon: not enough memory." );
 
     /* copy ending points */
     for ( i = 0; i < poly->dim; i++ ) {
-        p->pts[2 * i  ].x = poly->rectlist[i].x1 + 0.5;
-        p->pts[2 * i  ].y = poly->rectlist[i].y1 + 0.5;
+        p->pts[2 * i].x     = poly->rectlist[i].x1 + 0.5;
+        p->pts[2 * i].y     = poly->rectlist[i].y1 + 0.5;
         p->pts[2 * i + 1].x = poly->rectlist[i].x2 + 0.5;
         p->pts[2 * i + 1].y = poly->rectlist[i].y2 + 0.5;
     }

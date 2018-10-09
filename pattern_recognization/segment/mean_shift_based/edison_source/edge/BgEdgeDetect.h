@@ -26,34 +26,17 @@
 #define MAX_FILTS 31
 #define NO_ANGLES 361
 
-#define ALF_TRESH PI/4
+#define ALF_TRESH PI / 4
 
-static const int gNb[8][2] = {
-    1, 0,
-    1, 1,
-    1, -1,
-    0, 1,
-    0, -1,
-    -1, 0,
-    -1, 1,
-    -1, -1
-};
+static const int gNb[8][2] = { 1, 0, 1, 1, 1, -1, 0, 1, 0, -1, -1, 0, -1, 1, -1, -1 };
 
-static const double gAlpha[8][2] = {
-    PI / 2,   PI / 2,
-    PI / 4,   PI / 4,
-    3 * PI / 4, 3 * PI / 4,
-    0,   PI,
-    0,   PI,
-    PI / 2,   PI / 2,
-    3 * PI / 4, 3 * PI / 4,
-    PI / 4,   PI / 4
-};
+static const double gAlpha[8][2] = { PI / 2,     PI / 2,     PI / 4, PI / 4, 3 * PI / 4, 3 * PI / 4,
+                                     0,          PI,         0,      PI,     PI / 2,     PI / 2,
+                                     3 * PI / 4, 3 * PI / 4, PI / 4, PI / 4 };
 
 // main class, edge detection
 class BgEdgeDetect {
-public:
-
+  public:
     // main function for edge detection
     // cim input image
     // cel edge list (will be filled with pixels on edges)
@@ -64,42 +47,43 @@ public:
     // nmxType, hystTypeHigh, hystTypeLow, type of nmx curve, hyst. high curve, hyst low curve
     //  in (FC_ELLIPSE, FC_VERT_LINE, FC_HORIZ_LINE, FC_LINE, FC_SQUARE_BOX, FC_CUSTOM)
 
-    void DoEdgeDetect(BgImage* cim, BgEdgeList* cel, double nmxr, double nmxc,
-                      double rh, double ch, double rl, double cl,
-                      int nMin, int nmxType, int hystTypeHigh, int hystTypeLow);
+    void DoEdgeDetect( BgImage* cim, BgEdgeList* cel, double nmxr, double nmxc, double rh,
+                       double ch, double rl, double cl, int nMin, int nmxType, int hystTypeHigh,
+                       int hystTypeLow );
 
     // computes confidence map and rank information of sepcified image
-    void ComputeEdgeInfo(BgImage*, float*, float*);
-//   void ComputeConfidenceMap1(BgImage*, float*);
+    void ComputeEdgeInfo( BgImage*, float*, float* );
+    //   void ComputeConfidenceMap1(BgImage*, float*);
     // if have permanent data, call this function (compute only last two steps is same kernel size)
-    void DoRecompute(BgEdgeList*, double, double, double, double, double, double, int, int, int, int);
+    void DoRecompute( BgEdgeList*, double, double, double, double, double, double, int, int, int,
+                      int );
 
-    BgEdgeDetect(int filtDim);
+    BgEdgeDetect( int filtDim );
     ~BgEdgeDetect();
 
     void SaveNmxValues();
 
-    float EllipseEval(float, float);
-    float EllipseComp(float, float, float, float);
-    float LineEval(float, float);
-    float LineComp(float, float, float, float);
-    float VerticalLineEval(float, float);
-    float VerticalLineComp(float, float, float, float);
-    float HorizontalLineEval(float, float);
-    float HorizontalLineComp(float, float, float, float);
-    float SquareEval(float, float);
-    float SquareComp(float, float, float, float);
-    float CustomRegionEval(float, float);
-    float CustomRegionComp(float, float, float, float);
+    float EllipseEval( float, float );
+    float EllipseComp( float, float, float, float );
+    float LineEval( float, float );
+    float LineComp( float, float, float, float );
+    float VerticalLineEval( float, float );
+    float VerticalLineComp( float, float, float, float );
+    float HorizontalLineEval( float, float );
+    float HorizontalLineComp( float, float, float, float );
+    float SquareEval( float, float );
+    float SquareComp( float, float, float, float );
+    float CustomRegionEval( float, float );
+    float CustomRegionComp( float, float, float, float );
 
-    void SetCustomHigh(int*, int*, int, int, int);
-    void SetCustomLow(int*, int*, int, int, int);
-    void SetCustomHigh(double*, double*, int);
-    void SetCustomLow(double*, double*, int);
+    void SetCustomHigh( int*, int*, int, int, int );
+    void SetCustomLow( int*, int*, int, int, int );
+    void SetCustomHigh( double*, double*, int );
+    void SetCustomLow( double*, double*, int );
 
-    void IsGood(void);
-    void GetPixels(int*, int*, int*, double, double, double, double);
-    void GetNmxPixels(int*, int*, int*, double, double, double, double);
+    void IsGood( void );
+    void GetPixels( int*, int*, int*, double, double, double, double );
+    void GetNmxPixels( int*, int*, int*, double, double, double, double );
 
     double smofil_[MAX_FILTS];
     double diffil_[MAX_FILTS];
@@ -135,22 +119,21 @@ public:
     float* permNmxConf_;
     bool havePerm_;
 
-protected:
-
-    void GenerateMaskAngle(double*, double);
-    void CreateFilters(void);
-    void CreateLookTable(void);
-    void DeleteLookTable(void);
-    void GaussFilter(BgImage*, float*, double, int);
-    void GaussDiffFilter(BgImage*, float*, float*, float*);
-    void Strength(float*, float*, float*);
-    void NewNonMaxSupress(float*, float*, float*, float*, float*, float*,
-                          float (BgEdgeDetect::*compf)(float, float, float, float));
-    void StrConfEstim(float*, float*, float*, float (BgEdgeDetect::*evalf)(float, float));
-    void CompRanks(float*, float*);
-    void NewHysteresisTr(float*, float*, BgEdgeList*, int, float*, float*);
-    void NewEdgeFollow(int, int);
-    void SubspaceEstim(float*, float*, float*, float*);
+  protected:
+    void GenerateMaskAngle( double*, double );
+    void CreateFilters( void );
+    void CreateLookTable( void );
+    void DeleteLookTable( void );
+    void GaussFilter( BgImage*, float*, double, int );
+    void GaussDiffFilter( BgImage*, float*, float*, float* );
+    void Strength( float*, float*, float* );
+    void NewNonMaxSupress( float*, float*, float*, float*, float*, float*,
+                           float ( BgEdgeDetect::*compf )( float, float, float, float ) );
+    void StrConfEstim( float*, float*, float*, float ( BgEdgeDetect::*evalf )( float, float ) );
+    void CompRanks( float*, float* );
+    void NewHysteresisTr( float*, float*, BgEdgeList*, int, float*, float* );
+    void NewEdgeFollow( int, int );
+    void SubspaceEstim( float*, float*, float*, float* );
 
     float* te_;
     float* tm_;

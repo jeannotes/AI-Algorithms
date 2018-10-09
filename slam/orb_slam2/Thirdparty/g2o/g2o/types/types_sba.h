@@ -33,31 +33,29 @@
 #include <Eigen/Geometry>
 #include <iostream>
 
-namespace g2o {
-
+namespace g2o
+{
 // BaseVertex  顶点SE3
 // 6, SE3Quat  最小表示为6个参数，内部为四元数
 // _estimate   w2c(Tcw)，from world to camera
 /**
  * \brief Point vertex, XYZ
  */
-class G2O_CORE_API VertexSBAPointXYZ : public BaseVertex<3, Vector3d> {
-public:
+class G2O_CORE_API VertexSBAPointXYZ : public BaseVertex< 3, Vector3d > {
+  public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     VertexSBAPointXYZ();
-    virtual bool read(std::istream& is);
-    virtual bool write(std::ostream& os) const;
+    virtual bool read( std::istream& is );
+    virtual bool write( std::ostream& os ) const;
 
-    virtual void setToOriginImpl() {
-        _estimate.fill(0.);
-    }
+    virtual void setToOriginImpl() { _estimate.fill( 0. ); }
 
-    virtual void oplusImpl(const double* update) {
-        Eigen::Map<const Vector3d> v(update);
+    virtual void oplusImpl( const double* update ) {
+        Eigen::Map< const Vector3d > v( update );
         _estimate += v;
     }
 };
 
-} // end namespace
+}   // end namespace
 
-#endif // SBA_TYPES
+#endif   // SBA_TYPES

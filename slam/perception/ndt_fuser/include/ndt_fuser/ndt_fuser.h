@@ -4,52 +4,55 @@
 #include <ndt_visualisation/ndt_viz.h>
 #endif
 #include <ndt_map/ndt_map.h>
-#include <ndt_registration/ndt_matcher_d2d_2d.h>
-#include <ndt_registration/ndt_matcher_d2d.h>
 #include <ndt_map/pointcloud_utils.h>
+#include <ndt_registration/ndt_matcher_d2d.h>
+#include <ndt_registration/ndt_matcher_d2d_2d.h>
 
-#include <Eigen/Eigen>
 #include <pcl/point_cloud.h>
 #include <sys/time.h>
+#include <Eigen/Eigen>
 
-namespace perception_oru {
+namespace perception_oru
+{
 /**
   * \brief This class fuses new point clouds into a common ndt map reference, keeping tack of the
   * camera postion.
   * \author Jari, Todor
   */
 class NDTFuser {
-public:
-    Eigen::Affine3d Tnow, Tlast_fuse; ///< current pose
-    perception_oru::NDTMap *map;  ///< da map
-    bool checkConsistency; ///perform a check for consistency against initial estimate
+  public:
+    Eigen::Affine3d Tnow, Tlast_fuse;   ///< current pose
+    perception_oru::NDTMap* map;        ///< da map
+    bool checkConsistency;              /// perform a check for consistency against initial estimate
     double max_translation_norm, max_rotation_norm;
     double sensor_range;
     bool be2D;
 #ifndef NO_NDT_VIZ
-    NDTViz *viewer;
+    NDTViz* viewer;
 #endif
-    NDTFuser(double map_resolution, double map_size_x_, double map_size_y_, double map_size_z_, double sensor_range_ = 3, bool visualize_ = false, bool be2D_ = false) {
-        isInit = false;
+    NDTFuser( double map_resolution, double map_size_x_, double map_size_y_, double map_size_z_,
+              double sensor_range_ = 3, bool visualize_ = false, bool be2D_ = false ) {
+        isInit     = false;
         resolution = map_resolution;
         sensor_pose.setIdentity();
-        checkConsistency = false;
-        visualize = true;
+        checkConsistency       = false;
+        visualize              = true;
         translation_fuse_delta = 0.05;
-        rotation_fuse_delta = 0.01;
-        max_translation_norm = 1.;
-        max_rotation_norm = M_PI / 4;
-        map_size_x = map_size_x_;
-        map_size_y = map_size_y_;
-        map_size_z = map_size_z_;
-        visualize = visualize_;
-        be2D = be2D_;
-        sensor_range = sensor_range_;
+        rotation_fuse_delta    = 0.01;
+        max_translation_norm   = 1.;
+        max_rotation_norm      = M_PI / 4;
+        map_size_x             = map_size_x_;
+        map_size_y             = map_size_y_;
+        map_size_z             = map_size_z_;
+        visualize              = visualize_;
+        be2D                   = be2D_;
+        sensor_range           = sensor_range_;
 #ifndef NO_NDT_VIZ
-        viewer = new NDTViz(visualize);
+        viewer = new NDTViz( visualize );
 #endif
-        std::cout << "MAP: resolution: " << resolution << " size " << map_size_x << " " << map_size_y << " " << map_size_z << std::endl;
-        map = new perception_oru::NDTMap(new perception_oru::LazyGrid(resolution));
+        std::cout << "MAP: resolution: " << resolution << " size " << map_size_x << " "
+                  << map_size_y << " " << map_size_z << std::endl;
+        map = new perception_oru::NDTMap( new perception_oru::LazyGrid( resolution ) );
     }
     ~NDTFuser() {
         delete map;
@@ -60,31 +63,27 @@ public:
 
     double getDoubleTime() {
         struct timeval time;
-        gettimeofday(&time, NULL);
+        gettimeofday( &time, NULL );
         return time.tv_sec + time.tv_usec * 1e-6;
     }
-    void setSensorPose(Eigen::Affine3d spose) {
-        sensor_pose = spose;
-    }
+    void setSensorPose( Eigen::Affine3d spose ) { sensor_pose = spose; }
 
-    bool wasInit() {
-        return isInit;
-    }
+    bool wasInit() { return isInit; }
 
     /**
      * Set the initial position and set the first scan to the map
      */
-    void initialize(Eigen::Affine3d initPos, pcl::PointCloud<pcl::PointXYZ> &cloud);
+    void initialize( Eigen::Affine3d initPos, pcl::PointCloud< pcl::PointXYZ >& cloud );
     /**
      *
      *
      */
-    Eigen::Affine3d update(Eigen::Affine3d Tmotion, pcl::PointCloud<pcl::PointXYZ> &cloud);
+    Eigen::Affine3d update( Eigen::Affine3d Tmotion, pcl::PointCloud< pcl::PointXYZ >& cloud );
 
-private:
+  private:
     bool isInit;
 
-    double resolution; ///< resolution of the map
+    double resolution;   ///< resolution of the map
     double map_size;
 
     double translation_fuse_delta, rotation_fuse_delta;
@@ -97,9 +96,8 @@ private:
     perception_oru::NDTMatcherD2D matcher;
     perception_oru::NDTMatcherD2D_2D matcher2D;
 
-public:
+  public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-
 };
 }
 #endif

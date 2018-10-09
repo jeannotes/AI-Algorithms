@@ -60,15 +60,14 @@ typedef struct ntuple_list_s {
     unsigned int size;
     unsigned int max_size;
     unsigned int dim;
-    double *values;
-} *ntuple_list;
+    double* values;
+} * ntuple_list;
 
-void free_ntuple_list(ntuple_list in);
-ntuple_list new_ntuple_list(unsigned int dim);
+void free_ntuple_list( ntuple_list in );
+ntuple_list new_ntuple_list( unsigned int dim );
 
-void add_5tuple( ntuple_list out, double v1, double v2,
-                 double v3, double v4, double v5 );
-void enlarge_ntuple_list(ntuple_list n_tuple);
+void add_5tuple( ntuple_list out, double v1, double v2, double v3, double v4, double v5 );
+void enlarge_ntuple_list( ntuple_list n_tuple );
 
 /** char image data type
 
@@ -79,14 +78,13 @@ void enlarge_ntuple_list(ntuple_list n_tuple);
     with x and y integer.
  */
 typedef struct image_char_s {
-    unsigned char *data;
+    unsigned char* data;
     unsigned int xsize, ysize;
-} *image_char;
+} * image_char;
 
-void free_image_char(image_char i);
-image_char new_image_char(unsigned int xsize, unsigned int ysize);
-image_char new_image_char_ini( unsigned int xsize, unsigned int ysize,
-                               unsigned char fill_value );
+void free_image_char( image_char i );
+image_char new_image_char( unsigned int xsize, unsigned int ysize );
+image_char new_image_char_ini( unsigned int xsize, unsigned int ysize, unsigned char fill_value );
 
 /** int image data type
 
@@ -97,14 +95,13 @@ image_char new_image_char_ini( unsigned int xsize, unsigned int ysize,
     with x and y integer.
  */
 typedef struct image_int_s {
-    int *data;
+    int* data;
     unsigned int xsize, ysize;
-} *image_int;
+} * image_int;
 
-void free_image_int(image_int i);
-image_int new_image_int(unsigned int xsize, unsigned int ysize);
-image_int new_image_int_ini( unsigned int xsize, unsigned int ysize,
-                             int fill_value );
+void free_image_int( image_int i );
+image_int new_image_int( unsigned int xsize, unsigned int ysize );
+image_int new_image_int_ini( unsigned int xsize, unsigned int ysize, int fill_value );
 
 /** double image data type
 
@@ -115,14 +112,13 @@ image_int new_image_int_ini( unsigned int xsize, unsigned int ysize,
     with x and y integer.
  */
 typedef struct image_double_s {
-    double *data;
+    double* data;
     unsigned int xsize, ysize;
-} *image_double;
+} * image_double;
 
-void free_image_double(image_double i);
-image_double new_image_double(unsigned int xsize, unsigned int ysize);
-image_double new_image_double_ini( unsigned int xsize, unsigned int ysize,
-                                   double fill_value );
+void free_image_double( image_double i );
+image_double new_image_double( unsigned int xsize, unsigned int ysize );
+image_double new_image_double_ini( unsigned int xsize, unsigned int ysize, double fill_value );
 
 /** LSD Full Interface
 
@@ -195,11 +191,9 @@ image_double new_image_double_ini( unsigned int xsize, unsigned int ysize,
                        for a line segment from (x1,y1) to (x2,y2) and
                        a width 'width'.
  */
-ntuple_list LineSegmentDetection( image_double image, double scale,
-                                  double sigma_scale, double quant,
-                                  double ang_th, double eps, double density_th,
-                                  int n_bins, double max_grad,
-                                  image_int *region );
+ntuple_list LineSegmentDetection( image_double image, double scale, double sigma_scale,
+                                  double quant, double ang_th, double eps, double density_th,
+                                  int n_bins, double max_grad, image_int* region );
 
 /** LSD Simple Interface with Scale
 
@@ -214,7 +208,7 @@ ntuple_list LineSegmentDetection( image_double image, double scale,
 
     @return a 5-tuple list of detected line segments.
  */
-ntuple_list lsd_scale(image_double image, double scale);
+ntuple_list lsd_scale( image_double image, double scale );
 
 /** LSD Simple Interface
 
@@ -222,7 +216,7 @@ ntuple_list lsd_scale(image_double image, double scale);
 
     @return a 5-tuple list of detected line segments.
  */
-ntuple_list lsd(image_double image);
+ntuple_list lsd( image_double image );
 
 #endif /* !LSD_HEADER */
-/*----------------------------------------------------------------------------*/
+       /*----------------------------------------------------------------------------*/

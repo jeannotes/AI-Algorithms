@@ -22,18 +22,17 @@
 #ifndef PROCESS_CURVE_H
 #define PROCESS_CURVE_H
 
-void valid_curve(struct point *reg, int *reg_size, double prec, double p,
-                 image_double angles, image_char used, image_double grad,
-                 image_double gradx, image_double grady, double *paramc,
-                 double *parame, struct rect rec, double *logNT, double mlog10eps,
-                 double density_th, int *min_size, double *nfa, int *pext,
-                 struct point3 *regc, struct point3 *rege, int *regp_size);
-double d_rosin (double *param, double x, double y);
-double angle(double x, double y, double *foci);
-void param2ellipse(double *param, double *ellipse);
-void rosin_point (double *param, double x, double y, double *xi, double *yi);
-void fitellipse(int reg_size, double *vgg, double *param);
-void fitcircle(int reg_size, double *vgg, double *param);
-void fit_equations(struct point *reg, int reg_size, image_double gradx,
-                   image_double grady, double *vgg);
+void valid_curve( struct point* reg, int* reg_size, double prec, double p, image_double angles,
+                  image_char used, image_double grad, image_double gradx, image_double grady,
+                  double* paramc, double* parame, struct rect rec, double* logNT, double mlog10eps,
+                  double density_th, int* min_size, double* nfa, int* pext, struct point3* regc,
+                  struct point3* rege, int* regp_size );
+double d_rosin( double* param, double x, double y );
+double angle( double x, double y, double* foci );
+void param2ellipse( double* param, double* ellipse );
+void rosin_point( double* param, double x, double y, double* xi, double* yi );
+void fitellipse( int reg_size, double* vgg, double* param );
+void fitcircle( int reg_size, double* vgg, double* param );
+void fit_equations( struct point* reg, int reg_size, image_double gradx, image_double grady,
+                    double* vgg );
 #endif

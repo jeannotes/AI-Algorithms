@@ -2,34 +2,33 @@
 //#define DO_DEBUG_PROC
 //#endif
 
-#include <ndt_matcher_p2d.h>
 #include <ndt_matcher_d2d.h>
+#include <ndt_matcher_p2d.h>
 //#include <ndt_matcher_d2d.hh>
 #include <ndt_map.h>
 #include <oc_tree.h>
 #include <pointcloud_utils.h>
 
-#include "ros/ros.h"
-#include "pcl/point_cloud.h"
-#include "sensor_msgs/PointCloud2.h"
-#include "pcl/io/pcd_io.h"
-#include "pcl/features/feature.h"
-#include "pcl/registration/icp.h"
-#include "pcl/filters/voxel_grid.h"
 #include <pcl/filters/passthrough.h>
+#include "pcl/features/feature.h"
+#include "pcl/filters/voxel_grid.h"
+#include "pcl/io/pcd_io.h"
+#include "pcl/point_cloud.h"
+#include "pcl/registration/icp.h"
+#include "ros/ros.h"
+#include "sensor_msgs/PointCloud2.h"
 
-#include <cstdio>
 #include <Eigen/Eigen>
 #include <Eigen/Geometry>
+#include <cstdio>
 #include <fstream>
 
 using namespace std;
 
-
 /*
 static int ctr = 0;
 bool matchICP(pcl::PointCloud<pcl::PointXYZ> &fixed,  pcl::PointCloud<pcl::PointXYZ> &moving,
-	      Eigen::Transform<double,3,Eigen::Affine,Eigen::ColMajor> &Tout) {
+          Eigen::Transform<double,3,Eigen::Affine,Eigen::ColMajor> &Tout) {
 
     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_in (new pcl::PointCloud<pcl::PointXYZ>);
     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_out (new pcl::PointCloud<pcl::PointXYZ>);
@@ -91,87 +90,87 @@ bool matchICP(pcl::PointCloud<pcl::PointXYZ> &fixed,  pcl::PointCloud<pcl::Point
 }
 */
 
-int
-main (int argc, char** argv) {
-
+int main( int argc, char** argv ) {
     double roll = 0, pitch = 0, yaw = 0, zoffset = 0;
 
-    pcl::PointCloud<pcl::PointXYZ> cloud, cloud_offset, cloud_OFF;
+    pcl::PointCloud< pcl::PointXYZ > cloud, cloud_offset, cloud_OFF;
     pcl::PCDReader reader;
     pcl::PCDWriter writer;
     char fname[50];
-    FILE *fout;
-    //double __res[] = {0.5};
-    double __res[] = {0.5, 1, 2, 4};
-    std::vector<double> resolutions (__res, __res + sizeof(__res) / sizeof(double));
-    lslgeneric::NDTMatcherP2D<pcl::PointXYZ, pcl::PointXYZ> matcherP2D(resolutions);
+    FILE* fout;
+    // double __res[] = {0.5};
+    double __res[] = { 0.5, 1, 2, 4 };
+    std::vector< double > resolutions( __res, __res + sizeof( __res ) / sizeof( double ) );
+    lslgeneric::NDTMatcherP2D< pcl::PointXYZ, pcl::PointXYZ > matcherP2D( resolutions );
 
     struct timeval tv_start, tv_end, tv_reg_start, tv_reg_end;
 
-    Eigen::Transform<double, 3, Eigen::Affine, Eigen::ColMajor> Tin, Tout, Tout2;
+    Eigen::Transform< double, 3, Eigen::Affine, Eigen::ColMajor > Tin, Tout, Tout2;
     Tout.setIdentity();
-    if (argc == 3) {
-
-        gettimeofday(&tv_start, NULL);
-        //we do a single scan to scan registration
-        //reader.read(argv[1],cloud);
-        //reader.read(argv[2],cloud_offset);
-        cloud = lslgeneric::readVRML<pcl::PointXYZ>(argv[1]);
-        cloud_offset = lslgeneric::readVRML<pcl::PointXYZ>(argv[2]);
+    if ( argc == 3 ) {
+        gettimeofday( &tv_start, NULL );
+        // we do a single scan to scan registration
+        // reader.read(argv[1],cloud);
+        // reader.read(argv[2],cloud_offset);
+        cloud        = lslgeneric::readVRML< pcl::PointXYZ >( argv[1] );
+        cloud_offset = lslgeneric::readVRML< pcl::PointXYZ >( argv[2] );
         /*
         Tin =  Eigen::Translation<double,3>(0.5,0.2,0)*
             Eigen::AngleAxis<double>(0,Eigen::Vector3d::UnitX()) *
             Eigen::AngleAxis<double>(0,Eigen::Vector3d::UnitY()) *
             Eigen::AngleAxis<double>(0.3,Eigen::Vector3d::UnitZ()) ;
             */
-        //cloud_offset = lslgeneric::transformPointCloud(Tin,cloud);
-        //cloud_offset = cloud;
+        // cloud_offset = lslgeneric::transformPointCloud(Tin,cloud);
+        // cloud_offset = cloud;
         /*
-        	snprintf(fname,49,"c_offset.wrl");
-        	FILE *fout = fopen(fname,"w");
-        	fprintf(fout,"#VRML V2.0 utf8\n");
-        	lslgeneric::writeToVRML<pcl::PointXYZ>(fout,cloud,Eigen::Vector3d(0,1,0));
-        	lslgeneric::writeToVRML<pcl::PointXYZ>(fout,cloud_offset,Eigen::Vector3d(1,0,0));
-        	fclose(fout);
+            snprintf(fname,49,"c_offset.wrl");
+            FILE *fout = fopen(fname,"w");
+            fprintf(fout,"#VRML V2.0 utf8\n");
+            lslgeneric::writeToVRML<pcl::PointXYZ>(fout,cloud,Eigen::Vector3d(0,1,0));
+            lslgeneric::writeToVRML<pcl::PointXYZ>(fout,cloud_offset,Eigen::Vector3d(1,0,0));
+            fclose(fout);
         */
-        lslgeneric::NDTMatcherD2D<pcl::PointXYZ, pcl::PointXYZ> matcherD2D(false, false, resolutions);
-        bool ret = matcherD2D.match2D(cloud, cloud_offset, Tout);
+        lslgeneric::NDTMatcherD2D< pcl::PointXYZ, pcl::PointXYZ > matcherD2D( false, false,
+                                                                              resolutions );
+        bool ret = matcherD2D.match2D( cloud, cloud_offset, Tout );
 
-        snprintf(fname, 49, "c_offset.wrl");
-        fout = fopen(fname, "w");
-        fprintf(fout, "#VRML V2.0 utf8\n");
-        lslgeneric::writeToVRML<pcl::PointXYZ>(fout, cloud, Eigen::Vector3d(1, 0, 0));
-        lslgeneric::writeToVRML<pcl::PointXYZ>(fout, cloud_offset, Eigen::Vector3d(1, 1, 1));
+        snprintf( fname, 49, "c_offset.wrl" );
+        fout = fopen( fname, "w" );
+        fprintf( fout, "#VRML V2.0 utf8\n" );
+        lslgeneric::writeToVRML< pcl::PointXYZ >( fout, cloud, Eigen::Vector3d( 1, 0, 0 ) );
+        lslgeneric::writeToVRML< pcl::PointXYZ >( fout, cloud_offset, Eigen::Vector3d( 1, 1, 1 ) );
 
-        lslgeneric::transformPointCloudInPlace<pcl::PointXYZ>(Tout, cloud_offset);
+        lslgeneric::transformPointCloudInPlace< pcl::PointXYZ >( Tout, cloud_offset );
         std::cout << Tout.matrix() << std::endl;
-        lslgeneric::writeToVRML<pcl::PointXYZ>(fout, cloud_offset, Eigen::Vector3d(0, 1, 0));
-        fclose(fout);
+        lslgeneric::writeToVRML< pcl::PointXYZ >( fout, cloud_offset, Eigen::Vector3d( 0, 1, 0 ) );
+        fclose( fout );
 
         return 0;
         /**/
         Eigen::Vector3d sensor_origin;
         sensor_origin << 0, 0, 0;
-        lslgeneric::NDTMap<pcl::PointXYZ> sourceNDT(new lslgeneric::LazyGrid<pcl::PointXYZ>(0.5));
-        //sourceNDT.loadPointCloud(cloud);
-        sourceNDT.addPointCloud(sensor_origin, cloud);
+        lslgeneric::NDTMap< pcl::PointXYZ > sourceNDT(
+            new lslgeneric::LazyGrid< pcl::PointXYZ >( 0.5 ) );
+        // sourceNDT.loadPointCloud(cloud);
+        sourceNDT.addPointCloud( sensor_origin, cloud );
         sourceNDT.computeNDTCells();
         Tin.setIdentity();
 
-        lslgeneric::NDTMap<pcl::PointXYZ> targetNDT(new lslgeneric::LazyGrid<pcl::PointXYZ>(0.5));
-        targetNDT.loadPointCloud(cloud_offset);
+        lslgeneric::NDTMap< pcl::PointXYZ > targetNDT(
+            new lslgeneric::LazyGrid< pcl::PointXYZ >( 0.5 ) );
+        targetNDT.loadPointCloud( cloud_offset );
         targetNDT.computeNDTCells();
 
-        matcherD2D.match2D(sourceNDT, targetNDT, Tout);
-        snprintf(fname, 49, "c_offset.wrl");
-        fout = fopen(fname, "w");
-        fprintf(fout, "#VRML V2.0 utf8\n");
-        lslgeneric::writeToVRML<pcl::PointXYZ>(fout, cloud, Eigen::Vector3d(1, 0, 0));
-        lslgeneric::writeToVRML<pcl::PointXYZ>(fout, cloud_offset, Eigen::Vector3d(1, 1, 1));
-        lslgeneric::transformPointCloudInPlace<pcl::PointXYZ>(Tout, cloud_offset);
+        matcherD2D.match2D( sourceNDT, targetNDT, Tout );
+        snprintf( fname, 49, "c_offset.wrl" );
+        fout = fopen( fname, "w" );
+        fprintf( fout, "#VRML V2.0 utf8\n" );
+        lslgeneric::writeToVRML< pcl::PointXYZ >( fout, cloud, Eigen::Vector3d( 1, 0, 0 ) );
+        lslgeneric::writeToVRML< pcl::PointXYZ >( fout, cloud_offset, Eigen::Vector3d( 1, 1, 1 ) );
+        lslgeneric::transformPointCloudInPlace< pcl::PointXYZ >( Tout, cloud_offset );
         std::cout << Tout.matrix() << std::endl;
-        lslgeneric::writeToVRML<pcl::PointXYZ>(fout, cloud_offset, Eigen::Vector3d(0, 1, 0));
-        fclose(fout);
+        lslgeneric::writeToVRML< pcl::PointXYZ >( fout, cloud_offset, Eigen::Vector3d( 0, 1, 0 ) );
+        fclose( fout );
     }
 }
 #if 0
@@ -193,7 +192,7 @@ std::vector<double> er;
 #pragma omp parallel
 {
     lslgeneric::NDTMatcherD2D<pcl::PointXYZ, pcl::PointXYZ> matcherD2DLocal(false, false, resolutions);
-    #pragma omp for
+#pragma omp for
     for (int i = 0; i < N_X; i++) { //xoffset=xmin;xoffset<xmin+N_X*dx;xoffset+=dx) {
         double xoffset = xmin + i * dx;
         for (int q = 0; q < N_Y; q++) { //yoffset=ymin;yoffset<ymin+N_Y*dy;yoffset+=dy) {
@@ -520,6 +519,3 @@ return (0);
 #endif
 }
 #endif
-
-
-

@@ -1,11 +1,13 @@
 #include "graph_map/map_node.h"
 #include <boost/serialization/export.hpp>
-BOOST_CLASS_EXPORT(perception_oru::libgraphMap::MapNode)
-namespace perception_oru {
-namespace libgraphMap {
+BOOST_CLASS_EXPORT( perception_oru::libgraphMap::MapNode )
+namespace perception_oru
+{
+namespace libgraphMap
+{
 Node::Node() {
     static unsigned int num_nodes = 0;
-    id_ = num_nodes;
+    id_                           = num_nodes;
     num_nodes++;
     pose_ = Eigen::Affine3d::Identity();
 }
@@ -13,26 +15,24 @@ Node::Node() {
 Affine3d Node::GetPose() const {
     return pose_;
 }
-bool Node::operator ==(const Node& node_compare) {
-    if (id_ == node_compare.id_ && pose_.isApprox(node_compare.pose_))
+bool Node::operator==( const Node& node_compare ) {
+    if ( id_ == node_compare.id_ && pose_.isApprox( node_compare.pose_ ) )
         return true;
-    else return false;
+    else
+        return false;
 }
 
-bool Node::WithinRadius(const Affine3d &pose, const double &radius) {
-
-    double distance = Eigen::Vector3d(pose.translation() - pose_.translation()).norm();
-    if (distance < radius)
+bool Node::WithinRadius( const Affine3d& pose, const double& radius ) {
+    double distance = Eigen::Vector3d( pose.translation() - pose_.translation() ).norm();
+    if ( distance < radius )
         return true;
-    else return false;
+    else
+        return false;
 }
 
-
-
-
-MapNode::MapNode(const Eigen::Affine3d &pose, const MapParamPtr &mapparam) {
+MapNode::MapNode( const Eigen::Affine3d& pose, const MapParamPtr& mapparam ) {
     pose_ = pose;
-    map_ = GraphFactory::CreateMapType(mapparam);
+    map_  = GraphFactory::CreateMapType( mapparam );
 }
 MapNode::MapNode() {
     map_ = NULL;
@@ -40,22 +40,23 @@ MapNode::MapNode() {
 
 string MapNode::ToString() {
     stringstream ss;
-    ss << "MapNode:\ninitialized: " << initialized_ << "\nid:" << id_ << "\nPosition(x,y,z):" << pose_.translation().transpose() << endl;;
+    ss << "MapNode:\ninitialized: " << initialized_ << "\nid:" << id_
+       << "\nPosition(x,y,z):" << pose_.translation().transpose() << endl;
+    ;
     ss << map_->ToString();
     return ss.str();
 }
 
-void MapNode::updateMap(const Eigen::Affine3d &Tnow, pcl::PointCloud<pcl::PointXYZ> &cloud) {
-    map_->update(Tnow, cloud);
+void MapNode::updateMap( const Eigen::Affine3d& Tnow, pcl::PointCloud< pcl::PointXYZ >& cloud ) {
+    map_->update( Tnow, cloud );
     initialized_ = true;
 }
 
-void MapNode::updateMap(const Eigen::Affine3d &Tnow, pcl::PointCloud<velodyne_pointcloud::PointXYZIR> &cloud) {
-    map_->update(Tnow, cloud);
+void MapNode::updateMap( const Eigen::Affine3d& Tnow,
+                         pcl::PointCloud< velodyne_pointcloud::PointXYZIR >& cloud ) {
+    map_->update( Tnow, cloud );
     initialized_ = true;
 }
-
-
 }
 }
 //#include <graph_map/map_node_impl.h>

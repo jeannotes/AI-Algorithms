@@ -6,12 +6,12 @@
 #define DBoW2_EXPORTS
 #endif
 #ifdef DBoW2_EXPORTS
-#define EXPORT __declspec(dllexport)
+#define EXPORT __declspec( dllexport )
 #else
-#define EXPORT __declspec(dllimport)
+#define EXPORT __declspec( dllimport )
 #endif
 #else
 #define EXPORT
 #endif
 
-#endif // CONFIG_H
+#endif   // CONFIG_H

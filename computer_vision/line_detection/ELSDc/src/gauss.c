@@ -23,25 +23,22 @@
 
 ------------------------------------------------------------------------------*/
 
-
+#include "gauss.h"
+#include <float.h>
+#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <math.h>
-#include <float.h>
 #include "image.h"
-#include "gauss.h"
-
 
 /*----------------------------------------------------------------------------*/
 /** Free memory used in a PGaussFilter 'in'.
  */
 static void free_PGaussFilter( PGaussFilter in ) {
-    if ( (in == NULL) || (in->values == NULL) )
-        error("free_PGaussFilter: invalid filter input.");
-    free( (void *) in->values );
-    free( (void *) in );
+    if ( ( in == NULL ) || ( in->values == NULL ) )
+        error( "free_PGaussFilter: invalid filter input." );
+    free( (void*) in->values );
+    free( (void*) in );
 }
-
 
 /*----------------------------------------------------------------------------*/
 /** Allocate space for a new PGaussFilter of size 'dim'.
@@ -50,19 +47,18 @@ static PGaussFilter new_PGaussFilter( unsigned int dim ) {
     PGaussFilter fil;
 
     /* check parameters */
-    if ( dim <= 0 ) error("new_PGaussFilter: invalid filter size");
+    if ( dim <= 0 ) error( "new_PGaussFilter: invalid filter size" );
 
     fil = (PGaussFilter) malloc( sizeof( struct GaussFilter ) );
-    if ( fil == NULL ) error("new_PGaussFilter: not enough memory");
-    fil->values = (double *) calloc( dim, sizeof(double) );
-    if ( fil->values == NULL ) error("new_PGaussFilter: not enough memory");
+    if ( fil == NULL ) error( "new_PGaussFilter: not enough memory" );
+    fil->values = (double*) calloc( dim, sizeof( double ) );
+    if ( fil->values == NULL ) error( "new_PGaussFilter: not enough memory" );
 
-    fil->dim = dim;
+    fil->dim  = dim;
     fil->mean = 0.0;
 
     return fil;
 }
-
 
 /*----------------------------------------------------------------------------*/
 /**
@@ -78,26 +74,24 @@ static void gaussian_kernel( PGaussFilter kernel, double sigma, double mean ) {
     int i;
 
     /* check parameters */
-    if ( (kernel == NULL) || (kernel->values == NULL) )
-        error("gaussian_kernel: invalid struct 'kernel'.");
-    if ( sigma <= 0.0 ) error("gaussian_kernel: 'sigma' must be positive.");
+    if ( ( kernel == NULL ) || ( kernel->values == NULL ) )
+        error( "gaussian_kernel: invalid struct 'kernel'." );
+    if ( sigma <= 0.0 ) error( "gaussian_kernel: 'sigma' must be positive." );
 
     /* compute gaussian kernel */
-    kernel->mean = mean;
+    kernel->mean  = mean;
     kernel->sigma = sigma;
 
     for ( i = 0; i < kernel->dim; i++ ) {
-        val = ( (double) i - mean ) / sigma;
+        val               = ( (double) i - mean ) / sigma;
         kernel->values[i] = exp( -0.5 * val * val );
         sum += kernel->values[i];
     }
 
     /* normalization */
     if ( sum >= 0.0 )
-        for ( i = 0; i < kernel->dim; i++ )
-            kernel->values[i] /= sum;
+        for ( i = 0; i < kernel->dim; i++ ) kernel->values[i] /= sum;
 }
-
 
 /*----------------------------------------------------------------------------*/
 /**
@@ -108,8 +102,7 @@ static void gaussian_kernel( PGaussFilter kernel, double sigma, double mean ) {
      sigma = sigma_scale / scale,   if scale <  1.0
      sigma = sigma_scale,           if scale >= 1.0
  */
-PImageDouble gaussian_sampler( PImageDouble in, double scale,
-                               double sigma_scale ) {
+PImageDouble gaussian_sampler( PImageDouble in, double scale, double sigma_scale ) {
     PImageDouble aux;
     PImageDouble out;
     PGaussFilter kernel;
@@ -119,16 +112,14 @@ PImageDouble gaussian_sampler( PImageDouble in, double scale,
     double sigma, xx, yy, sum, prec;
 
     /* check parameters */
-    if ( (in == NULL) || (in->data == NULL) || (in->xsize <= 0) ||
-            (in->ysize <= 0) )
-        error("gaussian_sampler: invalid image.");
-    if ( scale <= 0.0 ) error("gaussian_sampler: 'scale' must be positive.");
-    if ( sigma_scale <= 0.0 )
-        error("gaussian_sampler: 'sigma_scale' must be positive.");
+    if ( ( in == NULL ) || ( in->data == NULL ) || ( in->xsize <= 0 ) || ( in->ysize <= 0 ) )
+        error( "gaussian_sampler: invalid image." );
+    if ( scale <= 0.0 ) error( "gaussian_sampler: 'scale' must be positive." );
+    if ( sigma_scale <= 0.0 ) error( "gaussian_sampler: 'sigma_scale' must be positive." );
 
     /* get memory for images */
-    N = (unsigned int) floor( in->xsize * scale );
-    M = (unsigned int) floor( in->ysize * scale );
+    N   = (unsigned int) floor( in->xsize * scale );
+    M   = (unsigned int) floor( in->ysize * scale );
     aux = new_PImageDouble( N, in->ysize );
     out = new_PImageDouble( N, M );
 
@@ -143,14 +134,14 @@ PImageDouble gaussian_sampler( PImageDouble in, double scale,
        Then,
          x = sigma * sqrt( 2 * prec * ln(10) ).
      */
-    prec = 3.0;
-    h = (unsigned int) ceil( sigma * sqrt( 2.0 * prec * log(10.0) ) );
-    n = 1 + 2 * h; /* kernel size */
-    kernel = new_PGaussFilter(n);
+    prec   = 3.0;
+    h      = (unsigned int) ceil( sigma * sqrt( 2.0 * prec * log( 10.0 ) ) );
+    n      = 1 + 2 * h; /* kernel size */
+    kernel = new_PGaussFilter( n );
 
     /* auxiliary double image size variables */
-    double_x_size = (int) (2 * in->xsize);
-    double_y_size = (int) (2 * in->ysize);
+    double_x_size = (int) ( 2 * in->xsize );
+    double_y_size = (int) ( 2 * in->ysize );
 
     /* First subsampling: x axis */
     for ( x = 0; x < aux->xsize; x++ ) {
@@ -177,9 +168,9 @@ PImageDouble gaussian_sampler( PImageDouble in, double scale,
                 while ( j >= double_x_size ) j -= double_x_size;
                 if ( j >= (int) in->xsize ) j = double_x_size - 1 - j;
 
-                sum += in->data[ j + y * in->xsize ] * kernel->values[i];
+                sum += in->data[j + y * in->xsize] * kernel->values[i];
             }
-            aux->data[ x + y * aux->xsize ] = sum;
+            aux->data[x + y * aux->xsize] = sum;
         }
     }
 
@@ -208,14 +199,14 @@ PImageDouble gaussian_sampler( PImageDouble in, double scale,
                 while ( j >= double_y_size ) j -= double_y_size;
                 if ( j >= (int) in->ysize ) j = double_y_size - 1 - j;
 
-                sum += aux->data[ x + j * aux->xsize ] * kernel->values[i];
+                sum += aux->data[x + j * aux->xsize] * kernel->values[i];
             }
-            out->data[ x + y * out->xsize ] = sum;
+            out->data[x + y * out->xsize] = sum;
         }
     }
 
     /* free memory */
-    free_PGaussFilter(kernel);
-    free_PImageDouble(aux);
+    free_PGaussFilter( kernel );
+    free_PImageDouble( aux );
     return out;
 }

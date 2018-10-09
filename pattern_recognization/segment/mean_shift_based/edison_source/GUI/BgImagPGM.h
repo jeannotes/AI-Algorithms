@@ -27,22 +27,22 @@
 #define BLUE_WEIGHT 0.114
 
 class bgPGMHandler : public wxImageHandler {
+    DECLARE_DYNAMIC_CLASS( bgPGMHandler )
 
-    DECLARE_DYNAMIC_CLASS(bgPGMHandler)
-
-public:
+  public:
     inline bgPGMHandler() {
-        m_name = "PGM file";
+        m_name      = "PGM file";
         m_extension = "pgm";
-        m_type = wxBITMAP_TYPE_ANY;
-        m_mime = "image/pgm";
+        m_type      = wxBITMAP_TYPE_ANY;
+        m_mime      = "image/pgm";
     };
 
-    virtual bool LoadFile( wxImage *image, wxInputStream& stream, bool verbose = TRUE, int index = 0 );
-    virtual bool SaveFile( wxImage *image, wxOutputStream& stream, bool verbose = TRUE );
+    virtual bool LoadFile( wxImage* image, wxInputStream& stream, bool verbose = TRUE,
+                           int index = 0 );
+    virtual bool SaveFile( wxImage* image, wxOutputStream& stream, bool verbose = TRUE );
     virtual bool DoCanRead( wxInputStream& stream );
 
-    void Skip_Comment(wxInputStream &stream);
+    void Skip_Comment( wxInputStream& stream );
 };
 
 #endif

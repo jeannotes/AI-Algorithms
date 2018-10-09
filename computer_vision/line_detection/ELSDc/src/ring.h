@@ -24,7 +24,6 @@
 
 ------------------------------------------------------------------------------*/
 
-
 #ifndef RING_H
 #define RING_H
 
@@ -47,17 +46,16 @@ typedef struct {
                                 used for display */
 } Ring;
 
-void copy_ring( Ring *in, Ring *out );
-void swap_ring( Ring *r );
-int check_circ_ring( Ring *cring );
-int check_ell_ring( Ring *ering );
-int is_in_circ_ring( Ring * r, int x, int y );
-int is_in_ell_ring( Ring * r, int x, int y );
-void rosin_point( Ring *ering, int x, int y, double *xi, double *yi );
-double d_rosin( Ring *ering, double x, double y );
-void ellipse_foci( double *param, double *foci );
-double ellipse_normal_angle( double x, double y, double *foci );
-int get_ring( Point *reg, int reg_size, double ang, double *param,
-              double *pext1, double *pext2, int conic, double spir, Ring *r,
-              int *grad_dir, double *foci, int msize );
+void copy_ring( Ring* in, Ring* out );
+void swap_ring( Ring* r );
+int check_circ_ring( Ring* cring );
+int check_ell_ring( Ring* ering );
+int is_in_circ_ring( Ring* r, int x, int y );
+int is_in_ell_ring( Ring* r, int x, int y );
+void rosin_point( Ring* ering, int x, int y, double* xi, double* yi );
+double d_rosin( Ring* ering, double x, double y );
+void ellipse_foci( double* param, double* foci );
+double ellipse_normal_angle( double x, double y, double* foci );
+int get_ring( Point* reg, int reg_size, double ang, double* param, double* pext1, double* pext2,
+              int conic, double spir, Ring* r, int* grad_dir, double* foci, int msize );
 #endif

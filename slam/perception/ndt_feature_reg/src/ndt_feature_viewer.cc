@@ -1,7 +1,7 @@
 // Visualizer of feature f2f registration.
-#include <iostream>
-#include <boost/thread/thread.hpp>
 #include <boost/program_options.hpp>
+#include <boost/thread/thread.hpp>
+#include <iostream>
 
 #define DO_DEBUG_PROC
 
@@ -10,16 +10,16 @@
 #include <ndt_feature_reg/ndt_frame_viewer.h>
 
 #include <ndt_map/depth_camera.h>
-#include <ndt_registration/ndt_matcher_d2d_feature.h>
 #include <ndt_map/pointcloud_utils.h>
+#include <ndt_registration/ndt_matcher_d2d_feature.h>
 
 #include <cv.h>
 #include <highgui.h>
 
-#include <pcl/visualization/pcl_visualizer.h>
+#include <pcl/common/transforms.h>
 #include <pcl/io/io.h>
 #include <pcl/io/pcd_io.h>
-#include <pcl/common/transforms.h>
+#include <pcl/visualization/pcl_visualizer.h>
 
 using namespace ndt_feature_reg;
 using namespace pcl;
@@ -28,7 +28,7 @@ using namespace std;
 using namespace lslgeneric;
 namespace po = boost::program_options;
 
-int main(int argc, char** argv) {
+int main( int argc, char** argv ) {
     cout << "--------------------------------------------------" << endl;
     cout << "Small test program of the frame matching between 2" << endl;
     cout << "pair of depth + std (RGB) images. Each image pair " << endl;
@@ -44,43 +44,46 @@ int main(int argc, char** argv) {
     int support_size;
     double maxVar;
 
-    po::options_description desc("Allowed options");
-    desc.add_options()
-    ("help", "produce help message")
-    ("debug", "print debug output")
-    ("visualize", "visualize the output")
-    ("depth1", po::value<string>(&depth1_name), "first depth image")
-    ("depth2", po::value<string>(&depth2_name), "second depth image")
-    ("std1", po::value<string>(&std1_name), "first standard image")
-    ("std2", po::value<string>(&std2_name), "second standard image")
-//	  ("pc1", po::value<string>(&pc1_name), "first pointcloud")
-//	  ("pc2", po::value<string>(&pc2_name), "second pointcloud")
-    ("scale", po::value<double>(&scale)->default_value(0.0002), "depth scale (depth = scale * pixel value)")
-    ("max_inldist_xy", po::value<double>(&max_inldist_xy)->default_value(0.1), "max inlier distance in xy related to the camera plane (in meters)")
-    ("max_inldist_z", po::value<double>(&max_inldist_z)->default_value(0.1), "max inlier distance in z - depth (in meters)")
-    ("nb_ransac", po::value<int>(&nb_ransac)->default_value(100), "max number of RANSAC iterations")
-    ("ident", "don't use the pe matching as input to the registration")
-//	  ("nb_points", po::value<int>(&nb_points)->default_value(21), "number of surrounding points")
-    ("support_size", po::value<int>(&support_size)->default_value(5), "width of patch around each feature in pixels")
-    ("maxVar", po::value<double>(&maxVar)->default_value(0.05), "max variance of ndt cells")
-    ("skip_matching", "skip the matching step");
+    po::options_description desc( "Allowed options" );
+    desc.add_options()( "help", "produce help message" )( "debug", "print debug output" )(
+        "visualize", "visualize the output" )( "depth1", po::value< string >( &depth1_name ),
+                                               "first depth image" )(
+        "depth2", po::value< string >( &depth2_name ),
+        "second depth image" )( "std1", po::value< string >( &std1_name ), "first standard image" )(
+        "std2", po::value< string >( &std2_name ), "second standard image" )
+        //	  ("pc1", po::value<string>(&pc1_name), "first pointcloud")
+        //	  ("pc2", po::value<string>(&pc2_name), "second pointcloud")
+        ( "scale", po::value< double >( &scale )->default_value( 0.0002 ), "depth scale (depth = "
+                                                                           "scale * pixel value)" )(
+            "max_inldist_xy", po::value< double >( &max_inldist_xy )->default_value( 0.1 ),
+            "max inlier distance in xy related to the camera plane (in meters)" )(
+            "max_inldist_z", po::value< double >( &max_inldist_z )->default_value( 0.1 ),
+            "max inlier distance in z - depth (in meters)" )(
+            "nb_ransac", po::value< int >( &nb_ransac )->default_value( 100 ),
+            "max number of RANSAC iterations" )( "ident", "don't use the pe matching as input to "
+                                                          "the registration" )
+        //	  ("nb_points", po::value<int>(&nb_points)->default_value(21), "number of surrounding
+        // points")
+        ( "support_size", po::value< int >( &support_size )->default_value( 5 ),
+          "width of patch around each feature in pixels" )(
+            "maxVar", po::value< double >( &maxVar )->default_value( 0.05 ),
+            "max variance of ndt cells" )( "skip_matching", "skip the matching step" );
     ;
 
     po::variables_map vm;
-    po::store(po::parse_command_line(argc, argv, desc), vm);
-    po::notify(vm);
+    po::store( po::parse_command_line( argc, argv, desc ), vm );
+    po::notify( vm );
 
-    if (vm.count("help")) {
+    if ( vm.count( "help" ) ) {
         cout << desc << "\n";
         return 1;
     }
-    bool debug = vm.count("debug");
-    bool visualize = vm.count("visualize");
-    bool ident = vm.count("ident");
-    bool skip_matching = vm.count("skip_matching");
-    if (debug)
-        cout << "scale : " << scale << endl;
-    if (!(vm.count("depth1") && vm.count("depth2"))) {
+    bool debug         = vm.count( "debug" );
+    bool visualize     = vm.count( "visualize" );
+    bool ident         = vm.count( "ident" );
+    bool skip_matching = vm.count( "skip_matching" );
+    if ( debug ) cout << "scale : " << scale << endl;
+    if ( !( vm.count( "depth1" ) && vm.count( "depth2" ) ) ) {
         cout << "Check depth data input - quitting\n";
         return 1;
     }
@@ -90,60 +93,60 @@ int main(int argc, char** argv) {
     double fy = 516.5;
     double cx = 318.6;
     double cy = 255.3;
-    std::vector<double> dist(5);
-    dist[0] = 0.2624;
-    dist[1] = -0.9531;
-    dist[2] = -0.0054;
-    dist[3] = 0.0026;
-    dist[4] = 1.1633;
-    double ds = 1.035; // Depth scaling factor.
-    lslgeneric::DepthCamera<pcl::PointXYZ> cameraParams;
+    std::vector< double > dist( 5 );
+    dist[0]   = 0.2624;
+    dist[1]   = -0.9531;
+    dist[2]   = -0.0054;
+    dist[3]   = 0.0026;
+    dist[4]   = 1.1633;
+    double ds = 1.035;   // Depth scaling factor.
+    lslgeneric::DepthCamera< pcl::PointXYZ > cameraParams;
 
     // Load the files.
-    //pcl::PCDReader reader;
+    // pcl::PCDReader reader;
     double t0, t1, t2, t3;
 
-    if (debug)
-        cout << "loading imgs : " << std1_name << " and " << std2_name << endl;
+    if ( debug ) cout << "loading imgs : " << std1_name << " and " << std2_name << endl;
 
     size_t support = support_size;
 
-    NDTFrame *frame1 = new NDTFrame();
-    NDTFrame *frame2 = new NDTFrame();
-    frame1->img = cv::imread(std1_name, 0);
-    frame2->img = cv::imread(std2_name, 0);
+    NDTFrame* frame1    = new NDTFrame();
+    NDTFrame* frame2    = new NDTFrame();
+    frame1->img         = cv::imread( std1_name, 0 );
+    frame2->img         = cv::imread( std2_name, 0 );
     frame1->supportSize = support;
     frame2->supportSize = support;
-    frame1->maxVar = maxVar;
-    frame2->maxVar = maxVar;
+    frame1->maxVar      = maxVar;
+    frame2->maxVar      = maxVar;
 
     /*     cout<<"img channels "<<frame1.img.channels()<<endl;
          cout<<"img depth "<<frame1.img.depth()<<endl;
          cout<<"img channels "<<frame2.img.channels()<<endl;
     */
-    NDTFrameProc proc(nb_ransac, max_inldist_xy, max_inldist_z);
+    NDTFrameProc proc( nb_ransac, max_inldist_xy, max_inldist_z );
 
-    if (debug)
-        cout << "loading depth img : " << depth1_name << " and " << depth2_name << endl;
+    if ( debug ) cout << "loading depth img : " << depth1_name << " and " << depth2_name << endl;
 
     t0 = getDoubleTime();
-    frame1->depth_img = cv::imread(depth1_name, CV_LOAD_IMAGE_ANYDEPTH); // CV_LOAD_IMAGE_ANYDEPTH is important to load the 16bits image
-    frame2->depth_img = cv::imread(depth2_name, CV_LOAD_IMAGE_ANYDEPTH);
-    t1 = getDoubleTime();
+    frame1->depth_img =
+        cv::imread( depth1_name, CV_LOAD_IMAGE_ANYDEPTH );   // CV_LOAD_IMAGE_ANYDEPTH is important
+                                                             // to load the 16bits image
+    frame2->depth_img = cv::imread( depth2_name, CV_LOAD_IMAGE_ANYDEPTH );
+    t1                = getDoubleTime();
 
-    bool isFloat = (frame1->depth_img.depth() == CV_32F);
-    cameraParams = DepthCamera<pcl::PointXYZ>(fx, fy, cx, cy, dist, ds * scale, isFloat);
-    cameraParams.setupDepthPointCloudLookUpTable(frame1->depth_img.size());
+    bool isFloat = ( frame1->depth_img.depth() == CV_32F );
+    cameraParams = DepthCamera< pcl::PointXYZ >( fx, fy, cx, cy, dist, ds * scale, isFloat );
+    cameraParams.setupDepthPointCloudLookUpTable( frame1->depth_img.size() );
 
     frame1->cameraParams = cameraParams;
     frame2->cameraParams = cameraParams;
-    t2 = getDoubleTime();
+    t2                   = getDoubleTime();
     cout << "load: " << t1 - t0 << endl;
     cout << "lookup: " << t2 - t1 << endl;
 
     t1 = getDoubleTime();
-    proc.addFrameIncremental(frame1, skip_matching);
-    proc.addFrameIncremental(frame2, skip_matching);
+    proc.addFrameIncremental( frame1, skip_matching );
+    proc.addFrameIncremental( frame2, skip_matching );
     t2 = getDoubleTime();
     cout << "add frames: " << t2 - t1 << endl;
 
@@ -156,14 +159,14 @@ int main(int argc, char** argv) {
      cout<<"process per frame: "<<(t2-t1)/2<<endl;
 
      */
-    NDTFrameViewer viewer(&proc);
+    NDTFrameViewer viewer( &proc );
 
     viewer.showFeaturePC();
-    viewer.showMatches(proc.pe.inliers);
+    viewer.showMatches( proc.pe.inliers );
 
-    while (!viewer.wasStopped ()) {
+    while ( !viewer.wasStopped() ) {
         viewer.spinOnce();
-        boost::this_thread::sleep (boost::posix_time::microseconds (100000));
+        boost::this_thread::sleep( boost::posix_time::microseconds( 100000 ) );
     }
     return 0;
 
@@ -178,14 +181,14 @@ int main(int argc, char** argv) {
     cout <<" calc descriptors: "<<t2-t1<<endl;
 
     if (debug)
-    	  cout << "Computing NDT ..." << endl;
+          cout << "Computing NDT ..." << endl;
     t1 = getDoubleTime();
     frame1.computeNDT();
     frame2.computeNDT();
     t2 = getDoubleTime();
     cout << "compute NDT : " << t2 - t1 << endl;
     if (debug)
-    	  cout << " - done." << endl;
+          cout << " - done." << endl;
 
     NDTFrameViewer<pcl::PointXYZ> viewer(&frame1, &frame2, proc);
 
@@ -222,7 +225,8 @@ int main(int argc, char** argv) {
     Eigen::Vector3d trans = pe.trans;
     Eigen::Affine3d transl_transform = (Eigen::Affine3d)Eigen::Translation3d(trans);
     Eigen::Affine3d rot_transform = (Eigen::Affine3d)Eigen::Matrix3d(rot);
-    Eigen::Transform<double,3,Eigen::Affine,Eigen::ColMajor> transform = transl_transform*rot_transform;
+    Eigen::Transform<double,3,Eigen::Affine,Eigen::ColMajor> transform =
+    transl_transform*rot_transform;
 
     std::vector<std::pair<int,int> > corr = convertMatches(pe.inliers);
     NDTMatcherFeatureD2D<pcl::PointXYZ,pcl::PointXYZ> matcher_feat(corr);

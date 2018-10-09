@@ -23,16 +23,13 @@
 #ifndef PROCESS_LINE_H
 #define PROCESS_LINE_H
 
-void valid_line(struct point* reg, int *reg_size, double reg_angle, double prec,
-                double p, struct rect *rec, double *l, image_double grad,
-                image_double gradx, image_double grady,
-                image_char used, image_double angles, double density_th,
-                double logNT, double mlog10eps, double *nfaline);
-int refine(struct point *reg, int reg_size0, int *reg_size, image_double modgrad,
-           image_double gradx, image_double grady, double prec, double p,
-           struct rect *rec, image_char used, image_double angles,
-           double density_th, double logNT, double eps);
-void region2rect(struct point *reg, int reg_size0, int reg_size, image_double modgrad,
-                 double reg_angle, double prec, double p, struct rect * rec);
+void valid_line( struct point* reg, int* reg_size, double reg_angle, double prec, double p,
+                 struct rect* rec, double* l, image_double grad, image_double gradx,
+                 image_double grady, image_char used, image_double angles, double density_th,
+                 double logNT, double mlog10eps, double* nfaline );
+int refine( struct point* reg, int reg_size0, int* reg_size, image_double modgrad,
+            image_double gradx, image_double grady, double prec, double p, struct rect* rec,
+            image_char used, image_double angles, double density_th, double logNT, double eps );
+void region2rect( struct point* reg, int reg_size0, int reg_size, image_double modgrad,
+                  double reg_angle, double prec, double p, struct rect* rec );
 #endif
-

@@ -1,11 +1,11 @@
-#include <limits>
-#include <vector>
-#include <string>
 #include <Eigen/Core>
 #include <cmath>
-#include "ndt_map/ndt_map_hmt.h"
 #include <fstream>
+#include <limits>
+#include <string>
+#include <vector>
 #include "ndt_map/ndt_cell.h"
+#include "ndt_map/ndt_map_hmt.h"
 #include "ros/ros.h"
 class map_converter {
     std::string ndt_map_directory;
@@ -22,61 +22,60 @@ class map_converter {
     double v_size_z;
     double max_range;
     int width, height;
-    perception_oru::NDTMapHMT *ndtMap;
-    perception_oru::LazyGrid *mapGrid;
+    perception_oru::NDTMapHMT* ndtMap;
+    perception_oru::LazyGrid* mapGrid;
     bool floor_only;
-    std::vector<double> floor_levels;
-    std::vector<int> floor_count;
-    std::vector<std::string> map_names;
-    std::vector<std::vector<std::vector<int> > >maps;
-    std::vector<std::vector<int> > map;
-public:
-    map_converter(ros::NodeHandle private_nh) {
-        private_nh.param<std::string>("ndt_map_directory", ndt_map_directory, "map");
-        private_nh.param<double>("ndt_resolution", ndt_resolution, 0.4);
-        private_nh.param<std::string>("occ_map_name", occ_map_name, "occ");
-        private_nh.param<double>("occ_resolution", occ_resolution, 0.1);
-        private_nh.param<double>("floor_height", floor_height, -0.3);
-        private_nh.param<double>("floor_deviation", floor_deviation, 0.15);
-        private_nh.param<double>("lik_tr", lik_tr, 0.1);
-        private_nh.param<double>("robot_height", robot_height, 1.9);
-        private_nh.param<bool>("floor_only", floor_only, false);
-        private_nh.param<double>("v_size_x", v_size_x, 80.0);
-        private_nh.param<double>("v_size_y", v_size_y, 80.0);
-        private_nh.param<double>("v_size_z", v_size_z, 10.0);
-        private_nh.param("max_range", max_range, 80.0);
-        //InitializeOCCMap();
+    std::vector< double > floor_levels;
+    std::vector< int > floor_count;
+    std::vector< std::string > map_names;
+    std::vector< std::vector< std::vector< int > > > maps;
+    std::vector< std::vector< int > > map;
+
+  public:
+    map_converter( ros::NodeHandle private_nh ) {
+        private_nh.param< std::string >( "ndt_map_directory", ndt_map_directory, "map" );
+        private_nh.param< double >( "ndt_resolution", ndt_resolution, 0.4 );
+        private_nh.param< std::string >( "occ_map_name", occ_map_name, "occ" );
+        private_nh.param< double >( "occ_resolution", occ_resolution, 0.1 );
+        private_nh.param< double >( "floor_height", floor_height, -0.3 );
+        private_nh.param< double >( "floor_deviation", floor_deviation, 0.15 );
+        private_nh.param< double >( "lik_tr", lik_tr, 0.1 );
+        private_nh.param< double >( "robot_height", robot_height, 1.9 );
+        private_nh.param< bool >( "floor_only", floor_only, false );
+        private_nh.param< double >( "v_size_x", v_size_x, 80.0 );
+        private_nh.param< double >( "v_size_y", v_size_y, 80.0 );
+        private_nh.param< double >( "v_size_z", v_size_z, 10.0 );
+        private_nh.param( "max_range", max_range, 80.0 );
+        // InitializeOCCMap();
         LoadMap();
         BuildMapN();
         // SaveMap();
         // saveYAMLFile();
     }
 
-private:
+  private:
     int LoadMap() {
-
-        ndtMap = new perception_oru::NDTMapHMT(ndt_resolution, 0, 0, 0, v_size_x, v_size_y, v_size_z, max_range, ndt_map_directory);
+        ndtMap = new perception_oru::NDTMapHMT( ndt_resolution, 0, 0, 0, v_size_x, v_size_y,
+                                                v_size_z, max_range, ndt_map_directory );
         Eigen::Vector3d newPos;
         newPos << 0, 0, 0;
-        ndtMap->setInsertPosition(newPos);
+        ndtMap->setInsertPosition( newPos );
         return 0;
     }
 
-    double getAverageLevel(std::vector<perception_oru::NDTCell*> floors) {
+    double getAverageLevel( std::vector< perception_oru::NDTCell* > floors ) {
         double aver = 0;
 
-        for (size_t i = 0; i < floors.size(); i++)
-            aver += floors[i]->getMean()[2];
-        return aver / double(floors.size());
+        for ( size_t i = 0; i < floors.size(); i++ ) aver += floors[i]->getMean()[2];
+        return aver / double( floors.size() );
     }
 
-
     void BuildMapN() {
-        double X_min = 0.125;//-359.125;
-        double Y_min = 0.125;//-299.125;
+        double X_min = 0.125;   //-359.125;
+        double Y_min = 0.125;   //-299.125;
         double X_max = 199.125;
         double Y_max = 519.125;
-        double step = 0.25;
+        double step  = 0.25;
         double Z_max = 1.9;
         double Z_min = -0.3;
 
@@ -84,34 +83,39 @@ private:
         std::string png_map_file = occ_map_name;
 
         png_map_file += ".pgm";
-        std::ofstream map_file(png_map_file.c_str(), std::ofstream::out);
-        if (map_file.is_open()) {
+        std::ofstream map_file( png_map_file.c_str(), std::ofstream::out );
+        if ( map_file.is_open() ) {
             map_file << "P2" << std::endl;
-            map_file << int(fabs(X_max - X_min) / step) << " " << int(fabs(Y_max - Y_min) / step) << std::endl;
+            map_file << int( fabs( X_max - X_min ) / step ) << " "
+                     << int( fabs( Y_max - Y_min ) / step ) << std::endl;
             map_file << "1" << std::endl;
-            map.resize(int(fabs(Y_max - Y_min) / step), std::vector<int> (int(fabs(X_max - X_min) / step), 0));
-            for (size_t i_x = 0; i_x < fabs(X_max - X_min) / step; i_x++) {
-                for (size_t i_y = 0; i_y < fabs(Y_max - Y_min) / step; i_y++) {
+            map.resize( int( fabs( Y_max - Y_min ) / step ),
+                        std::vector< int >( int( fabs( X_max - X_min ) / step ), 0 ) );
+            for ( size_t i_x = 0; i_x < fabs( X_max - X_min ) / step; i_x++ ) {
+                for ( size_t i_y = 0; i_y < fabs( Y_max - Y_min ) / step; i_y++ ) {
                     bool traversable = true;
                     Eigen::Vector3d newPos;
                     newPos << X_min + i_x * step, Y_min + i_y * step, 0;
-                    ndtMap->setInsertPosition(newPos);
-                    for (size_t i_z = 0; i_z < int(fabs(Z_max - Z_min) / step); i_z++) {
+                    ndtMap->setInsertPosition( newPos );
+                    for ( size_t i_z = 0; i_z < int( fabs( Z_max - Z_min ) / step ); i_z++ ) {
                         Eigen::Vector3d newPos;
-                        pcl::PointXYZ pt(X_min + i_x * step, Y_min + i_y * step, Z_min + i_z * step);
-                        ROS_INFO_STREAM(pt);
-                        perception_oru::NDTCell *cell;
-                        if (ndtMap->getCellForPoint(pt, cell)) {
-                            if (cell == NULL) {
+                        pcl::PointXYZ pt( X_min + i_x * step, Y_min + i_y * step,
+                                          Z_min + i_z * step );
+                        ROS_INFO_STREAM( pt );
+                        perception_oru::NDTCell* cell;
+                        if ( ndtMap->getCellForPoint( pt, cell ) ) {
+                            if ( cell == NULL ) {
                                 traversable = false;
                                 break;
                             }
                             double cz;
-                            cell->getCenter(cz, cz, cz);
-                            pcl::PointXYZ p1(X_min + i_x * step, Y_min + i_y * step, cz - ndt_resolution / 2.0);
-                            pcl::PointXYZ p2(X_min + i_x * step, Y_min + i_y * step, cz + ndt_resolution / 2.0);
+                            cell->getCenter( cz, cz, cz );
+                            pcl::PointXYZ p1( X_min + i_x * step, Y_min + i_y * step,
+                                              cz - ndt_resolution / 2.0 );
+                            pcl::PointXYZ p2( X_min + i_x * step, Y_min + i_y * step,
+                                              cz + ndt_resolution / 2.0 );
                             Eigen::Vector3d out;
-                            if (cell->computeMaximumLikelihoodAlongLine(p1, p2, out) > lik_tr) {
+                            if ( cell->computeMaximumLikelihoodAlongLine( p1, p2, out ) > lik_tr ) {
                                 // ROS_INFO_STREAM(__LINE__);
                                 traversable = false;
                                 break;
@@ -121,7 +125,7 @@ private:
                             break;
                         }
                     }
-                    if (traversable) {
+                    if ( traversable ) {
                         map[i_y][i_x] = 1;
 
                     } else {
@@ -134,12 +138,7 @@ private:
             }
         }
     }
-
 };
-
-
-
-
 
 // void BuildMap(){
 //
@@ -152,7 +151,8 @@ private:
 // 		if(ndts[i]->getClass() == lslgeneric::NDTCell::HORIZONTAL){
 // 			bool found = false;
 // 			for(size_t j = 0; j < floors.size(); j++){
-// 				if(av_level[j] - floor_deviation<ndts[i]->getMean()[2] && av_level[j] + floor_deviation>ndts[i]->getMean()[2]){
+// 				if(av_level[j] - floor_deviation<ndts[i]->getMean()[2] && av_level[j] +
+// floor_deviation>ndts[i]->getMean()[2]){
 // 					found = true;
 // 					floors[j].push_back(ndts[i]);
 // 					av_level[j] = getAverageLevel(floors[j]);
@@ -186,16 +186,26 @@ private:
 // 		for(size_t k = 0; k < floors[j].size(); k++){
 // 			double ccx, ccy, ccz;
 // 			floors[j][k]->getCenter(ccx, ccy, ccz);
-// 			for(double lx = ccx - sx / 2.0 + occ_resolution / 2.0; lx <= ccx + sx / 2.0 - occ_resolution / 2.0; lx += occ_resolution){
-// 				for(double ly = ccy - sy / 2.0 + occ_resolution / 2.0; ly <= ccy + sy / 2.0 - occ_resolution / 2.0; ly += occ_resolution){
+// 			for(double lx = ccx - sx / 2.0 + occ_resolution / 2.0; lx <= ccx + sx / 2.0 - occ_resolution
+// /
+// 2.0; lx += occ_resolution){
+// 				for(double ly = ccy - sy / 2.0 + occ_resolution / 2.0; ly <= ccy + sy / 2.0 -
+// occ_resolution
+// / 2.0; ly += occ_resolution){
 // 					double lccz = ccz;
-// 					int X = floor((lx + sx / 2.0) / occ_resolution + 0.5) + height / 2.0;   // round((lx - (occ_resolution - xs) / 2.0) / occ_resolution);
-// 					int Y = floor((ly + sy / 2.0) / occ_resolution + 0.5) + width / 2.0;    //round((ly - (occ_resolution - ys) / 2.0) / occ_resolution);
+// 					int X = floor((lx + sx / 2.0) / occ_resolution + 0.5) + height / 2.0;   // round((lx
+// -
+// (occ_resolution - xs) / 2.0) / occ_resolution);
+// 					int Y = floor((ly + sy / 2.0) / occ_resolution + 0.5) + width / 2.0;    //round((ly
+// -
+// (occ_resolution - ys) / 2.0) / occ_resolution);
 // 					pcl::PointXYZ p1(lx, ly, ccz - sz / 2.0);
 // 					pcl::PointXYZ p2(lx, ly, ccz + sz / 2.0);
 // 					Eigen::Vector3d out;
 // 					// ROS_INFO_STREAM(X<<" "<<Y);
-// 					// ROS_INFO_STREAM(p1<<" "<<p2<<" "<<floors[j][k]->computeMaximumLikelihoodAlongLine(p1, p2, out)<<" "<<X<<" "<<Y);
+// 					// ROS_INFO_STREAM(p1<<" "<<p2<<" "<<floors[j][k]->computeMaximumLikelihoodAlongLine(p1,
+// p2,
+// out)<<" "<<X<<" "<<Y);
 //
 // 					if(floors[j][k]->computeMaximumLikelihoodAlongLine(p1, p2, out) > lik_tr){
 // 						bool traversable = true;
@@ -218,9 +228,11 @@ private:
 // 								if(ndtMap->getCellAtPoint(refPoint, cell)){
 // 									if(cell->hasGaussian_ && cell->getOccupancyRescaled() > 0.9){
 //
-// 										if(cell->computeMaximumLikelihoodAlongLine(p1, p2, out) > lik_tr){
+// 										if(cell->computeMaximumLikelihoodAlongLine(p1, p2, out) >
+// lik_tr){
 // 											traversable = false;
-// 											//std::cout << cell->getCenter() << " break occ" << std::endl;
+// 											//std::cout << cell->getCenter() << " break occ" <<
+// std::endl;
 // 											break;
 // 										}
 // 									}
@@ -355,9 +367,11 @@ private:
 //    if(ndts[i]->getClass() == lslgeneric::NDTCell::HORIZONTAL){
 //     bool found = false;
 //     for(size_t j = 0; j < floor_levels.size(); j++){
-//      if(floor_levels[j] - floor_deviation<ndts[i]->getMean()[2] && floor_levels[j] + floor_deviation>ndts[i]->getMean()[2]){
+//      if(floor_levels[j] - floor_deviation<ndts[i]->getMean()[2] && floor_levels[j] +
+//      floor_deviation>ndts[i]->getMean()[2]){
 //       found = true;
-//       floor_levels[j] = (floor_levels[j] * floor_count[j] + ndts[i]->getMean()[2]) / (floor_count[j] + 1);
+//       floor_levels[j] = (floor_levels[j] * floor_count[j] + ndts[i]->getMean()[2]) /
+//       (floor_count[j] + 1);
 //       floor_count[j]++;
 //       break;
 //      }
@@ -371,7 +385,8 @@ private:
 //   }
 //   fclose(jffin);
 //  }
-//  maps.resize(floor_levels.size(), std::vector<std::vector<int> >(width, std::vector<int>(height)));
+//  maps.resize(floor_levels.size(), std::vector<std::vector<int> >(width,
+//  std::vector<int>(height)));
 // }
 //
 // void BuildMapTr(){
@@ -409,11 +424,15 @@ private:
 //     }
 //     double ccx, ccy, ccz;
 //     ndts[i]->getCenter(ccx, ccy, ccz);
-//     for(double lx = ccx - sx / 2.0 + occ_resolution / 2.0; lx <= ccx + sx / 2.0 - occ_resolution / 2.0; lx += occ_resolution){
-//      for(double ly = ccy - sy / 2.0 + occ_resolution / 2.0; ly <= ccy + sy / 2.0 - occ_resolution / 2.0; ly += occ_resolution){
+//     for(double lx = ccx - sx / 2.0 + occ_resolution / 2.0; lx <= ccx + sx / 2.0 - occ_resolution
+//     / 2.0; lx += occ_resolution){
+//      for(double ly = ccy - sy / 2.0 + occ_resolution / 2.0; ly <= ccy + sy / 2.0 - occ_resolution
+//      / 2.0; ly += occ_resolution){
 //       double lccz = ccz;
-//       int X = floor((lx + sx / 2.0) / occ_resolution + 0.5) + height / 2.0;            // round((lx - (occ_resolution - xs) / 2.0) / occ_resolution);
-//       int Y = floor((ly + sy / 2.0) / occ_resolution + 0.5) + width / 2.0;             //round((ly - (occ_resolution - ys) / 2.0) / occ_resolution);
+//       int X = floor((lx + sx / 2.0) / occ_resolution + 0.5) + height / 2.0;            //
+//       round((lx - (occ_resolution - xs) / 2.0) / occ_resolution);
+//       int Y = floor((ly + sy / 2.0) / occ_resolution + 0.5) + width / 2.0;
+//       //round((ly - (occ_resolution - ys) / 2.0) / occ_resolution);
 //       pcl::PointXYZ p1(lx, ly, ccz - sz / 2.0);
 //       pcl::PointXYZ p2(lx, ly, ccz + sz / 2.0);
 //       Eigen::Vector3d out;
@@ -490,7 +509,8 @@ private:
 //   if(ndts[i]->getClass() == lslgeneric::NDTCell::HORIZONTAL){
 //    bool found = false;
 //    for(size_t j = 0; j < floors.size(); j++){
-//     if(av_level[j] - floor_deviation<ndts[i]->getMean()[2] && av_level[j] + floor_deviation>ndts[i]->getMean()[2]){
+//     if(av_level[j] - floor_deviation<ndts[i]->getMean()[2] && av_level[j] +
+//     floor_deviation>ndts[i]->getMean()[2]){
 //      found = true;
 //      floors[j].push_back(ndts[i]);
 //      av_level[j] = getAverageLevel(floors[j]);
@@ -524,16 +544,21 @@ private:
 //   for(size_t k = 0; k < floors[j].size(); k++){
 //    double ccx, ccy, ccz;
 //    floors[j][k]->getCenter(ccx, ccy, ccz);
-//    for(double lx = ccx - sx / 2.0 + occ_resolution / 2.0; lx <= ccx + sx / 2.0 - occ_resolution / 2.0; lx += occ_resolution){
-//     for(double ly = ccy - sy / 2.0 + occ_resolution / 2.0; ly <= ccy + sy / 2.0 - occ_resolution / 2.0; ly += occ_resolution){
+//    for(double lx = ccx - sx / 2.0 + occ_resolution / 2.0; lx <= ccx + sx / 2.0 - occ_resolution /
+//    2.0; lx += occ_resolution){
+//     for(double ly = ccy - sy / 2.0 + occ_resolution / 2.0; ly <= ccy + sy / 2.0 - occ_resolution
+//     / 2.0; ly += occ_resolution){
 //      double lccz = ccz;
-//      int X = floor((lx + sx / 2.0) / occ_resolution + 0.5) + height / 2.0;        // round((lx - (occ_resolution - xs) / 2.0) / occ_resolution);
-//      int Y = floor((ly + sy / 2.0) / occ_resolution + 0.5) + width / 2.0;         //round((ly - (occ_resolution - ys) / 2.0) / occ_resolution);
+//      int X = floor((lx + sx / 2.0) / occ_resolution + 0.5) + height / 2.0;        // round((lx -
+//      (occ_resolution - xs) / 2.0) / occ_resolution);
+//      int Y = floor((ly + sy / 2.0) / occ_resolution + 0.5) + width / 2.0;         //round((ly -
+//      (occ_resolution - ys) / 2.0) / occ_resolution);
 //      pcl::PointXYZ p1(lx, ly, ccz - sz / 2.0);
 //      pcl::PointXYZ p2(lx, ly, ccz + sz / 2.0);
 //      Eigen::Vector3d out;
 //      // ROS_INFO_STREAM(X<<" "<<Y);
-//      // ROS_INFO_STREAM(p1<<" "<<p2<<" "<<floors[j][k]->computeMaximumLikelihoodAlongLine(p1, p2, out)<<" "<<X<<" "<<Y);
+//      // ROS_INFO_STREAM(p1<<" "<<p2<<" "<<floors[j][k]->computeMaximumLikelihoodAlongLine(p1, p2,
+//      out)<<" "<<X<<" "<<Y);
 //
 //      if(floors[j][k]->computeMaximumLikelihoodAlongLine(p1, p2, out) > lik_tr){
 //       bool traversable = true;
@@ -617,9 +642,11 @@ private:
 //  std::cout << height << " " << width << std::endl;
 //  int h = 0;
 //  map.resize(width, std::vector<int>(height));
-//  for(double current_x = -xs / 2 + occ_resolution; current_x < xs - occ_resolution; current_x += occ_resolution){
+//  for(double current_x = -xs / 2 + occ_resolution; current_x < xs - occ_resolution; current_x +=
+//  occ_resolution){
 //   int w = 0;
-//   for(double current_y = -ys / 2 + occ_resolution; current_y < ys - occ_resolution; current_y += occ_resolution){
+//   for(double current_y = -ys / 2 + occ_resolution; current_y < ys - occ_resolution; current_y +=
+//   occ_resolution){
 //
 //
 //    lslgeneric::NDTCell *check_cell;
@@ -699,10 +726,10 @@ private:
 // }
 //};
 
-int main(int argc, char **argv) {
-    ROS_INFO("Starting node");
-    ros::init(argc, argv, "off_line_velodyne_test");
+int main( int argc, char** argv ) {
+    ROS_INFO( "Starting node" );
+    ros::init( argc, argv, "off_line_velodyne_test" );
     ros::NodeHandle nh;
-    ros::NodeHandle parameters("~");
-    map_converter mc(parameters);
+    ros::NodeHandle parameters( "~" );
+    map_converter mc( parameters );
 }

@@ -23,10 +23,8 @@
 
 ------------------------------------------------------------------------------*/
 
-
 #ifndef GAUSS_H
 #define GAUSS_H
-
 
 /*----------------------------------------------------------------------------*/
 /** Structure for defining the parameters of a Gaussian filter: dimension, mean,
@@ -36,10 +34,9 @@ typedef struct GaussFilter {
     int dim;
     double sigma;
     double mean;
-    double *values;
-} *PGaussFilter; /* pointer to Gauss filter structure */
+    double* values;
+} * PGaussFilter; /* pointer to Gauss filter structure */
 
-PImageDouble gaussian_sampler( PImageDouble in, double scale,
-                               double sigma_scale );
+PImageDouble gaussian_sampler( PImageDouble in, double scale, double sigma_scale );
 
 #endif

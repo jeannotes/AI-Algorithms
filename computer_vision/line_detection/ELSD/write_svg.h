@@ -22,10 +22,10 @@
 #ifndef WRITE_SVG_H
 #define WRITE_SVG_H
 
-FILE* init_svg(char * filename, unsigned int xsize, unsigned int ysize );
-void fclose_svg(FILE *svg);
-void write_svg_ellipse(FILE *fe, FILE *svg, double *param, int *pext, int smooth);
-void write_svg_circle(FILE *fe, FILE *svg, double *param, int *pext, int smooth);
-void write_svg_line(FILE *svg, double *lin, int smooth);
+FILE* init_svg( char* filename, unsigned int xsize, unsigned int ysize );
+void fclose_svg( FILE* svg );
+void write_svg_ellipse( FILE* fe, FILE* svg, double* param, int* pext, int smooth );
+void write_svg_circle( FILE* fe, FILE* svg, double* param, int* pext, int smooth );
+void write_svg_line( FILE* svg, double* lin, int smooth );
 
 #endif

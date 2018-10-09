@@ -38,8 +38,8 @@
 #include <ndt_map/ndt_map.h>
 #include <vector>
 
-namespace perception_oru {
-
+namespace perception_oru
+{
 /**
  * \short
  * Histogram of NDT cells, to be used as a global appearance
@@ -54,25 +54,31 @@ namespace perception_oru {
  *   transform. Journal of field robotics, 26 (11-12), 892-914.
  */
 class NDTHistogram {
-private:
-    std::vector<int> histogramBinsFlat; ///< The flat (planar, according to the planarity threshold) histogram bins.
-    std::vector<int> histogramBinsLine; ///< The linear (according to the linearity threshold) histogram bins.
-    std::vector<int> histogramBinsSphere; ///< The histogram bins that are not "linear" or "flat".
+  private:
+    std::vector< int > histogramBinsFlat;     ///< The flat (planar, according to the planarity
+                                              /// threshold) histogram bins.
+    std::vector< int > histogramBinsLine;     ///< The linear (according to the linearity threshold)
+                                              /// histogram bins.
+    std::vector< int > histogramBinsSphere;   ///< The histogram bins that are not "linear" or
+                                              ///"flat".
 
-    int N_LINE_BINS; ///< Number of linear bins to use.
-    int N_FLAT_BINS; ///< Number of flat bins to use.
-    int N_SPHERE_BINS; ///< Number of spherical bins to use.
+    int N_LINE_BINS;     ///< Number of linear bins to use.
+    int N_FLAT_BINS;     ///< Number of flat bins to use.
+    int N_SPHERE_BINS;   ///< Number of spherical bins to use.
     double D1, D2;
-    bool inited; ///< Whether the histogram is initialised or not.
+    bool inited;   ///< Whether the histogram is initialised or not.
 
-    std::vector< Eigen::Transform<double, 3, Eigen::Affine, Eigen::ColMajor>, Eigen::aligned_allocator<Eigen::Transform<double, 3, Eigen::Affine, Eigen::ColMajor> > > topThree;
+    std::vector<
+        Eigen::Transform< double, 3, Eigen::Affine, Eigen::ColMajor >,
+        Eigen::aligned_allocator< Eigen::Transform< double, 3, Eigen::Affine, Eigen::ColMajor > > >
+        topThree;
     double topThreeS[3];
 
-    std::vector<int> dist_histogramBinsFlat[3];
-    std::vector<int> dist_histogramBinsLine[3];
-    std::vector<int> dist_histogramBinsSphere[3];
+    std::vector< int > dist_histogramBinsFlat[3];
+    std::vector< int > dist_histogramBinsLine[3];
+    std::vector< int > dist_histogramBinsSphere[3];
 
-    std::vector<Eigen::Vector3d, Eigen::aligned_allocator<Eigen::Vector3d> > averageDirections;
+    std::vector< Eigen::Vector3d, Eigen::aligned_allocator< Eigen::Vector3d > > averageDirections;
 
     /**
      * Build a histogram descriptor given an NDT map.
@@ -86,22 +92,23 @@ private:
      * In Magnusson et al. (2009), \f$ l = f = 10 = 1/t_e\f$.
      *
      * @param map The input data.
-     * @param l Threshold for what is a "linear" distribution. If \f$e_3 > l \cdot e_2\f$ then it is classified as linear.
-     * @param f Threshold for what is a "flat" distribution. If \f$e_2 > f \cdot e_1\f$, and it is not linear, then it is classified as flat.
+     * @param l Threshold for what is a "linear" distribution. If \f$e_3 > l \cdot e_2\f$ then it is
+     * classified as linear.
+     * @param f Threshold for what is a "flat" distribution. If \f$e_2 > f \cdot e_1\f$, and it is
+     * not linear, then it is classified as flat.
      */
-    void constructHistogram(NDTMap &map,
-                            double l = 50,
-                            double f = 50
-                           );
+    void constructHistogram( NDTMap& map, double l = 50, double f = 50 );
 
-    void incrementLineBin(double d);
-    void incrementFlatBin(Eigen::Vector3d &normal, double d);
-    void incrementSphereBin(double d);
+    void incrementLineBin( double d );
+    void incrementFlatBin( Eigen::Vector3d& normal, double d );
+    void incrementSphereBin( double d );
 
     void computeDirections();
-    void closedFormSolution(pcl::PointCloud<pcl::PointXYZ> &src, pcl::PointCloud<pcl::PointXYZ> &trgt, Eigen::Transform<double, 3, Eigen::Affine, Eigen::ColMajor> &T);
+    void closedFormSolution( pcl::PointCloud< pcl::PointXYZ >& src,
+                             pcl::PointCloud< pcl::PointXYZ >& trgt,
+                             Eigen::Transform< double, 3, Eigen::Affine, Eigen::ColMajor >& T );
 
-public:
+  public:
     /**
      * Default constructor.
      *
@@ -109,38 +116,32 @@ public:
      * @param flat_classes
      * @param spherical_classes
      */
-    NDTHistogram (int linear_classes = 1,
-                  int flat_classes = 40,
-                  int spherical_classes = 10,
-                  double _D1 = 5.0,
-                  double _D2 = 10.0
-                 );
+    NDTHistogram( int linear_classes = 1, int flat_classes = 40, int spherical_classes = 10,
+                  double _D1 = 5.0, double _D2 = 10.0 );
 
     /**
      * Construct a histogram from an NDTMap.
      *
-     * @param map The 3D data to generate a histogram from. This typically comes from a single 3D scan.
+     * @param map The 3D data to generate a histogram from. This typically comes from a single 3D
+     * scan.
      * @param linear_classes
      * @param flat_classes
      * @param spherical_classes
      */
-    NDTHistogram (NDTMap &map,
-                  int linear_classes = 1,
-                  int flat_classes = 40,
-                  int spherical_classes = 10,
-                  double _D1 = 5.0,
-                  double _D2 = 10.0
-                 );
+    NDTHistogram( NDTMap& map, int linear_classes = 1, int flat_classes = 40,
+                  int spherical_classes = 10, double _D1 = 5.0, double _D2 = 10.0 );
 
     /**
      * Copy constructor.
      */
-    NDTHistogram (const NDTHistogram& other);
+    NDTHistogram( const NDTHistogram& other );
 
     /**
      * Get the transform that brings me close to target.
      */
-    void bestFitToHistogram(NDTHistogram &target, Eigen::Transform<double, 3, Eigen::Affine, Eigen::ColMajor> &T, bool bound_transform = true);
+    void bestFitToHistogram( NDTHistogram& target,
+                             Eigen::Transform< double, 3, Eigen::Affine, Eigen::ColMajor >& T,
+                             bool bound_transform = true );
 
     /**
      * Print out histogram data on stdout.
@@ -148,35 +149,36 @@ public:
      * @param bMatlab Whether to print in a format suitable for matlab
      * plotting.
      */
-    void printHistogram(bool bMatlab = false);
-
+    void printHistogram( bool bMatlab = false );
 
     /**
      * Call this to get the 1/2/3 best option, _after_ a call to
      * bestFitToHistogram.
      */
-    double getTransform(size_t FIT_NUMBER, Eigen::Transform<double, 3, Eigen::Affine, Eigen::ColMajor> &T) {
+    double getTransform( size_t FIT_NUMBER,
+                         Eigen::Transform< double, 3, Eigen::Affine, Eigen::ColMajor >& T ) {
         double ret = -1;
         T.setIdentity();
-        if (FIT_NUMBER >= 0 && FIT_NUMBER < 3) {
-            T = topThree[FIT_NUMBER];
+        if ( FIT_NUMBER >= 0 && FIT_NUMBER < 3 ) {
+            T   = topThree[FIT_NUMBER];
             ret = topThreeS[FIT_NUMBER];
         }
         return ret;
     }
 
-    pcl::PointCloud<pcl::PointXYZ> getDominantDirections(int nDirections);
+    pcl::PointCloud< pcl::PointXYZ > getDominantDirections( int nDirections );
 
     /**
      * Compute similarity measure w.r.t. another histogram.
      */
-    double getSimilarity(NDTHistogram &other);
+    double getSimilarity( NDTHistogram& other );
 
-    double getSimilarity(NDTHistogram &other, Eigen::Transform<double, 3, Eigen::Affine, Eigen::ColMajor> &T);
+    double getSimilarity( NDTHistogram& other,
+                          Eigen::Transform< double, 3, Eigen::Affine, Eigen::ColMajor >& T );
 
-    std::vector<Eigen::Vector3d, Eigen::aligned_allocator<Eigen::Vector3d> > directions;
+    std::vector< Eigen::Vector3d, Eigen::aligned_allocator< Eigen::Vector3d > > directions;
 
-public:
+  public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 }

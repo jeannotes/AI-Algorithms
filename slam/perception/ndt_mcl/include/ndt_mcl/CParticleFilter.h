@@ -19,13 +19,13 @@
 #ifndef C_PARTICLE_FILTER_H_
 #define C_PARTICLE_FILTER_H_
 
+#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <math.h>
-#include <time.h>
 #include <string.h>
-#include <vector>
+#include <time.h>
 #include <Eigen/Core>
+#include <vector>
 
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
@@ -33,39 +33,37 @@
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
 class ownRandom {
-public:
-    float *normalRandomCache;
+  public:
+    float* normalRandomCache;
     bool isOk;
     int size;
 
     ownRandom() {
         isOk = false;
         size = 0;
-        allocate(10000);
-        srand( (unsigned)time( NULL ) ); ///< set new seed
+        allocate( 10000 );
+        srand( (unsigned) time( NULL ) );   ///< set new seed
     }
-    ~ownRandom() {
-
-    }
-    ///Allocate the memory for cache
-    void allocate(int m_size) {
-        if (size != 0) {
-            if (normalRandomCache)free(normalRandomCache);
+    ~ownRandom() {}
+    /// Allocate the memory for cache
+    void allocate( int m_size ) {
+        if ( size != 0 ) {
+            if ( normalRandomCache ) free( normalRandomCache );
         }
 
-        normalRandomCache = (float *) malloc(sizeof(float) * m_size);
-        isOk = true;
-        size = m_size;
+        normalRandomCache = (float*) malloc( sizeof( float ) * m_size );
+        isOk              = true;
+        size              = m_size;
     }
 
     void fillCache() {
-        if (size > 0 && normalRandomCache != NULL) {
-            for (int i = 0; i < size; i++) {
+        if ( size > 0 && normalRandomCache != NULL ) {
+            for ( int i = 0; i < size; i++ ) {
                 normalRandomCache[i] = normalRandom();
-                isOk = true;
+                isOk                 = true;
             }
         } else {
-            allocate(10000);
+            allocate( 10000 );
             fillCache();
         }
     }
@@ -77,14 +75,14 @@ public:
         int rv;
         float scale;
 
-        if (!isOk) fillCache();
+        if ( !isOk ) fillCache();
 
-        scale = (float) size / (float)RAND_MAX;
-        rv = rand();
-        rv = (int) ((float) rv * scale);
-        if (rv >= size) {
-            fprintf(stderr, "ERROR in getCachedUniformRandom(). rv=%d\n", rv);
-            rv = size - 1; ///< Just for precaution
+        scale = (float) size / (float) RAND_MAX;
+        rv    = rand();
+        rv    = (int) ( (float) rv * scale );
+        if ( rv >= size ) {
+            fprintf( stderr, "ERROR in getCachedUniformRandom(). rv=%d\n", rv );
+            rv = size - 1;   ///< Just for precaution
         }
         return normalRandomCache[rv];
     }
@@ -92,9 +90,7 @@ public:
     /**
      * Returns a (pseudo) random number between 0 and 1.
      **/
-    float uniformRandom(void) {
-        return ( ((float) rand() / (float) RAND_MAX));
-    }
+    float uniformRandom( void ) { return ( ( (float) rand() / (float) RAND_MAX ) ); }
 
     /**
      * Returns normally distributed random number
@@ -105,19 +101,17 @@ public:
         static int randomStored = 0;
         float fac, rsq, v1, v2;
 
-        if (randomStored) {
-            return gset;
-        }
+        if ( randomStored ) { return gset; }
 
         do {
-            v1 = 2.0 * uniformRandom() - 1.0; //pick two uniform numbers in the square extending
-            //from -1 to +1 in each direction,
-            v2 = 2.0 * uniformRandom() - 1.0;
-            rsq = v1 * v1 + v2 * v2;		//see if they are in the unit circle,
-        } while (rsq >= 1.0 || rsq == 0.0); //if not try again
+            v1 = 2.0 * uniformRandom() - 1.0;   // pick two uniform numbers in the square extending
+            // from -1 to +1 in each direction,
+            v2  = 2.0 * uniformRandom() - 1.0;
+            rsq = v1 * v1 + v2 * v2;            // see if they are in the unit circle,
+        } while ( rsq >= 1.0 || rsq == 0.0 );   // if not try again
 
-        fac = sqrt(-2.0 * log(rsq) / rsq);
-        gset = v1 * fac; // can be used also as normal distributed random number!!
+        fac  = sqrt( -2.0 * log( rsq ) / rsq );
+        gset = v1 * fac;   // can be used also as normal distributed random number!!
         return v2 * fac;
     }
 
@@ -128,7 +122,7 @@ public:
      * cov[2] = Y - variance
      * @return xRand and yRand the random value
      */
-    void covRandom(float& xRand, float& yRand, float cov[3]) {
+    void covRandom( float& xRand, float& yRand, float cov[3] ) {
         float a, b, c;
         float eig1, eig2;
         float vx1, vy1, vx2, vy2;
@@ -139,86 +133,83 @@ public:
         yRand = normalRandom();
         // calculate eigen values
         a = 1.0;
-        b = -(cov[0] + cov[2]);
+        b = -( cov[0] + cov[2] );
         c = cov[0] * cov[2] - cov[1] * cov[1];
 
-        eig1 = (-b + sqrt(b * b - 4 * a * c)) / (2 * a);
-        eig2 = (-b - sqrt(b * b - 4 * a * c)) / (2 * a);
+        eig1 = ( -b + sqrt( b * b - 4 * a * c ) ) / ( 2 * a );
+        eig2 = ( -b - sqrt( b * b - 4 * a * c ) ) / ( 2 * a );
 
         // calculate eigen vectors
         vx1 = cov[1];
         vy1 = eig1 - cov[0];
-        d = sqrt(vx1 * vx1 + vy1 + vy1);
+        d   = sqrt( vx1 * vx1 + vy1 + vy1 );
         vx1 /= d;
         vy1 /= d;
 
         vx2 = cov[1];
         vy2 = eig2 - cov[0];
-        d = sqrt(vx2 * vx2 + vy2 + vy2);
+        d   = sqrt( vx2 * vx2 + vy2 + vy2 );
         vx2 /= d;
         vy2 /= d;
 
         // Transform the random variable according to the covariance
-        x = xRand * sqrt(eig1);
-        y = yRand * sqrt(eig2);
+        x = xRand * sqrt( eig1 );
+        y = yRand * sqrt( eig2 );
 
         xRand = x * vx1 + y * vx2;
         yRand = x * vy1 + y * vy2;
     }
 };
 
-
-
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
 /// Definitions for pose and scan (uses namespace mcl)
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
-namespace mcl {
+namespace mcl
+{
 /**
  * Definition of scan for Scan Match interface
  * Uses the polar coordinate format (r,a) pairs.
  * Natural for sensor coordinates and used as sensor coordinates here!
  */
 struct scan {
-public:
-    float *r;  ///< Distance measurement vector [m]
-    float *a;  ///< Angle measurement of distance measurement [rad]
-    int N;     ///< The number of measurements in vector
+  public:
+    float* r;   ///< Distance measurement vector [m]
+    float* a;   ///< Angle measurement of distance measurement [rad]
+    int N;      ///< The number of measurements in vector
     scan() {
         N = 0;
         r = NULL;
         a = NULL;
     }
-    scan(const scan &s) {
-        *this = s;
-    }
-    scan &operator=(const scan &s) {
-        s.copy(*this);
+    scan( const scan& s ) { *this = s; }
+    scan& operator=( const scan& s ) {
+        s.copy( *this );
         return *this;
-    }/*
-		~scan(){
-		if(r)free(r);
-		if(a)free(a);
-		r=NULL;a=NULL;
-		}*/
-    void allocate(int n) {
-        if (r) free(r);
-        if (a) free(a);
-        r = (float *) malloc(n * sizeof(float));
-        a = (float *) malloc(n * sizeof(float));
+    } /*
+         ~scan(){
+         if(r)free(r);
+         if(a)free(a);
+         r=NULL;a=NULL;
+         }*/
+    void allocate( int n ) {
+        if ( r ) free( r );
+        if ( a ) free( a );
+        r = (float*) malloc( n * sizeof( float ) );
+        a = (float*) malloc( n * sizeof( float ) );
         N = n;
     }
-    void copy(struct scan &new_scan) const {
-        new_scan.r = (float *) malloc(N * sizeof(float));
-        new_scan.a = (float *) malloc(N * sizeof(float));
+    void copy( struct scan& new_scan ) const {
+        new_scan.r = (float*) malloc( N * sizeof( float ) );
+        new_scan.a = (float*) malloc( N * sizeof( float ) );
         new_scan.N = N;
-        memcpy(new_scan.r, r, N * sizeof(float));
-        memcpy(new_scan.a, a, N * sizeof(float));
+        memcpy( new_scan.r, r, N * sizeof( float ) );
+        memcpy( new_scan.a, a, N * sizeof( float ) );
     }
-    void set(float *rr, float *aa) {
-        if (N <= 0) return;
-        for (int i = 0; i < N; i++) {
+    void set( float* rr, float* aa ) {
+        if ( N <= 0 ) return;
+        for ( int i = 0; i < N; i++ ) {
             r[i] = rr[i];
             a[i] = aa[i];
         }
@@ -229,26 +220,26 @@ public:
  * 2D-pose x,y and heading
  */
 struct pose {
-public:
-    float x; ///<[m]
-    float y; ///<[m]
-    float a; ///<[rad]
+  public:
+    float x;   ///<[m]
+    float y;   ///<[m]
+    float a;   ///<[rad]
     pose() {
         x = 0;
         y = 0;
         a = 0;
     }
-    pose(float _x, float _y, float _a) {
+    pose( float _x, float _y, float _a ) {
         x = _x;
         y = _y;
         a = _a;
     }
-    void set(pose &p) {
+    void set( pose& p ) {
         x = p.x;
         y = p.y;
         a = p.a;
     }
-    void set(float xx, float yy, float aa) {
+    void set( float xx, float yy, float aa ) {
         x = xx;
         y = yy;
         a = aa;
@@ -257,66 +248,66 @@ public:
      * Calculates differential movement based on two global positions
      * i.e. odometric positions
      */
-    void setToDifferentialPose(pose odo_cur, pose odo_ref) {
+    void setToDifferentialPose( pose odo_cur, pose odo_ref ) {
         float ddx, ddy, dist, alpha;
         pose tmp;
-        ///Calculates the differential movement in odometry frame of reference
-        ddx = odo_cur.x - odo_ref.x;
-        ddy = odo_cur.y - odo_ref.y;
-        alpha = atan2(ddy, ddx);
-        dist = sqrt(ddx * ddx + ddy * ddy);
+        /// Calculates the differential movement in odometry frame of reference
+        ddx   = odo_cur.x - odo_ref.x;
+        ddy   = odo_cur.y - odo_ref.y;
+        alpha = atan2( ddy, ddx );
+        dist  = sqrt( ddx * ddx + ddy * ddy );
 
         tmp.x = dist * cos( alpha - odo_ref.a );
         tmp.y = dist * sin( alpha - odo_ref.a );
-        tmp.a = (float)fmod((float)(odo_cur.a - odo_ref.a), (float)(2.0 * M_PI));
-        if (tmp.a < 0) tmp.a += 2 * (float)M_PI;
+        tmp.a = (float) fmod( (float) ( odo_cur.a - odo_ref.a ), (float) ( 2.0 * M_PI ) );
+        if ( tmp.a < 0 ) tmp.a += 2 * (float) M_PI;
         x = tmp.x;
         y = tmp.y;
         a = tmp.a;
-
     }
     /**
      * Integrates new position from this position and differential position
      * @param diff the differential position to be added to this position
      * @return pose New integrated position
      **/
-    const pose integrateDifferential(const pose diff) {
+    const pose integrateDifferential( const pose diff ) {
         pose result;
         float l, phii;
 
-        l = sqrt(diff.x * diff.x + diff.y * diff.y);
-        phii = atan2(diff.y, diff.x);
+        l    = sqrt( diff.x * diff.x + diff.y * diff.y );
+        phii = atan2( diff.y, diff.x );
 
-        result.x = x + (float)cos(a + phii) * l;
-        result.y = y + (float)sin(a + phii) * l;
+        result.x = x + (float) cos( a + phii ) * l;
+        result.y = y + (float) sin( a + phii ) * l;
 
         // Update angle
-        result.a = (float)fmod((float)(diff.a + a), (float)( 2 * M_PI));
+        result.a = (float) fmod( (float) ( diff.a + a ), (float) ( 2 * M_PI ) );
         // fmod accepts also negative values
-        if (result.a < 0) result.a += 2 * (float)M_PI;
+        if ( result.a < 0 ) result.a += 2 * (float) M_PI;
         return result;
     }
     void to2PI() {
-        a = (float)fmod((float)(a), (float)( 2 * M_PI));
-        if (a < 0) a += 2 * (float)M_PI;
+        a = (float) fmod( (float) ( a ), (float) ( 2 * M_PI ) );
+        if ( a < 0 ) a += 2 * (float) M_PI;
     }
     void toPI() {
         int cnt = 0;
-        if (a > M_PI) while (a > M_PI) {
+        if ( a > M_PI )
+            while ( a > M_PI ) {
                 a -= 2.0 * M_PI;
                 cnt++;
-                //if(cnt%10000==0) fprintf(stderr,"Loopping alot a=%.2f cnt=%d\n",a,cnt);
-            } else if (a < -M_PI) while (a < -M_PI) {
+                // if(cnt%10000==0) fprintf(stderr,"Loopping alot a=%.2f cnt=%d\n",a,cnt);
+            }
+        else if ( a < -M_PI )
+            while ( a < -M_PI ) {
                 a += 2.0 * M_PI;
                 cnt++;
-                //if(cnt%10000==0) fprintf(stderr,"Loopping alot a=%.2f cnt=%d\n",a,cnt);
+                // if(cnt%10000==0) fprintf(stderr,"Loopping alot a=%.2f cnt=%d\n",a,cnt);
             }
     }
 
     ~pose() {}
-
 };
-
 
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
@@ -324,30 +315,30 @@ public:
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
 struct TPoseParticle {
-public:
-    float x;	// X - coordinate of the particle
-    float y;	// Y - coordinate of the particle
-    float a;	// Heading
-    float p;	// Probability of the particle
-    float lik;	// Likelihood of the particle
+  public:
+    float x;     // X - coordinate of the particle
+    float y;     // Y - coordinate of the particle
+    float a;     // Heading
+    float p;     // Probability of the particle
+    float lik;   // Likelihood of the particle
     TPoseParticle() {
-        x = 0;
-        y = 0;
-        a = 0;
-        p = 0;
+        x   = 0;
+        y   = 0;
+        a   = 0;
+        p   = 0;
         lik = 0;
     }
     void to2PI() {
-        a = (float)fmod((float)(a), (float)( 2 * M_PI));
-        if (a < 0) a += 2 * (float)M_PI;
+        a = (float) fmod( (float) ( a ), (float) ( 2 * M_PI ) );
+        if ( a < 0 ) a += 2 * (float) M_PI;
     }
     void toPI() {
-        if (a > M_PI) while (a > M_PI) a -= 2.0 * M_PI;
-        else if (a < -M_PI) while (a < -M_PI) a += 2.0 * M_PI;
+        if ( a > M_PI )
+            while ( a > M_PI ) a -= 2.0 * M_PI;
+        else if ( a < -M_PI )
+            while ( a < -M_PI ) a += 2.0 * M_PI;
     }
 };
-
-
 
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
@@ -356,24 +347,24 @@ public:
 //////////////////////////////////////////////////////////////////////////
 
 class CParticleFilter {
-public:
-    TPoseParticle *Particles;	       ///< Particle distribution
-    float Lik;					             ///< Likelihood of the distribution
-    float outLiers;			             ///< Percentage of the outlier measurements in distribution
-    int NumOfParticles;			         ///< Number of particles in distribution
-    int size;					               ///< reserved memory Size (number of reserved particles!)
-    mcl::pose average;                ///< Distribution mean
-    mcl::pose variance;              ///< Distribution variance
-    bool isAvgSet;                   ///< Tells if the distribution mean has been calculated
-    ownRandom myrand;                 ///< The random number class
+  public:
+    TPoseParticle* Particles;   ///< Particle distribution
+    float Lik;                  ///< Likelihood of the distribution
+    float outLiers;             ///< Percentage of the outlier measurements in distribution
+    int NumOfParticles;         ///< Number of particles in distribution
+    int size;                   ///< reserved memory Size (number of reserved particles!)
+    mcl::pose average;          ///< Distribution mean
+    mcl::pose variance;         ///< Distribution variance
+    bool isAvgSet;              ///< Tells if the distribution mean has been calculated
+    ownRandom myrand;           ///< The random number class
 
-    CParticleFilter();               ///<default constructor
-    ~CParticleFilter();              ///<destructor
-    /**
-     * Allocates memory for the distribution
-     * @p num_particles The amount of particles you want to reserve
-     */
-    void allocate(int num_particles);
+    CParticleFilter();    ///<default constructor
+    ~CParticleFilter();   ///<destructor
+                          /**
+                           * Allocates memory for the distribution
+                           * @p num_particles The amount of particles you want to reserve
+                           */
+    void allocate( int num_particles );
     /**
      * Frees the reserved memory
      */
@@ -383,7 +374,7 @@ public:
      * Get the mean values of the distribution
      * @returns mcl::pose
      */
-    mcl::pose getDistributionMean(bool doWeighting = false);
+    mcl::pose getDistributionMean( bool doWeighting = false );
     /**
      * Computes the best indices and returns the average
      * @param N The best particles
@@ -392,7 +383,8 @@ public:
      * @param vy variance y
      * @param va variance a
      */
-    mcl::pose averageOverNBestAndRandomize(int N, int M = 0, float vx = 0, float vy = 0, float va = 0);
+    mcl::pose averageOverNBestAndRandomize( int N, int M = 0, float vx = 0, float vy = 0,
+                                            float va = 0 );
     /**
      * Calculate the variance of the distribution
      */
@@ -402,7 +394,7 @@ public:
      * Initializes the filter by sampling from normal distribution with
      * mean in @p0 and variance defined by @variance
      */
-    void initializeNormalRandom(mcl::pose p0, mcl::pose variance, int size);
+    void initializeNormalRandom( mcl::pose p0, mcl::pose variance, int size );
 
     /**
      * Initializes the distribution using uniform distribution
@@ -411,7 +403,7 @@ public:
      * @p Pmax maximum values
      * @p dP step size
      **/
-    void initializeUniform(mcl::pose Pmin, mcl::pose Pmax, mcl::pose dP);
+    void initializeUniform( mcl::pose Pmin, mcl::pose Pmax, mcl::pose dP );
 
     /**
      * Performs the Sample Importance Resampling (SIR) algorithm for the distribution
@@ -419,7 +411,8 @@ public:
      * resamples these.
      *
      * You should have updated the likelihoods and normalized the distribution before running this
-     * Also, it might be smart not to run this in every iteration, since the distribution looses accuracy
+     * Also, it might be smart not to run this in every iteration, since the distribution looses
+     *accuracy
      * due to the "discretation"
      **/
     void SIRUpdate();
@@ -439,7 +432,7 @@ public:
      * @param dP relative movement between the scans
      * @param std The standard deviation of the noise that is independently added to each component
      **/
-    void predict(mcl::pose dP, mcl::pose std);
+    void predict( mcl::pose dP, mcl::pose std );
 
     /**
      * Performs prediction step with system noise covariance matrix
@@ -449,7 +442,7 @@ public:
      * @p dP relative motion between steps
      * @p Q[4] Uncertainty as covariance (Var(X) Var(XY) Var(Y) STD(A)!!)
      */
-    void predict(mcl::pose dP, float Q[4]);
+    void predict( mcl::pose dP, float Q[4] );
 
     /**
      * You Can use this to update the vector of likelihoods
@@ -460,7 +453,7 @@ public:
      * @param *lik the vector of likelihoods for the particles
      *		(has to be the same size as the number of particles)
      */
-    void updateLikelihood(float *lik);
+    void updateLikelihood( float* lik );
 
     /**
      * Resizes the distribution so that n particles
@@ -469,24 +462,23 @@ public:
 
      * @p n the size of *ind and the "new" vector
      */
-    void resize(int n);
+    void resize( int n );
 
     /**
      * Prints some status data
      */
     void print();
-    void saveToFile(int Fileind);
+    void saveToFile( int Fileind );
 
-private:
-    TPoseParticle *tmp;	///< Particle distribution for SIR (Maintained for efficiency reasons here)
+  private:
+    TPoseParticle* tmp;   ///< Particle distribution for SIR (Maintained for efficiency reasons
+                          /// here)
     /**
      * Heap Sort algorithm
      * @param *indx The index of values after sort
      * @param N The number of values
      **/
-    void hpsrt(int * indx);
-
+    void hpsrt( int* indx );
 };
 }
 #endif
-

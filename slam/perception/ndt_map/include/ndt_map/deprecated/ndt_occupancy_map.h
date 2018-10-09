@@ -41,9 +41,9 @@
 #ifndef NDT_OCCUPANCY_MAP_HH
 #define NDT_OCCUPANCY_MAP_HH
 
-#include <ndt_map/spatial_index.h>
-#include <ndt_map/ndt_cell.h>
 #include <ndt_map/depth_camera.h>
+#include <ndt_map/ndt_cell.h>
+#include <ndt_map/spatial_index.h>
 
 #include <cstdlib>
 
@@ -51,36 +51,33 @@
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 
-namespace perception_oru {
-
+namespace perception_oru
+{
 /** \brief Implements an NDT based spatial index
     \details This is an interface to a SpatialIndex (custom defined)
-	that contains NDT cells. Provides methods to create from a PointCloud
+    that contains NDT cells. Provides methods to create from a PointCloud
 */
-template <typename PointT>
+template < typename PointT >
 class NDTOccupancyMap {
-public:
-
-    NDTOccupancyMap() {
-        index_ = NULL;
-    }
+  public:
+    NDTOccupancyMap() { index_ = NULL; }
     /** default constructor. The SpatialIndex sent as a paramter
     is used as a factory every time that loadPointCloud is called.
     it can/should be deallocated outside the class after the destruction of the NDTMap
     */
-    NDTOccupancyMap(SpatialIndex<PointT> *idx, float _resolution) {
-        //std::cout<<"STORE INDEX PROTOTYPE\n";
-        index_ = idx;
+    NDTOccupancyMap( SpatialIndex< PointT >* idx, float _resolution ) {
+        // std::cout<<"STORE INDEX PROTOTYPE\n";
+        index_     = idx;
         resolution = _resolution;
-        //this is used to prevent memory de-allocation of the *si
-        //si was allocated outside the NDT class and should be deallocated outside
+        // this is used to prevent memory de-allocation of the *si
+        // si was allocated outside the NDT class and should be deallocated outside
         isFirstLoad_ = true;
     }
 
-    NDTOccupancyMap(const NDTOccupancyMap& other) {
-        //std::cout<<"COPY MAP\n";
-        if (other.index_ != NULL) {
-            //std::cout<<"COPY INDEX\n";
+    NDTOccupancyMap( const NDTOccupancyMap& other ) {
+        // std::cout<<"COPY MAP\n";
+        if ( other.index_ != NULL ) {
+            // std::cout<<"COPY INDEX\n";
             this->index_ = index_->copy();
             isFirstLoad_ = false;
         }
@@ -88,21 +85,19 @@ public:
     }
 
     virtual ~NDTOccupancyMap() {
-        //std::cout<<"DELETE MAP\n";
-        if (index_ != NULL && !isFirstLoad_) {
-            //std::cout<<"DELETE INDEX\n";
+        // std::cout<<"DELETE MAP\n";
+        if ( index_ != NULL && !isFirstLoad_ ) {
+            // std::cout<<"DELETE INDEX\n";
             delete index_;
         }
     }
 
     /**
-    	* Add new pointcloud to map
-    	* @param &origin is the position of the sensor, from where the scan has been taken from.
-    	* @param &pc is the pointcloud to be added
-    	*/
-    void addPointCloud(const Eigen::Vector3d &origin, const pcl::PointCloud<PointT> &pc);
-
-
+        * Add new pointcloud to map
+        * @param &origin is the position of the sensor, from where the scan has been taken from.
+        * @param &pc is the pointcloud to be added
+        */
+    void addPointCloud( const Eigen::Vector3d& origin, const pcl::PointCloud< PointT >& pc );
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /**
@@ -110,62 +105,67 @@ public:
     *
     */
     /// each entry in the indices vector contains a set of indices to a NDC cell.
-    void loadPointCloud(const pcl::PointCloud<PointT> &pc, const std::vector<std::vector<size_t> > &indices);
-    void loadDepthImage(const cv::Mat& depthImage, DepthCamera<PointT> &cameraParams);
-    pcl::PointCloud<PointT> loadDepthImageFeatures(const cv::Mat& depthImage, std::vector<cv::KeyPoint> &keypoints,
-            size_t &supportSize, double maxVar, DepthCamera<PointT> &cameraParams, bool estimateParamsDI = false, bool nonMean = false);
+    void loadPointCloud( const pcl::PointCloud< PointT >& pc,
+                         const std::vector< std::vector< size_t > >& indices );
+    void loadDepthImage( const cv::Mat& depthImage, DepthCamera< PointT >& cameraParams );
+    pcl::PointCloud< PointT > loadDepthImageFeatures( const cv::Mat& depthImage,
+                                                      std::vector< cv::KeyPoint >& keypoints,
+                                                      size_t& supportSize, double maxVar,
+                                                      DepthCamera< PointT >& cameraParams,
+                                                      bool estimateParamsDI = false,
+                                                      bool nonMean          = false );
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    void computeNDTCells(int cellupdatemode = CELL_UPDATE_MODE_SAMPLE_VARIANCE_WITH_RESET);
+    void computeNDTCells( int cellupdatemode = CELL_UPDATE_MODE_SAMPLE_VARIANCE_WITH_RESET );
 
-    virtual void writeToVRML(FILE* fout);
-    virtual void writeToVRML(FILE* fout, Eigen::Vector3d col);
+    virtual void writeToVRML( FILE* fout );
+    virtual void writeToVRML( FILE* fout, Eigen::Vector3d col );
 
-    inline SpatialIndex<PointT>* getMyIndex() const {
-        return index_;
-    }
+    inline SpatialIndex< PointT >* getMyIndex() const { return index_; }
     /// return the spatial index used as a string
     std::string getMyIndexStr() const;
 
-    //computes the likelihood of a single observation
-    double getLikelihoodForPoint(PointT pt);
+    // computes the likelihood of a single observation
+    double getLikelihoodForPoint( PointT pt );
 
-    //returns the covariance matrix of the closest cell to refPoint
-    bool getCellForPoint(const PointT &refPoint, NDTCell<PointT> *&cell);
-    std::vector<NDTCell<PointT>*> getCellsForPoint(const PointT pt, double radius);
+    // returns the covariance matrix of the closest cell to refPoint
+    bool getCellForPoint( const PointT& refPoint, NDTCell< PointT >*& cell );
+    std::vector< NDTCell< PointT >* > getCellsForPoint( const PointT pt, double radius );
 
-    ///return the cell using a specific index (not available for all spatialindexes), will return NULL if the idx is not valid.
-    NDTCell<PointT>* getCellIdx(unsigned int idx);
+    /// return the cell using a specific index (not available for all spatialindexes), will return
+    /// NULL if the idx is not valid.
+    NDTCell< PointT >* getCellIdx( unsigned int idx );
 
-    std::vector<NDTCell<PointT>*> pseudoTransformNDT(Eigen::Transform<double, 3, Eigen::Affine, Eigen::ColMajor> T);
-
-    /**
-    * Returns all computed cells from the map
-    */
-    std::vector<perception_oru::NDTCell<PointT>*> getAllCells();
+    std::vector< NDTCell< PointT >* >
+    pseudoTransformNDT( Eigen::Transform< double, 3, Eigen::Affine, Eigen::ColMajor > T );
 
     /**
     * Returns all computed cells from the map
     */
-    std::vector<perception_oru::NDTCell<PointT>*> getDynamicCells(unsigned int Timescale, float threshold);
+    std::vector< perception_oru::NDTCell< PointT >* > getAllCells();
 
+    /**
+    * Returns all computed cells from the map
+    */
+    std::vector< perception_oru::NDTCell< PointT >* > getDynamicCells( unsigned int Timescale,
+                                                                       float threshold );
 
     int numberOfActiveCells();
 
-    //tsv: temporary debug function
-    void debugToVRML(const char* fname, pcl::PointCloud<PointT> &pc);
-protected:
-    SpatialIndex<PointT> *index_;
+    // tsv: temporary debug function
+    void debugToVRML( const char* fname, pcl::PointCloud< PointT >& pc );
+
+  protected:
+    SpatialIndex< PointT >* index_;
     bool isFirstLoad_;
-    void loadPointCloud(const Eigen::Vector3d &origin, const pcl::PointCloud<PointT> &pc);
+    void loadPointCloud( const Eigen::Vector3d& origin, const pcl::PointCloud< PointT >& pc );
     float resolution;
-public:
+
+  public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-
-
 };
 
-} // end namespace
+}   // end namespace
 
 #include <ndt_map/impl/ndt_occupancy_map.hpp>
 

@@ -9,19 +9,10 @@
 /////////////////////////////////////////////////////////////////////////////
 
 // 8-connected neighbour
-static const int gNb8[8][2] = {
-    1, 1,
-    1, -1,
-    1, 0,
-    0, 1,
-    0, -1,
-    -1, -1,
-    -1, 0,
-    -1, 1
-};
+static const int gNb8[8][2] = { 1, 1, 1, -1, 1, 0, 0, 1, 0, -1, -1, -1, -1, 0, -1, 1 };
 
 class BgEdge {
-public:
+  public:
     int* edge_;
     double* grad_;
     bool isGradSet_;
@@ -32,7 +23,7 @@ public:
 
     BgEdge();
     ~BgEdge();
-    void SetPoints(float*, int);
-    void SetPoints(int*, int);
-    void SetGradient(float*, float*, float*, int);
+    void SetPoints( float*, int );
+    void SetPoints( int*, int );
+    void SetGradient( float*, float*, float*, int );
 };

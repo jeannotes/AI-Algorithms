@@ -29,30 +29,30 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <fstream>
 #include <assert.h>
-#include <opencv2/opencv.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/program_options.hpp>
+#include <fstream>
+#include <opencv2/opencv.hpp>
 #include "graph_segmentation.h"
 
 /** \brief Read all image files (.png and .jpg) in the given directory.
  * \param[in] directory directory to read
  * \param[out] files found files
  */
-void readDirectory(boost::filesystem::path directory,
-                   std::multimap<std::string, boost::filesystem::path> &files) {
-
-    assert(boost::filesystem::is_directory(directory));
+void readDirectory( boost::filesystem::path directory,
+                    std::multimap< std::string, boost::filesystem::path >& files ) {
+    assert( boost::filesystem::is_directory( directory ) );
 
     files.clear();
     boost::filesystem::directory_iterator end;
 
-    for (boost::filesystem::directory_iterator it(directory); it != end; ++it) {
+    for ( boost::filesystem::directory_iterator it( directory ); it != end; ++it ) {
         std::string extension = it->path().extension().string();
-        if (extension == ".png" || extension == ".jpg"
-                || extension == ".PNG" || extension == ".JPG") {
-            files.insert(std::multimap<std::string, boost::filesystem::path>::value_type(it->path().string(), it->path()));
+        if ( extension == ".png" || extension == ".jpg" || extension == ".PNG" ||
+             extension == ".JPG" ) {
+            files.insert( std::multimap< std::string, boost::filesystem::path >::value_type(
+                it->path().string(), it->path() ) );
         }
     }
 }
@@ -61,24 +61,19 @@ void readDirectory(boost::filesystem::path directory,
  * \param[in] file path to file to write
  * \param[in] mat matrix to write, expected to be integer matrix
  */
-void writeMatCSV(boost::filesystem::path file, const cv::Mat& mat) {
+void writeMatCSV( boost::filesystem::path file, const cv::Mat& mat ) {
+    assert( !mat.empty() );
+    assert( mat.channels() == 1 );
 
-    assert(!mat.empty());
-    assert(mat.channels() == 1);
+    std::ofstream file_stream( file.c_str() );
+    for ( int i = 0; i < mat.rows; i++ ) {
+        for ( int j = 0; j < mat.cols; j++ ) {
+            file_stream << mat.at< int >( i, j );
 
-    std::ofstream file_stream(file.c_str());
-    for (int i = 0; i < mat.rows; i++) {
-        for (int j = 0; j < mat.cols; j++) {
-            file_stream << mat.at<int>(i, j);
-
-            if (j < mat.cols - 1) {
-                file_stream << ",";
-            }
+            if ( j < mat.cols - 1 ) { file_stream << ","; }
         }
 
-        if (i < mat.rows  - 1) {
-            file_stream << "\n";
-        }
+        if ( i < mat.rows - 1 ) { file_stream << "\n"; }
     }
 
     file_stream.close();
@@ -91,30 +86,21 @@ void writeMatCSV(boost::filesystem::path file, const cv::Mat& mat) {
  * \param[in] j x coordinate
  * \return true if boundary pixel, false otherwise
  */
-bool is4ConnectedBoundaryPixel(const cv::Mat &labels, int i, int j) {
-
-    if (i > 0) {
-        if (labels.at<int>(i, j) != labels.at<int>(i - 1, j)) {
-            return true;
-        }
+bool is4ConnectedBoundaryPixel( const cv::Mat& labels, int i, int j ) {
+    if ( i > 0 ) {
+        if ( labels.at< int >( i, j ) != labels.at< int >( i - 1, j ) ) { return true; }
     }
 
-    if (i < labels.rows - 1) {
-        if (labels.at<int>(i, j) != labels.at<int>(i + 1, j)) {
-            return true;
-        }
+    if ( i < labels.rows - 1 ) {
+        if ( labels.at< int >( i, j ) != labels.at< int >( i + 1, j ) ) { return true; }
     }
 
-    if (j > 0) {
-        if (labels.at<int>(i, j) != labels.at<int>(i, j - 1)) {
-            return true;
-        }
+    if ( j > 0 ) {
+        if ( labels.at< int >( i, j ) != labels.at< int >( i, j - 1 ) ) { return true; }
     }
 
-    if (j < labels.cols - 1) {
-        if (labels.at<int>(i, j) != labels.at<int>(i, j + 1)) {
-            return true;
-        }
+    if ( j < labels.cols - 1 ) {
+        if ( labels.at< int >( i, j ) != labels.at< int >( i, j + 1 ) ) { return true; }
     }
 
     return false;
@@ -125,23 +111,21 @@ bool is4ConnectedBoundaryPixel(const cv::Mat &labels, int i, int j) {
  * \param[in] labels segments to draw as integer image
  * \param[out] contours image with segments indicated by contours
  */
-void drawContours(const cv::Mat &image, const cv::Mat &labels, cv::Mat &contours) {
+void drawContours( const cv::Mat& image, const cv::Mat& labels, cv::Mat& contours ) {
+    assert( !image.empty() );
+    assert( image.channels() == 3 );
+    assert( image.rows == labels.rows && image.cols == labels.cols );
+    assert( labels.type() == CV_32SC1 );
 
-    assert(!image.empty());
-    assert(image.channels() == 3);
-    assert(image.rows == labels.rows && image.cols == labels.cols);
-    assert(labels.type() == CV_32SC1);
+    contours.create( image.rows, image.cols, CV_8UC3 );
+    cv::Vec3b color( 0, 0, 0 );   // Black contours
 
-    contours.create(image.rows, image.cols, CV_8UC3);
-    cv::Vec3b color(0, 0, 0); // Black contours
-
-    for (int i = 0; i < contours.rows; ++i) {
-        for (int j = 0; j < contours.cols; ++j) {
-            if (is4ConnectedBoundaryPixel(labels, i, j)) {
-
-                contours.at<cv::Vec3b>(i, j) = color;
+    for ( int i = 0; i < contours.rows; ++i ) {
+        for ( int j = 0; j < contours.cols; ++j ) {
+            if ( is4ConnectedBoundaryPixel( labels, i, j ) ) {
+                contours.at< cv::Vec3b >( i, j ) = color;
             } else {
-                contours.at<cv::Vec3b>(i, j) = image.at<cv::Vec3b>(i, j);
+                contours.at< cv::Vec3b >( i, j ) = image.at< cv::Vec3b >( i, j );
             }
         }
     }
@@ -155,76 +139,81 @@ void drawContours(const cv::Mat &image, const cv::Mat &labels, cv::Mat &contours
  *
  * \author David Stutz
  */
-int main (int argc, char ** argv) {
-
-    boost::program_options::options_description desc("Allowed options");
-    desc.add_options()
-    ("help,h", "produce help message")
-    ("input", boost::program_options::value<std::string>(), "folder containing the images to process")
-    ("threshold", boost::program_options::value<float>()->default_value(20.0f), "constant for threshold function")
-    ("minimum-size", boost::program_options::value<int>()->default_value(10), "minimum component size")
-    ("output", boost::program_options::value<std::string>()->default_value("output"), "save segmentation as CSV file and contour images");
+int main( int argc, char** argv ) {
+    boost::program_options::options_description desc( "Allowed options" );
+    desc.add_options()( "help,h", "produce help message" )(
+        "input", boost::program_options::value< std::string >(),
+        "folder containing the images to "
+        "process" )( "threshold", boost::program_options::value< float >()->default_value( 20.0f ),
+                     "constant for threshold function" )(
+        "minimum-size", boost::program_options::value< int >()->default_value( 10 ),
+        "minimum component size" )(
+        "output", boost::program_options::value< std::string >()->default_value( "output" ),
+        "save segmentation as CSV file and contour images" );
 
     boost::program_options::positional_options_description positionals;
-    positionals.add("input", 1);
-    positionals.add("output", 1);
+    positionals.add( "input", 1 );
+    positionals.add( "output", 1 );
 
     boost::program_options::variables_map parameters;
-    boost::program_options::store(boost::program_options::command_line_parser(argc, argv).options(desc).positional(positionals).run(), parameters);
-    boost::program_options::notify(parameters);
+    boost::program_options::store( boost::program_options::command_line_parser( argc, argv )
+                                       .options( desc )
+                                       .positional( positionals )
+                                       .run(),
+                                   parameters );
+    boost::program_options::notify( parameters );
 
-    if (parameters.find("help") != parameters.end()) {
+    if ( parameters.find( "help" ) != parameters.end() ) {
         std::cout << desc << std::endl;
         return 1;
     }
 
-    boost::filesystem::path output_dir(parameters["output"].as<std::string>());
-    if (!output_dir.empty()) {
-        if (!boost::filesystem::is_directory(output_dir)) {
-            boost::filesystem::create_directories(output_dir);
+    boost::filesystem::path output_dir( parameters["output"].as< std::string >() );
+    if ( !output_dir.empty() ) {
+        if ( !boost::filesystem::is_directory( output_dir ) ) {
+            boost::filesystem::create_directories( output_dir );
         }
     }
 
-    boost::filesystem::path input_dir(parameters["input"].as<std::string>());
-    if (!boost::filesystem::is_directory(input_dir)) {
+    boost::filesystem::path input_dir( parameters["input"].as< std::string >() );
+    if ( !boost::filesystem::is_directory( input_dir ) ) {
         std::cout << "Image directory not found ..." << std::endl;
         return 1;
     }
 
-    float threshold = parameters["threshold"].as<float>();
+    float threshold = parameters["threshold"].as< float >();
     std::cout << "threshold :  " << threshold << std::endl;
-    int minimum_segment_size = parameters["minimum-size"].as<int>();
+    int minimum_segment_size = parameters["minimum-size"].as< int >();
 
-    std::multimap<std::string, boost::filesystem::path> images;
-    readDirectory(input_dir, images);
+    std::multimap< std::string, boost::filesystem::path > images;
+    readDirectory( input_dir, images );
 
-    for (std::multimap<std::string, boost::filesystem::path>::iterator it = images.begin();
-            it != images.end(); ++it) {
+    for ( std::multimap< std::string, boost::filesystem::path >::iterator it = images.begin();
+          it != images.end(); ++it ) {
+        cv::Mat image = cv::imread( it->first );
 
-        cv::Mat image = cv::imread(it->first);
-
-        GraphSegmentationMagicThreshold magic(threshold);
+        GraphSegmentationMagicThreshold magic( threshold );
         GraphSegmentationEuclideanRGB distance;
 
         GraphSegmentation segmenter;
-        segmenter.setMagic(&magic);
-        segmenter.setDistance(&distance);
+        segmenter.setMagic( &magic );
+        segmenter.setDistance( &distance );
 
-        segmenter.buildGraph(image);
+        segmenter.buildGraph( image );
         segmenter.oversegmentGraph();
-        segmenter.enforceMinimumSegmentSize(minimum_segment_size);
+        segmenter.enforceMinimumSegmentSize( minimum_segment_size );
         std::cout << minimum_segment_size << std::endl;
         cv::Mat labels = segmenter.deriveLabels();
 
-        boost::filesystem::path csv_file(output_dir
-                                         / boost::filesystem::path(it->second.stem().string() + ".csv"));
-        writeMatCSV(csv_file, labels);
+        boost::filesystem::path csv_file(
+            output_dir / boost::filesystem::path( it->second.stem().string() + ".csv" ) );
+        writeMatCSV( csv_file, labels );
 
-        boost::filesystem::path contours_file(output_dir
-                                              / boost::filesystem::path(it->second.stem().string() + ".png"));
+        boost::filesystem::path contours_file(
+            output_dir / boost::filesystem::path( it->second.stem().string() + ".png" ) );
         cv::Mat image_contours;
-        drawContours(image, labels, image_contours);
-        cv::imwrite(contours_file.string(), image_contours);
+        drawContours( image, labels, image_contours );
+        cv::imwrite( contours_file.string(), image_contours );
     }
 
     return 0;

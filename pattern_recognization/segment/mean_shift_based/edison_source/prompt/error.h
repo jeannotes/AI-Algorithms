@@ -13,20 +13,17 @@
 
 #include "parser.h"
 
-//error class
+// error class
 class CmCError {
-public:
+  public:
+    CmCToken* token_;
+    int errorCode_;
 
-    CmCToken *token_;
-    int      errorCode_;
-
-    CmCError(CmCToken *token, int errorCode) {
-        token_ = token;
+    CmCError( CmCToken* token, int errorCode ) {
+        token_     = token;
         errorCode_ = errorCode;
     }
-    ~CmCError( void ) {
-        return;
-    }
+    ~CmCError( void ) { return; }
 };
 
 #endif

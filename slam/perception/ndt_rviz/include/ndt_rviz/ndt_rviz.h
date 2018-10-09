@@ -1,20 +1,20 @@
 #pragma once
 
+#include <eigen_conversions/eigen_msg.h>
 #include <ndt_map/ndt_map.h>
 #include <ros/ros.h>
 #include <tf_conversions/tf_eigen.h>
-#include <eigen_conversions/eigen_msg.h>
 #include <visualization_msgs/Marker.h>
 #include <visualization_msgs/MarkerArray.h>
 
 #include <ndt_rviz/utils.h>
 
-namespace ndt_visualisation {
-
+namespace ndt_visualisation
+{
 // Contains a set of useful functions to generate markers from NDT related classes.
 
 // Some helper functions to convert to the position etc. utilized in the markers.
-inline geometry_msgs::Point toPointFromPCL(const pcl::PointXYZ &p) {
+inline geometry_msgs::Point toPointFromPCL( const pcl::PointXYZ& p ) {
     geometry_msgs::Point pt;
     pt.x = p.x;
     pt.y = p.y;
@@ -22,7 +22,7 @@ inline geometry_msgs::Point toPointFromPCL(const pcl::PointXYZ &p) {
     return pt;
 }
 
-inline geometry_msgs::Point toPointFromTF (const tf::Vector3& p) {
+inline geometry_msgs::Point toPointFromTF( const tf::Vector3& p ) {
     geometry_msgs::Point pt;
     pt.x = p.x();
     pt.y = p.y();
@@ -30,52 +30,52 @@ inline geometry_msgs::Point toPointFromTF (const tf::Vector3& p) {
     return pt;
 }
 
-inline geometry_msgs::Point toPointFromEigen (const Eigen::Vector3d &p) {
+inline geometry_msgs::Point toPointFromEigen( const Eigen::Vector3d& p ) {
     geometry_msgs::Point pt;
-    pt.x = p(0);
-    pt.y = p(1);
-    pt.z = p(2);
+    pt.x = p( 0 );
+    pt.y = p( 1 );
+    pt.z = p( 2 );
     return pt;
 }
 
-inline geometry_msgs::Point toPointFromEigen( const Eigen::Affine3d &T) {
-    return toPointFromEigen(T.translation());
+inline geometry_msgs::Point toPointFromEigen( const Eigen::Affine3d& T ) {
+    return toPointFromEigen( T.translation() );
 }
 
-void assignDefault(visualization_msgs::Marker &m) {
+void assignDefault( visualization_msgs::Marker& m ) {
     m.header.frame_id = "/world";
-    m.scale.x = 1;
-    m.scale.y = 1;
-    m.scale.z = 1;
-    m.lifetime = ros::Duration(60.);
+    m.scale.x         = 1;
+    m.scale.y         = 1;
+    m.scale.z         = 1;
+    m.lifetime        = ros::Duration( 60. );
 }
 
-void assignColor(visualization_msgs::Marker &m, int color) {
+void assignColor( visualization_msgs::Marker& m, int color ) {
     double r, g, b = 0.;
     int color_mod = color % 3;
 
-    switch (color_mod) {
-    case 0:
-        r = 1.;
-        g = 0.;
-        b = 0.;
-        break;
-    case 1:
-        r = 0.;
-        g = 1.;
-        b = 0.;
-        break;
-    case 2:
-        r = 0.;
-        g = 0.;
-        b = 1.;
-        break;
+    switch ( color_mod ) {
+        case 0:
+            r = 1.;
+            g = 0.;
+            b = 0.;
+            break;
+        case 1:
+            r = 0.;
+            g = 1.;
+            b = 0.;
+            break;
+        case 2:
+            r = 0.;
+            g = 0.;
+            b = 1.;
+            break;
 
-    default:
-        r = 0.5;
-        g = 0.5;
-        b = 0.5;
-        break;
+        default:
+            r = 0.5;
+            g = 0.5;
+            b = 0.5;
+            break;
     };
 
     m.color.r = r;
@@ -83,7 +83,7 @@ void assignColor(visualization_msgs::Marker &m, int color) {
     m.color.b = b;
     m.color.a = 0.3;
 
-    if (color < 0) {
+    if ( color < 0 ) {
         m.color.r = 1.;
         m.color.g = 1.;
         m.color.b = 1.;
@@ -105,29 +105,30 @@ void assignColor(visualization_msgs::Marker &m, int color) {
 /* } */
 
 // Visualize the ndt cells as a set of 3 lines drawn along the eigen vectors.
-inline visualization_msgs::Marker markerNDTCells (std::vector<perception_oru::NDTCell*> cells/*, tf::Pose& pose*/, const visualization_msgs::Marker &marker) {
+inline visualization_msgs::Marker
+markerNDTCells( std::vector< perception_oru::NDTCell* > cells /*, tf::Pose& pose*/,
+                const visualization_msgs::Marker& marker ) {
     visualization_msgs::Marker m = marker;
-    m.type = visualization_msgs::Marker::LINE_LIST;
-    m.scale.x = 0.02;
+    m.type                       = visualization_msgs::Marker::LINE_LIST;
+    m.scale.x                    = 0.02;
 
-    for (size_t i = 0; i < cells.size(); i++)	{
-        if (!cells[i]->hasGaussian_) continue;
+    for ( size_t i = 0; i < cells.size(); i++ ) {
+        if ( !cells[i]->hasGaussian_ ) continue;
 
         //	cells[i]->rescaleCovariance(); // needed?
 
-        Eigen::Vector3d mean = cells[i]->getMean();
+        Eigen::Vector3d mean  = cells[i]->getMean();
         Eigen::Matrix3d evecs = cells[i]->getEvecs();
         Eigen::Vector3d evals = cells[i]->getEvals();
-        for (size_t j = 0; j < 3; j++) {
-            double scale = evals(j);
-            if (scale < 0.0001)
-                continue;
-            scale = sqrt(scale);
-            Eigen::Vector3d offset = evecs.col(j) * scale;
-            Eigen::Vector3d p1 = mean - offset;
-            Eigen::Vector3d p2 = mean + offset;
-            m.points.push_back(toPointFromEigen(p1));
-            m.points.push_back(toPointFromEigen(p2));
+        for ( size_t j = 0; j < 3; j++ ) {
+            double scale = evals( j );
+            if ( scale < 0.0001 ) continue;
+            scale                  = sqrt( scale );
+            Eigen::Vector3d offset = evecs.col( j ) * scale;
+            Eigen::Vector3d p1     = mean - offset;
+            Eigen::Vector3d p2     = mean + offset;
+            m.points.push_back( toPointFromEigen( p1 ) );
+            m.points.push_back( toPointFromEigen( p2 ) );
 
             //	  tf::Vector3 p1_, p2_;
             //	  tf::vectorEigenToTF (p1, p1_);
@@ -137,279 +138,285 @@ inline visualization_msgs::Marker markerNDTCells (std::vector<perception_oru::ND
         }
     }
     return m;
-
 }
 
 // Visualize the ndt cells as a set of 3 lines drawn along the eigen vectors.
-inline visualization_msgs::Marker markerNDTCells (std::vector<perception_oru::NDTCell*> cells, const Eigen::Affine3d &pose, const visualization_msgs::Marker &marker) {
+inline visualization_msgs::Marker markerNDTCells( std::vector< perception_oru::NDTCell* > cells,
+                                                  const Eigen::Affine3d& pose,
+                                                  const visualization_msgs::Marker& marker ) {
     visualization_msgs::Marker m = marker;
-    m.type = visualization_msgs::Marker::LINE_LIST;
-    m.scale.x = 0.02;
+    m.type                       = visualization_msgs::Marker::LINE_LIST;
+    m.scale.x                    = 0.02;
 
-    for (size_t i = 0; i < cells.size(); i++)	{
-        if (!cells[i]->hasGaussian_) continue;
+    for ( size_t i = 0; i < cells.size(); i++ ) {
+        if ( !cells[i]->hasGaussian_ ) continue;
 
-        Eigen::Vector3d mean = cells[i]->getMean();
+        Eigen::Vector3d mean  = cells[i]->getMean();
         Eigen::Matrix3d evecs = cells[i]->getEvecs();
         Eigen::Vector3d evals = cells[i]->getEvals();
-        for (size_t j = 0; j < 3; j++) {
-            double scale = evals(j);
-            if (scale < 0.0001)
-                continue;
-            scale = sqrt(scale);
-            Eigen::Vector3d offset = evecs.col(j) * scale;
-            Eigen::Vector3d p1 = mean - offset;
-            Eigen::Vector3d p2 = mean + offset;
-            m.points.push_back(toPointFromEigen(pose * p1));
-            m.points.push_back(toPointFromEigen(pose * p2));
+        for ( size_t j = 0; j < 3; j++ ) {
+            double scale = evals( j );
+            if ( scale < 0.0001 ) continue;
+            scale                  = sqrt( scale );
+            Eigen::Vector3d offset = evecs.col( j ) * scale;
+            Eigen::Vector3d p1     = mean - offset;
+            Eigen::Vector3d p2     = mean + offset;
+            m.points.push_back( toPointFromEigen( pose * p1 ) );
+            m.points.push_back( toPointFromEigen( pose * p2 ) );
         }
     }
     return m;
-
 }
 
-inline visualization_msgs::Marker markerNDTCells (std::vector<perception_oru::NDTCell*> cells) {
+inline visualization_msgs::Marker markerNDTCells( std::vector< perception_oru::NDTCell* > cells ) {
     visualization_msgs::Marker m;
-    assignDefault(m);
+    assignDefault( m );
     m.ns = "NDTCells";
-    return markerNDTCells(cells, m);
+    return markerNDTCells( cells, m );
 }
 
-inline visualization_msgs::Marker markerNDTCells( perception_oru::NDTMap &map, int id, const std::string &name) {
+inline visualization_msgs::Marker markerNDTCells( perception_oru::NDTMap& map, int id,
+                                                  const std::string& name ) {
     visualization_msgs::Marker m;
-    assignDefault(m);
-    assignColor(m, id);
-    m.id = id;
-    m.ns = name;
-    std::vector<perception_oru::NDTCell*> cells = map.getAllCells();
-    visualization_msgs::Marker ret = markerNDTCells(cells, m);
-    for (std::vector<perception_oru::NDTCell*>::const_iterator it = cells.begin(); it != cells.end(); it++) {
+    assignDefault( m );
+    assignColor( m, id );
+    m.id                                          = id;
+    m.ns                                          = name;
+    std::vector< perception_oru::NDTCell* > cells = map.getAllCells();
+    visualization_msgs::Marker ret                = markerNDTCells( cells, m );
+    for ( std::vector< perception_oru::NDTCell* >::const_iterator it = cells.begin();
+          it != cells.end(); it++ ) {
         delete *it;
     }
-    return  ret;
+    return ret;
 }
 
-inline visualization_msgs::Marker markerNDTCells( perception_oru::NDTMap &map, const Eigen::Affine3d &pose, int id, const std::string &name) {
+inline visualization_msgs::Marker markerNDTCells( perception_oru::NDTMap& map,
+                                                  const Eigen::Affine3d& pose, int id,
+                                                  const std::string& name ) {
     visualization_msgs::Marker m;
-    assignDefault(m);
-    assignColor(m, id);
-    m.id = id;
-    m.ns = name;
-    std::vector<perception_oru::NDTCell*> cells = map.getAllCells();
-    visualization_msgs::Marker ret = markerNDTCells(cells, pose, m);
-    for (std::vector<perception_oru::NDTCell*>::const_iterator it = cells.begin(); it != cells.end(); it++) {
+    assignDefault( m );
+    assignColor( m, id );
+    m.id                                          = id;
+    m.ns                                          = name;
+    std::vector< perception_oru::NDTCell* > cells = map.getAllCells();
+    visualization_msgs::Marker ret                = markerNDTCells( cells, pose, m );
+    for ( std::vector< perception_oru::NDTCell* >::const_iterator it = cells.begin();
+          it != cells.end(); it++ ) {
         delete *it;
     }
-    return  ret;
+    return ret;
 }
 
-inline visualization_msgs::Marker markerNDTCells (perception_oru::NDTMap &map, int id) {
-    return  markerNDTCells(map, id, std::string("NDTMap"));
+inline visualization_msgs::Marker markerNDTCells( perception_oru::NDTMap& map, int id ) {
+    return markerNDTCells( map, id, std::string( "NDTMap" ) );
 }
-
 
 // Visualize the ndt cells as a set of 3 lines drawn along the eigen vectors.
-void markerNDTCells2 (std::vector<perception_oru::NDTCell*> cells, const Eigen::Affine3d &pose, visualization_msgs::Marker &m) {
-    m.type = visualization_msgs::Marker::LINE_LIST;
+void markerNDTCells2( std::vector< perception_oru::NDTCell* > cells, const Eigen::Affine3d& pose,
+                      visualization_msgs::Marker& m ) {
+    m.type    = visualization_msgs::Marker::LINE_LIST;
     m.scale.x = 0.02;
 
-    for (size_t i = 0; i < cells.size(); i++)	{
-        if (!cells[i]->hasGaussian_) continue;
+    for ( size_t i = 0; i < cells.size(); i++ ) {
+        if ( !cells[i]->hasGaussian_ ) continue;
 
-        Eigen::Vector3d mean = cells[i]->getMean();
+        Eigen::Vector3d mean  = cells[i]->getMean();
         Eigen::Matrix3d evecs = cells[i]->getEvecs();
         Eigen::Vector3d evals = cells[i]->getEvals();
-        for (size_t j = 0; j < 3; j++) {
-            double scale = evals(j);
-            if (scale < 0.0001)
-                continue;
-            scale = sqrt(scale);
-            Eigen::Vector3d offset = evecs.col(j) * scale;
-            Eigen::Vector3d p1 = mean - offset;
-            Eigen::Vector3d p2 = mean + offset;
-            m.points.push_back(toPointFromEigen(pose * p1));
-            m.points.push_back(toPointFromEigen(pose * p2));
+        for ( size_t j = 0; j < 3; j++ ) {
+            double scale = evals( j );
+            if ( scale < 0.0001 ) continue;
+            scale                  = sqrt( scale );
+            Eigen::Vector3d offset = evecs.col( j ) * scale;
+            Eigen::Vector3d p1     = mean - offset;
+            Eigen::Vector3d p2     = mean + offset;
+            m.points.push_back( toPointFromEigen( pose * p1 ) );
+            m.points.push_back( toPointFromEigen( pose * p2 ) );
         }
     }
 }
 
-void markerNDTCells2( perception_oru::NDTMap &map, const Eigen::Affine3d &pose, int id, const std::string &name, visualization_msgs::Marker &m) {
-    assignDefault(m);
-    assignColor(m, id);
-    m.id = id;
-    m.ns = name;
-    std::vector<perception_oru::NDTCell*> cells = map.getAllCells();
-    markerNDTCells2(cells, pose, m);
-    for (std::vector<perception_oru::NDTCell*>::const_iterator it = cells.begin(); it != cells.end(); it++) {
+void markerNDTCells2( perception_oru::NDTMap& map, const Eigen::Affine3d& pose, int id,
+                      const std::string& name, visualization_msgs::Marker& m ) {
+    assignDefault( m );
+    assignColor( m, id );
+    m.id                                          = id;
+    m.ns                                          = name;
+    std::vector< perception_oru::NDTCell* > cells = map.getAllCells();
+    markerNDTCells2( cells, pose, m );
+    for ( std::vector< perception_oru::NDTCell* >::const_iterator it = cells.begin();
+          it != cells.end(); it++ ) {
         delete *it;
     }
 }
 
 //! Draw correspondance lines between the NDTCells
-inline visualization_msgs::Marker markerCellVectorCorrespondances (perception_oru::NDTMap &map1, perception_oru::NDTMap &map2, const std::vector<std::pair<int, int> > &corr) {
+inline visualization_msgs::Marker
+markerCellVectorCorrespondances( perception_oru::NDTMap& map1, perception_oru::NDTMap& map2,
+                                 const std::vector< std::pair< int, int > >& corr ) {
     visualization_msgs::Marker m;
-    assignDefault(m);
-    m.ns = "NDTCellCorrs";
-    m.id = 1;
-    m.type = visualization_msgs::Marker::LINE_LIST;
+    assignDefault( m );
+    m.ns      = "NDTCellCorrs";
+    m.id      = 1;
+    m.type    = visualization_msgs::Marker::LINE_LIST;
     m.scale.x = 0.005;
     m.color.r = m.color.a = 1.0;
-    m.color.g = 0.2;
+    m.color.g             = 0.2;
 
-    for (size_t i = 0; i < corr.size(); i++) {
-
-        perception_oru::NDTCell* cell1 = map1.getCellIdx(corr[i].first);
-        perception_oru::NDTCell* cell2 = map2.getCellIdx(corr[i].second);
-        if (cell1 == NULL || cell2 == NULL) {
-            ROS_WARN("Failed to get cells using NDTMap::getCellIdx()!");
+    for ( size_t i = 0; i < corr.size(); i++ ) {
+        perception_oru::NDTCell* cell1 = map1.getCellIdx( corr[i].first );
+        perception_oru::NDTCell* cell2 = map2.getCellIdx( corr[i].second );
+        if ( cell1 == NULL || cell2 == NULL ) {
+            ROS_WARN( "Failed to get cells using NDTMap::getCellIdx()!" );
             continue;
         }
-        m.points.push_back(toPointFromEigen(cell1->getMean()));
-        m.points.push_back(toPointFromEigen(cell2->getMean()));
+        m.points.push_back( toPointFromEigen( cell1->getMean() ) );
+        m.points.push_back( toPointFromEigen( cell2->getMean() ) );
     }
     return m;
 }
 
 // Code from user skohlbrecher
-void drawCovariance(const Eigen::Vector2d& mean, const Eigen::Matrix2d& covMatrix, visualization_msgs::Marker &marker) {
+void drawCovariance( const Eigen::Vector2d& mean, const Eigen::Matrix2d& covMatrix,
+                     visualization_msgs::Marker& marker ) {
     marker.pose.position.x = mean[0];
     marker.pose.position.y = mean[1];
 
-    Eigen::SelfAdjointEigenSolver<Eigen::Matrix2d> eig(covMatrix);
+    Eigen::SelfAdjointEigenSolver< Eigen::Matrix2d > eig( covMatrix );
 
-    const Eigen::Vector2d& eigValues (eig.eigenvalues());
-    const Eigen::Matrix2d& eigVectors (eig.eigenvectors());
+    const Eigen::Vector2d& eigValues( eig.eigenvalues() );
+    const Eigen::Matrix2d& eigVectors( eig.eigenvectors() );
 
-    float angle = (atan2(eigVectors(1, 0), eigVectors(0, 0)));
+    float angle = ( atan2( eigVectors( 1, 0 ), eigVectors( 0, 0 ) ) );
 
     marker.type = visualization_msgs::Marker::CYLINDER;
 
-    double lengthMajor = sqrt(eigValues[0]);
-    double lengthMinor = sqrt(eigValues[1]);
+    double lengthMajor = sqrt( eigValues[0] );
+    double lengthMinor = sqrt( eigValues[1] );
 
     marker.scale.x = lengthMajor;
     marker.scale.y = lengthMinor;
     marker.scale.z = 0.001;
 
-    marker.pose.orientation.w = cos(angle * 0.5);
-    marker.pose.orientation.z = sin(angle * 0.5);
+    marker.pose.orientation.w = cos( angle * 0.5 );
+    marker.pose.orientation.z = sin( angle * 0.5 );
 }
 
-void drawCovariance(const Eigen::Vector3d& mean, const Eigen::Matrix3d& covMatrix, visualization_msgs::Marker &marker) {
-    Eigen::Vector2d tmp_mean = mean.head(2);
-    Eigen::Matrix2d tmp_cov = covMatrix.block(0, 0, 2, 2);
-    drawCovariance(tmp_mean, tmp_cov, marker);
+void drawCovariance( const Eigen::Vector3d& mean, const Eigen::Matrix3d& covMatrix,
+                     visualization_msgs::Marker& marker ) {
+    Eigen::Vector2d tmp_mean = mean.head( 2 );
+    Eigen::Matrix2d tmp_cov  = covMatrix.block( 0, 0, 2, 2 );
+    drawCovariance( tmp_mean, tmp_cov, marker );
 }
 
-inline visualization_msgs::Marker markerMeanCovariance2d(const Eigen::Vector3d &mean, const Eigen::Matrix3d &cov, double scale, int id, int color) {
+inline visualization_msgs::Marker markerMeanCovariance2d( const Eigen::Vector3d& mean,
+                                                          const Eigen::Matrix3d& cov, double scale,
+                                                          int id, int color ) {
     visualization_msgs::Marker m;
-    assignDefault(m);
-    m.ns = "mean_cov";
-    m.id = id;
+    assignDefault( m );
+    m.ns      = "mean_cov";
+    m.id      = id;
     m.color.r = m.color.a = 1.0;
-    m.color.g = 0.2;
-    if (color >= 0) {
-        assignColor(m, color);
-    }
+    m.color.g             = 0.2;
+    if ( color >= 0 ) { assignColor( m, color ); }
     Eigen::MatrixXd cov_scaled = cov * scale;
 
-    drawCovariance(mean, cov_scaled, m);
+    drawCovariance( mean, cov_scaled, m );
     return m;
 }
-
 
 // Visualization markers.
-void appendMarkerArray(visualization_msgs::MarkerArray &array, const visualization_msgs::MarkerArray &add) {
-    for (size_t i = 0; i < add.markers.size(); i++) {
-        array.markers.push_back(add.markers[i]);
-    }
+void appendMarkerArray( visualization_msgs::MarkerArray& array,
+                        const visualization_msgs::MarkerArray& add ) {
+    for ( size_t i = 0; i < add.markers.size(); i++ ) { array.markers.push_back( add.markers[i] ); }
 }
 
-
-visualization_msgs::Marker getMarkerArrowAffine3d(const Eigen::Affine3d &T, int id, int color, const std::string &ns) {
+visualization_msgs::Marker getMarkerArrowAffine3d( const Eigen::Affine3d& T, int id, int color,
+                                                   const std::string& ns ) {
     visualization_msgs::Marker m;
-    assignDefault(m);
-    assignColor(m, color);
-    m.ns = ns;
-    m.type = visualization_msgs::Marker::ARROW;
-    m.action = visualization_msgs::Marker::ADD;
+    assignDefault( m );
+    assignColor( m, color );
+    m.ns      = ns;
+    m.type    = visualization_msgs::Marker::ARROW;
+    m.action  = visualization_msgs::Marker::ADD;
     m.scale.y = 0.1;
     m.scale.z = 0.1;
-    m.id = id;
-    tf::poseEigenToMsg (T, m.pose);
+    m.id      = id;
+    tf::poseEigenToMsg( T, m.pose );
     return m;
 }
 
-visualization_msgs::Marker getMarkerCylinder(const Eigen::Affine3d &T,
-        int id, int color,
-        double length, double radius,
-        const std::string &ns) {
+visualization_msgs::Marker getMarkerCylinder( const Eigen::Affine3d& T, int id, int color,
+                                              double length, double radius,
+                                              const std::string& ns ) {
     visualization_msgs::Marker m;
-    assignDefault(m);
-    assignColor(m, color);
-    m.ns = ns;
-    m.type = visualization_msgs::Marker::CYLINDER;
+    assignDefault( m );
+    assignColor( m, color );
+    m.ns     = ns;
+    m.type   = visualization_msgs::Marker::CYLINDER;
     m.action = visualization_msgs::Marker::ADD;
-    m.id = id;
+    m.id     = id;
 
     m.scale.x = radius;
     m.scale.y = radius;
     m.scale.z = length;
-    tf::poseEigenToMsg(T, m.pose);
+    tf::poseEigenToMsg( T, m.pose );
     return m;
 }
 
 /// Draw an x,y,z coordsystem given an affine3d.
-visualization_msgs::MarkerArray getMarkerFrameAffine3d(const Eigen::Affine3d &T, const std::string &ns, double length, double radius) {
-
+visualization_msgs::MarkerArray getMarkerFrameAffine3d( const Eigen::Affine3d& T,
+                                                        const std::string& ns, double length,
+                                                        double radius ) {
     visualization_msgs::MarkerArray m;
     // X
     {
-        Eigen::Affine3d T_x =
-            Eigen::Translation3d(length / 2.0, 0, 0) * Eigen::AngleAxisd(M_PI / 2.0, Eigen::Vector3d::UnitY());
+        Eigen::Affine3d T_x = Eigen::Translation3d( length / 2.0, 0, 0 ) *
+                              Eigen::AngleAxisd( M_PI / 2.0, Eigen::Vector3d::UnitY() );
         T_x = T * T_x;
-        m.markers.push_back(getMarkerCylinder(T_x, 0, 0, length, radius, ns));
+        m.markers.push_back( getMarkerCylinder( T_x, 0, 0, length, radius, ns ) );
     }
     // Y
     {
-        Eigen::Affine3d T_y =
-            Eigen::Translation3d(0, length / 2.0, 0) * Eigen::AngleAxisd(M_PI / 2.0, Eigen::Vector3d::UnitX());
+        Eigen::Affine3d T_y = Eigen::Translation3d( 0, length / 2.0, 0 ) *
+                              Eigen::AngleAxisd( M_PI / 2.0, Eigen::Vector3d::UnitX() );
         T_y = T * T_y;
-        m.markers.push_back(getMarkerCylinder(T_y, 1, 1, length, radius, ns));
+        m.markers.push_back( getMarkerCylinder( T_y, 1, 1, length, radius, ns ) );
     }
     // Z
     {
-        Eigen::Affine3d T_z = Eigen::Translation3d(0, 0, length / 2.0) * Eigen::AngleAxisd(0, Eigen::Vector3d::UnitZ());
+        Eigen::Affine3d T_z = Eigen::Translation3d( 0, 0, length / 2.0 ) *
+                              Eigen::AngleAxisd( 0, Eigen::Vector3d::UnitZ() );
         T_z = T * T_z;
-        m.markers.push_back(getMarkerCylinder(T_z, 2, 2, length, radius, ns));
+        m.markers.push_back( getMarkerCylinder( T_z, 2, 2, length, radius, ns ) );
     }
     return m;
 }
 
-visualization_msgs::Marker getMarkerLineListFromTwoPointClouds(const pcl::PointCloud<pcl::PointXYZ> &pc1, const pcl::PointCloud<pcl::PointXYZ> &pc2, int color, const std::string &ns, const std::string &frame_id, double width) {
-
+visualization_msgs::Marker getMarkerLineListFromTwoPointClouds(
+    const pcl::PointCloud< pcl::PointXYZ >& pc1, const pcl::PointCloud< pcl::PointXYZ >& pc2,
+    int color, const std::string& ns, const std::string& frame_id, double width ) {
     visualization_msgs::Marker m;
-    if (pc1.size() != pc2.size()) {
-        assert(false);
+    if ( pc1.size() != pc2.size() ) {
+        assert( false );
         return m;
     }
-    assignDefault(m);
+    assignDefault( m );
 
-    assignColor(m, color);
-    m.ns = ns;
-    m.type = visualization_msgs::Marker::LINE_LIST;
-    m.action = visualization_msgs::Marker::ADD;
-    m.id = 0;
-    m.scale.x = width;
+    assignColor( m, color );
+    m.ns              = ns;
+    m.type            = visualization_msgs::Marker::LINE_LIST;
+    m.action          = visualization_msgs::Marker::ADD;
+    m.id              = 0;
+    m.scale.x         = width;
     m.header.frame_id = frame_id;
 
-    for (int i = 0; i < pc1.size(); i++) {
-        m.points.push_back(toPointFromPCL(pc1[i]));
-        m.points.push_back(toPointFromPCL(pc2[i]));
+    for ( int i = 0; i < pc1.size(); i++ ) {
+        m.points.push_back( toPointFromPCL( pc1[i] ) );
+        m.points.push_back( toPointFromPCL( pc2[i] ) );
     }
     return m;
 }
 
-
-} // namespace
-
+}   // namespace

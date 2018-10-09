@@ -1,31 +1,31 @@
 /*******************************************************
 
                  Mean Shift Analysis Library
-	=============================================
+    =============================================
 
-	The mean shift library is a collection of routines
-	that use the mean shift algorithm. Using this algorithm,
-	the necessary output will be generated needed
-	to analyze a given input set of data.
+    The mean shift library is a collection of routines
+    that use the mean shift algorithm. Using this algorithm,
+    the necessary output will be generated needed
+    to analyze a given input set of data.
 
   Mean Shift System:
   ==================
 
-	The Mean Shift System class provides a mechanism for the
-	mean shift library classes to prompt progress and to
-	time its computations. When porting the mean shift library
-	to an application the methods of this class may be changed
-	such that the output of the mean shift class prompts
-	will be given to whatever hardware or software device that
-	is desired.
+    The Mean Shift System class provides a mechanism for the
+    mean shift library classes to prompt progress and to
+    time its computations. When porting the mean shift library
+    to an application the methods of this class may be changed
+    such that the output of the mean shift class prompts
+    will be given to whatever hardware or software device that
+    is desired.
 
-	The prototype for the mean shift system class is provided
-	below. Its defition is provided in "msSys.cc".
+    The prototype for the mean shift system class is provided
+    below. Its defition is provided in "msSys.cc".
 
 The theory is described in the papers:
 
   D. Comaniciu, P. Meer: Mean Shift: A robust approach toward feature
-									 space analysis.
+                                     space analysis.
 
   C. Christoudias, B. Georgescu, P. Meer: Synergism in low level vision.
 
@@ -35,29 +35,26 @@ and they are is available at:
 Implemented by Chris M. Christoudias, Bogdan Georgescu
 ********************************************************/
 
-
 #ifndef MSSYS_H
 #define MSSYS_H
 
-//Include standard mean shift library type definitions
-#include	"tdef.h"
+// Include standard mean shift library type definitions
+#include "tdef.h"
 
-//Include standard libraries needed for msSystem prototype
-#include	<time.h>
+// Include standard libraries needed for msSystem prototype
+#include <time.h>
 
-extern void bgLogFile(const char*, ...);
+extern void bgLogFile( const char*, ... );
 
-//Mean Shify System class prototype
+// Mean Shify System class prototype
 class msSystem {
-
-public:
-
+  public:
     /*/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\*/
     /* Class Constructor and Destructor */
     /*\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/*/
 
-    msSystem( void ); //Default Constructor
-    ~msSystem( void ); //Class Destructor
+    msSystem( void );    // Default Constructor
+    ~msSystem( void );   // Class Destructor
 
     /*/\/\/\/\/\/\/\*/
     /* System Timer */
@@ -115,7 +112,7 @@ public:
     //<--------------------------------------------------->|//
     //--\\||//--\\||//--\\||//--\\||//--\\||//--\\||//--\\||//
 
-    double	ElapsedTime( void );
+    double ElapsedTime( void );
 
     /*/\/\/\/\/\/\/\/\*/
     /*  System Output */
@@ -161,7 +158,7 @@ public:
     //<--------------------------------------------------->|//
     //--\\||//--\\||//--\\||//--\\||//--\\||//--\\||//--\\||//
 
-    void	Prompt(const char*, ...);
+    void Prompt( const char*, ... );
 
     //--\\||//--\\||//--\\||//--\\||//--\\||//--\\||//--\\||//
     //<--------------------------------------------------->|//
@@ -217,13 +214,11 @@ public:
     //<--------------------------------------------------->|//
     //--\\||//--\\||//--\\||//--\\||//--\\||//--\\||//--\\||//
 
-    ErrorLevel Progress(float);
+    ErrorLevel Progress( float );
 
-private:
-
-    //Timer object...
+  private:
+    // Timer object...
     time_t currentTime;
-
 };
 
 #endif

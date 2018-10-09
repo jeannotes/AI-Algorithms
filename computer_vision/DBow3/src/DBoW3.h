@@ -56,13 +56,10 @@
 
 /// Includes all the data structures to manage vocabularies and image databases
 
-#include "Vocabulary.h"
-#include "Database.h"
 #include "BowVector.h"
+#include "Database.h"
 #include "FeatureVector.h"
 #include "QueryResults.h"
-
-
+#include "Vocabulary.h"
 
 #endif
-

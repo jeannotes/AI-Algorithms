@@ -22,13 +22,12 @@
 
 ------------------------------------------------------------------------------*/
 
-
 #ifndef PGM_H
 #define PGM_H
 
 #include "image.h"
 
-PImageDouble read_pgm_image_double( char *name );
-void write_pgm_image_int( int *image, int xsize, int ysize, char *name );
+PImageDouble read_pgm_image_double( char* name );
+void write_pgm_image_int( int* image, int xsize, int ysize, char* name );
 
 #endif

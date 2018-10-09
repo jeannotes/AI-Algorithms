@@ -29,37 +29,33 @@
 
 #include <map>
 
-#include "optimizable_graph.h"
 #include "g2o_core_api.h"
+#include "optimizable_graph.h"
 
-namespace g2o {
-
+namespace g2o
+{
 class CacheContainer;
 
 class G2O_CORE_API Cache : public HyperGraph::HyperGraphElement {
-public:
+  public:
     friend class CacheContainer;
     class G2O_CORE_API CacheKey {
-    public:
+      public:
         friend class CacheContainer;
         CacheKey();
-        CacheKey(const std::string& type_, const ParameterVector& parameters_);
+        CacheKey( const std::string& type_, const ParameterVector& parameters_ );
 
-        bool operator<(const CacheKey& c) const;
+        bool operator<( const CacheKey& c ) const;
 
-        const std::string& type() const {
-            return _type;
-        }
-        const ParameterVector& parameters() const {
-            return _parameters;
-        }
+        const std::string& type() const { return _type; }
+        const ParameterVector& parameters() const { return _parameters; }
 
-    protected:
+      protected:
         std::string _type;
         ParameterVector _parameters;
     };
 
-    Cache(CacheContainer* container_ = 0, const ParameterVector& parameters_ = ParameterVector());
+    Cache( CacheContainer* container_ = 0, const ParameterVector& parameters_ = ParameterVector() );
 
     CacheKey key() const;
 
@@ -70,11 +66,9 @@ public:
 
     void update();
 
-    virtual HyperGraph::HyperGraphElementType elementType() const {
-        return HyperGraph::HGET_CACHE;
-    }
+    virtual HyperGraph::HyperGraphElementType elementType() const { return HyperGraph::HGET_CACHE; }
 
-protected:
+  protected:
     //! redefine this to do the update
     virtual void updateImpl() = 0;
 
@@ -89,7 +83,8 @@ protected:
      * parameter vector of C2 of the parameters needed to construct C1.
      * @returns the newly created cache
      */
-    Cache* installDependency(const std::string& type_, const std::vector<int>& parameterIndices);
+    Cache* installDependency( const std::string& type_,
+                              const std::vector< int >& parameterIndices );
 
     /**
      * Function to be called from a cache that has dependencies. It just invokes a
@@ -101,43 +96,38 @@ protected:
 
     bool _updateNeeded;
     ParameterVector _parameters;
-    std::vector<Cache*> _parentCaches;
+    std::vector< Cache* > _parentCaches;
     CacheContainer* _container;
 };
 
-class G2O_CORE_API CacheContainer : public std::map<Cache::CacheKey, Cache*> {
-public:
-    CacheContainer(OptimizableGraph::Vertex* vertex_);
+class G2O_CORE_API CacheContainer : public std::map< Cache::CacheKey, Cache* > {
+  public:
+    CacheContainer( OptimizableGraph::Vertex* vertex_ );
     virtual ~CacheContainer();
     OptimizableGraph::Vertex* vertex();
     OptimizableGraph* graph();
-    Cache* findCache(const Cache::CacheKey& key);
-    Cache* createCache(const Cache::CacheKey& key);
-    void setUpdateNeeded(bool needUpdate = true);
+    Cache* findCache( const Cache::CacheKey& key );
+    Cache* createCache( const Cache::CacheKey& key );
+    void setUpdateNeeded( bool needUpdate = true );
     void update();
-protected:
+
+  protected:
     OptimizableGraph::Vertex* _vertex;
     bool _updateNeeded;
 };
 
-
-template <typename CacheType>
-void OptimizableGraph::Edge::resolveCache(CacheType*& cache,
-        OptimizableGraph::Vertex* v,
-        const std::string& type_,
-        const ParameterVector& parameters_) {
-    cache = 0;
+template < typename CacheType >
+void OptimizableGraph::Edge::resolveCache( CacheType*& cache, OptimizableGraph::Vertex* v,
+                                           const std::string& type_,
+                                           const ParameterVector& parameters_ ) {
+    cache                     = 0;
     CacheContainer* container = v->cacheContainer();
-    Cache::CacheKey key(type_, parameters_);
-    Cache* c = container->findCache(key);
-    if (!c) {
-        c = container->createCache(key);
-    }
-    if (c) {
-        cache = dynamic_cast<CacheType*>(c);
-    }
+    Cache::CacheKey key( type_, parameters_ );
+    Cache* c = container->findCache( key );
+    if ( !c ) { c = container->createCache( key ); }
+    if ( c ) { cache = dynamic_cast< CacheType* >( c ); }
 }
 
-} // end namespace
+}   // end namespace
 
 #endif

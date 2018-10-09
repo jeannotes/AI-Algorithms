@@ -12,53 +12,50 @@
 #define PARSER_H
 
 class CmCToken {
-public:
-
+  public:
     int lineNumber_, tokenSize_;
-    char *token_;
-    CmCToken *next_;
+    char* token_;
+    CmCToken* next_;
 
-    CmCToken(char *, int);
+    CmCToken( char*, int );
     ~CmCToken( void );
 };
 
 class CmCParser {
-public:
-
+  public:
     CmCParser( void );
     ~CmCParser( void );
 
-    //parses a file having specified filename
-    int Parse (char *);
+    // parses a file having specified filename
+    int Parse( char* );
 
-    //sets the token pointer to the beginning of
-    //the token list
+    // sets the token pointer to the beginning of
+    // the token list
     void StartOver( void );
 
-    //retrievs token pointed to by current token pointer
-    //and increments the current token pointer to point
-    //to the next token; NULL is returned if the current
-    //token pointer is NULL (i.e. nothing has been parsed
-    //or the end of the token list has been reached)
-    CmCToken *GetToken( void );
+    // retrievs token pointed to by current token pointer
+    // and increments the current token pointer to point
+    // to the next token; NULL is returned if the current
+    // token pointer is NULL (i.e. nothing has been parsed
+    // or the end of the token list has been reached)
+    CmCToken* GetToken( void );
 
-    //indicate any delimiters
-    void SetDelimiters(char *);
+    // indicate any delimiters
+    void SetDelimiters( char* );
 
-    //indicate whether delimiters should be stored as tokens
-    void StoreDelimiters(bool);
+    // indicate whether delimiters should be stored as tokens
+    void StoreDelimiters( bool );
 
-private:
-
+  private:
     int tokenCount_;
     bool storeDelimiters_;
     CmCToken *head_, *tail_, *cur_;
     char *delimiters_, *delstr_;
 
     void ClearList( void );
-    void InsertToken(char *, int);
-    void InsertToken(char, int);
-    bool IsDelimiter(char);
+    void InsertToken( char*, int );
+    void InsertToken( char, int );
+    bool IsDelimiter( char );
 };
 
 #endif

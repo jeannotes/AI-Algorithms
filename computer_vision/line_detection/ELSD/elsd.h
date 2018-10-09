@@ -23,13 +23,12 @@
 #ifndef ELSD_H
 #define ELSD_H
 
-
 #ifndef M_LN10
 #define M_LN10 2.30258509299404568402
 #endif /* !M_LN10 */
 
 #ifndef M_PI
-#define M_PI   3.14159265358979323846
+#define M_PI 3.14159265358979323846
 #endif /* !M_PI */
 
 #ifndef FALSE
@@ -43,7 +42,7 @@
 #define NOTDEF -1024.0
 #define M_3_2_PI 4.71238898038
 #define M_1_2_PI 1.57079632679
-#define M_2__PI  6.28318530718
+#define M_2__PI 6.28318530718
 #define NOTUSED 0
 #define USED 1
 #define USEDCIRC 2
@@ -53,37 +52,31 @@
 
 #define SQRT2 1.414213562373095
 
-#define max(A, B) (((A)>(B))?(A):(B))
-#define min(A, B) (((A)<(B))?(A):(B))
-
-
+#define max( A, B ) ( ( ( A ) > ( B ) ) ? ( A ) : ( B ) )
+#define min( A, B ) ( ( ( A ) < ( B ) ) ? ( A ) : ( B ) )
 
 /*----------------------------------------------------------------------------*/
 /* -------------------------- Global temporary variables -------------------- */
 /*----------------------------------------------------------------------------*/
-extern double *gBufferDouble;
-extern int *gBufferInt;
+extern double* gBufferDouble;
+extern int* gBufferInt;
 extern int gSizeBufferDouble, gSizeBufferInt;
 /*----------------------------------------------------------------------------*/
-
-
 
 /*----------------------------------------------------------------------------*/
 /*--------------------------- Rectangle structure ----------------------------*/
 /*----------------------------------------------------------------------------*/
 /*----------------------------------------------------------------------------*/
-struct rect { /* line segment with width */
+struct rect {              /* line segment with width */
     double x1, y1, x2, y2; /* first and second point of the line segment */
-    double width;        /* rectangle width */
-    double x, y;         /* center of the rectangle */
-    double theta;        /* angle */
-    double dx, dy;       /* vector with the line segment angle */
-    double prec;         /* tolerance angle */
-    double p;            /* probability of a point with angle within 'prec' */
+    double width;          /* rectangle width */
+    double x, y;           /* center of the rectangle */
+    double theta;          /* angle */
+    double dx, dy;         /* vector with the line segment angle */
+    double prec;           /* tolerance angle */
+    double p;              /* probability of a point with angle within 'prec' */
 };
 /*----------------------------------------------------------------------------*/
-
-
 
 /*----------------------------------------------------------------------------*/
 typedef struct rit {
@@ -94,74 +87,59 @@ typedef struct rit {
 } rect_iter;
 /*----------------------------------------------------------------------------*/
 
-
-
 /*----------------------------------------------------------------------------*/
 typedef struct gauss_filter_s {
     int dim;
     double sigma;
     double mean;
-    double *values;
-} *gauss_filter;
+    double* values;
+} * gauss_filter;
 /*----------------------------------------------------------------------------*/
-
-
 
 /*----------------------------------------------------------------------------*/
 typedef struct image_char_s {
-    unsigned char *data;
+    unsigned char* data;
     unsigned int xsize, ysize;
-} *image_char;
+} * image_char;
 
-void free_image_char(image_char i);
-image_char new_image_char(unsigned int xsize, unsigned int ysize);
-image_char new_image_char_ini( unsigned int xsize, unsigned int ysize,
-                               unsigned char fill_value );
+void free_image_char( image_char i );
+image_char new_image_char( unsigned int xsize, unsigned int ysize );
+image_char new_image_char_ini( unsigned int xsize, unsigned int ysize, unsigned char fill_value );
 /*----------------------------------------------------------------------------*/
-
-
 
 /*----------------------------------------------------------------------------*/
 /** int image data type
  */
 
 typedef struct image_int_s {
-    int * data;
+    int* data;
     unsigned int xsize, ysize;
-} *image_int;
+} * image_int;
 
-void free_image_int(image_int i);
-image_int new_image_int(unsigned int xsize, unsigned int ysize);
-image_int new_image_int_ini( unsigned int xsize, unsigned int ysize,
-                             int fill_value );
+void free_image_int( image_int i );
+image_int new_image_int( unsigned int xsize, unsigned int ysize );
+image_int new_image_int_ini( unsigned int xsize, unsigned int ysize, int fill_value );
 /*----------------------------------------------------------------------------*/
-
-
 
 /*----------------------------------------------------------------------------*/
 /** double image data type
  */
 typedef struct image_double_s {
-    double *data;
+    double* data;
     unsigned int xsize, ysize;
-} *image_double;
+} * image_double;
 
-void free_image_double(image_double i);
-image_double new_image_double(unsigned int xsize, unsigned int ysize);
-image_double new_image_double_ini( unsigned int xsize, unsigned int ysize,
-                                   double fill_value );
+void free_image_double( image_double i );
+image_double new_image_double( unsigned int xsize, unsigned int ysize );
+image_double new_image_double_ini( unsigned int xsize, unsigned int ysize, double fill_value );
 /*----------------------------------------------------------------------------*/
-
-
 
 /*----------------------------------------------------------------------------*/
 struct coorlist {
     int x, y;
-    struct coorlist * next;
+    struct coorlist* next;
 };
 /*----------------------------------------------------------------------------*/
-
-
 
 /*----------------------------------------------------------------------------*/
 struct point {
@@ -169,14 +147,11 @@ struct point {
 };
 /*----------------------------------------------------------------------------*/
 
-
-
 /*----------------------------------------------------------------------------*/
 struct point3 {
     int x, y, z;
 };
 /*----------------------------------------------------------------------------*/
-
 
 /*----------------------------------------------------------------------------*/
 struct doublepoint {
@@ -184,27 +159,22 @@ struct doublepoint {
 };
 /*----------------------------------------------------------------------------*/
 
-
-
 /*----------------------------------------------------------------------------*/
-void error(char * msg);
-int double_equal(double a, double b);
-int isaligned(int x, int y, image_double theta, double angle,
-              double precision);
-double dist(double x1, double y1, double x2, double y2);
+void error( char* msg );
+int double_equal( double a, double b );
+int isaligned( int x, int y, image_double theta, double angle, double precision );
+double dist( double x1, double y1, double x2, double y2 );
 
-void get_cadran(double angle, int* cad);
+void get_cadran( double angle, int* cad );
 
-void init_rect(struct rect *rec);
+void init_rect( struct rect* rec );
 
-int check_ellipse(double *param);
-double nfa(int n, int k, double p, double logNT);
-void region_grow(int x, int y, image_double angles, struct point * reg,
-                 int * reg_size, double * reg_angle, image_char used,
-                 double prec );
-double angle_diff_signed(double a, double b);
-double angle_diff(double a, double b);
-double angle_diff_full(double a, double b, int sens);
+int check_ellipse( double* param );
+double nfa( int n, int k, double p, double logNT );
+void region_grow( int x, int y, image_double angles, struct point* reg, int* reg_size,
+                  double* reg_angle, image_char used, double prec );
+double angle_diff_signed( double a, double b );
+double angle_diff( double a, double b );
+double angle_diff_full( double a, double b, int sens );
 /*----------------------------------------------------------------------------*/
 #endif
-

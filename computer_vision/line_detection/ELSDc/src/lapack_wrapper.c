@@ -22,38 +22,34 @@
 
 ------------------------------------------------------------------------------*/
 
-#include <stddef.h>
 #include "lapack_wrapper.h"
+#include <stddef.h>
 
 typedef long int integer;
 typedef double doublereal;
-
 
 /*----------------------------------------------------------------------------*/
 /** Header of lapack function for computing the eigen-decomposition of a
     matrix of double.
  */
-int dsyev_(char *jobz, char *uplo, integer *n, doublereal *a,
-           integer *lda, doublereal *w, doublereal *work, integer *lwork,
-           integer *info);
-
+int dsyev_( char* jobz, char* uplo, integer* n, doublereal* a, integer* lda, doublereal* w,
+            doublereal* work, integer* lwork, integer* info );
 
 /*----------------------------------------------------------------------------*/
 /** Solve linear system.
     'n' number of unknowns;
     'A' coefficients of the equations.
  */
-void lap_eig( double *A, int n ) {
-    char jobz = 'V';
-    char uplo = 'U';
-    integer M = (integer)n;
-    integer LDA = M;
+void lap_eig( double* A, int n ) {
+    char jobz     = 'V';
+    char uplo     = 'U';
+    integer M     = (integer) n;
+    integer LDA   = M;
     integer LWORK = 24;
     integer INFO;
     doublereal W[6];
     doublereal WORK[LWORK];
 
     /* Solve eigenproblem */
-    dsyev_( &jobz, &uplo, &M, (doublereal*)A, &LDA, W, WORK, &LWORK, &INFO );
+    dsyev_( &jobz, &uplo, &M, (doublereal*) A, &LDA, W, WORK, &LWORK, &INFO );
 }
-

@@ -1,12 +1,12 @@
-#include <ndt_map/ndt_map.h>
 #include <ndt_map/lazy_grid.h>
+#include <ndt_map/ndt_map.h>
 #include <pointcloud_vrml/pointcloud_utils.h>
 
-#include "pcl/point_cloud.h"
-#include "pcl/io/pcd_io.h"
-#include "pcl/features/feature.h"
 #include <cstdio>
 #include <cstring>
+#include "pcl/features/feature.h"
+#include "pcl/io/pcd_io.h"
+#include "pcl/point_cloud.h"
 
 // #include <opencv/cv.h>
 // #include <opencv/highgui.h>
@@ -20,31 +20,30 @@
 
 using namespace std;
 
-int main (int argc, char** argv) {
-    if (argc < 2) {
+int main( int argc, char** argv ) {
+    if ( argc < 2 ) {
         cout << "[ USAGE ] jffSaveTest cloud\n";
-        exit(1);
+        exit( 1 );
     }
 
     cout << "Started saveTest.\n";
 
-    pcl::PointCloud<pcl::PointXYZ> cloud;
+    pcl::PointCloud< pcl::PointXYZ > cloud;
     char fname[] = "test_wrl.wrl";
 
-    //cloud = lslgeneric::readVRML<pcl::PointXYZ>(argv[1]);
+    // cloud = lslgeneric::readVRML<pcl::PointXYZ>(argv[1]);
 
-    perception_oru::NDTMap<pcl::PointXYZ> nd(new perception_oru::LazyGrid<pcl::PointXYZ>(0.2));
+    perception_oru::NDTMap< pcl::PointXYZ > nd(
+        new perception_oru::LazyGrid< pcl::PointXYZ >( 0.2 ) );
 
-    nd.loadPointCloud(cloud);
+    nd.loadPointCloud( cloud );
     nd.computeNDTCells();
 
-    //nd.writeToVRML(fname);
+    // nd.writeToVRML(fname);
 
-    if (nd.writeToJFF("LazyGrid.jff") < 0)
-        cout << "writing to jff failed\n";
+    if ( nd.writeToJFF( "LazyGrid.jff" ) < 0 ) cout << "writing to jff failed\n";
 
     cout << "Finished saveTest.\n";
 
     return 0;
 }
-

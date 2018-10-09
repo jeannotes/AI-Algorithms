@@ -17,9 +17,9 @@
 
 #ifdef G2O_SHARED_LIBS
 #ifdef G2O_EXPORT
-#define G2O_CORE_API __declspec(dllexport)
+#define G2O_CORE_API __declspec( dllexport )
 #else
-#define G2O_CORE_API __declspec(dllimport)
+#define G2O_CORE_API __declspec( dllimport )
 #endif
 #else
 #define G2O_CORE_API
@@ -30,4 +30,4 @@
 #define G2O_CORE_API
 #endif
 
-#endif // G2O_CORE_API_H
+#endif   // G2O_CORE_API_H

@@ -24,40 +24,38 @@
 
 ------------------------------------------------------------------------------*/
 
+#include "rectangle.h"
+#include <float.h>
+#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <math.h>
-#include <float.h>
 #include "misc.h"
-#include "rectangle.h"
 
 /*----------------------------------------------------------------------------*/
 /** Copy one Rectangle structure to another.
  */
-void copy_rect( Rectangle *in, Rectangle *out ) {
-    if ( (in == NULL) || (out == NULL) )
-        error("copy_rect: invalid 'in' or 'out'.");
-    out->x1 = in->x1;
-    out->y1 = in->y1;
-    out->x2 = in->x2;
-    out->y2 = in->y2;
-    out->len = in->len;
+void copy_rect( Rectangle* in, Rectangle* out ) {
+    if ( ( in == NULL ) || ( out == NULL ) ) error( "copy_rect: invalid 'in' or 'out'." );
+    out->x1    = in->x1;
+    out->y1    = in->y1;
+    out->x2    = in->x2;
+    out->y2    = in->y2;
+    out->len   = in->len;
     out->width = in->width;
-    out->wmin = in->wmin;
-    out->wmax = in->wmax;
-    out->cx = in->cx;
-    out->cy = in->cy;
+    out->wmin  = in->wmin;
+    out->wmax  = in->wmax;
+    out->cx    = in->cx;
+    out->cy    = in->cy;
     out->theta = in->theta;
-    out->dx = in->dx;
-    out->dy = in->dy;
-    out->prec = in->prec;
+    out->dx    = in->dx;
+    out->dy    = in->dy;
+    out->prec  = in->prec;
 }
-
 
 /*----------------------------------------------------------------------------*/
 /** Write Rectangle coordinates to file; if file is NULL, write to stdout.
  */
-void write_rectangle( FILE *f, Rectangle *r ) {
-    fprintf(f, "%f %f %f %f %f %f %f %f\n", r->x1, r->y1, r->x2, r->y2,
-            r->dx, r->dy, r->wmax, r->wmin );
+void write_rectangle( FILE* f, Rectangle* r ) {
+    fprintf( f, "%f %f %f %f %f %f %f %f\n", r->x1, r->y1, r->x2, r->y2, r->dx, r->dy, r->wmax,
+             r->wmin );
 }

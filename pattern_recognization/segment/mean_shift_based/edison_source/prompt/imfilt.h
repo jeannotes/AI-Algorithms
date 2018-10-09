@@ -8,4 +8,4 @@
 // Version  : v0.1
 ////////////////////////////////////////////////////////
 
-#include "libppm.h" //read/write pgm and ppm images
+#include "libppm.h"   //read/write pgm and ppm images

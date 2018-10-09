@@ -11,28 +11,28 @@
 #ifndef DEFS_H
 #define DEFS_H
 
-//define constants
-#define MAX_TOKEN_NUM  10
+// define constants
+#define MAX_TOKEN_NUM 10
 
-//define counts
-#define SPEED_NUM       3
-#define CUST_CURVE_NUM  2
-#define CURVE_NUM       6
-#define CMD_NUM        10
-#define PARAM_NUM      17
-#define OUTPUTTYPE_NUM  9
-#define INPUTTYPE_NUM   2
-#define FILETYPE_NUM    7
-#define SUPPORT_NUM     4
+// define counts
+#define SPEED_NUM 3
+#define CUST_CURVE_NUM 2
+#define CURVE_NUM 6
+#define CMD_NUM 10
+#define PARAM_NUM 17
+#define OUTPUTTYPE_NUM 9
+#define INPUTTYPE_NUM 2
+#define FILETYPE_NUM 7
+#define SUPPORT_NUM 4
 
-//define command types
+// define command types
 enum {
     CMD_IO,
     CMD_EXECUTION,
     CMD_FLAGS,
 };
 
-//define commands
+// define commands
 enum {
     CMD_SAVE,
     CMD_LOAD,
@@ -47,7 +47,7 @@ enum {
     UNKNOWN_COMMAND
 };
 
-//define parameters
+// define parameters
 enum {
     PARAM_SPATIAL_BANDWIDTH,
     PARAM_RANGE_BANDWIDTH,
@@ -69,15 +69,10 @@ enum {
     UNKNOWN_PARAMETER
 };
 
-//define parameter types
-enum {
-    PARAM_INTEGER,
-    PARAM_FLOAT,
-    PARAM_SPEEDUP_TYPE,
-    PARAM_CURVE_TYPE
-};
+// define parameter types
+enum { PARAM_INTEGER, PARAM_FLOAT, PARAM_SPEEDUP_TYPE, PARAM_CURVE_TYPE };
 
-//define file types
+// define file types
 enum {
     FILE_PPM,
     FILE_PGM,
@@ -89,22 +84,14 @@ enum {
     FILE_UNKNOWN
 };
 
-//define supported file types list
-const int SUPPORTED_FILETYPE_LIST[SUPPORT_NUM] = {
-    FILE_PPM,
-    FILE_PGM,
-    FILE_PNM,
-    FILE_MATLAB_ASCII
-};
+// define supported file types list
+const int SUPPORTED_FILETYPE_LIST[SUPPORT_NUM] = { FILE_PPM, FILE_PGM, FILE_PNM,
+                                                   FILE_MATLAB_ASCII };
 
-//define input types
-enum {
-    INPUT_IMAGE,
-    INPUT_MAP,
-    INPUT_UNKNOWN
-};
+// define input types
+enum { INPUT_IMAGE, INPUT_MAP, INPUT_UNKNOWN };
 
-//define output types
+// define output types
 enum {
     OUTPUT_SEGM_BOUNDARIES,
     OUTPUT_SEGM_IMAGE,
@@ -118,210 +105,105 @@ enum {
     OUTPUT_UNKNOWN
 };
 
-//define curve types
-enum {
-    CURVE_ARC,
-    CURVE_VERTICAL_LINE,
-    CURVE_HORIZONTAL_LINE,
-    CURVE_LINE,
-    CURVE_BOX,
-    CURVE_CUSTOM
-};
+// define curve types
+enum { CURVE_ARC, CURVE_VERTICAL_LINE, CURVE_HORIZONTAL_LINE, CURVE_LINE, CURVE_BOX, CURVE_CUSTOM };
 
-//define custum curve parameters
-enum {
-    CUST_CURVE_HYST_HIGH,
-    CUST_CURVE_HYST_LOW,
-    UNKNOWN_CURVE
-};
+// define custum curve parameters
+enum { CUST_CURVE_HYST_HIGH, CUST_CURVE_HYST_LOW, UNKNOWN_CURVE };
 
-//define custom curve list
-const char CUST_CURVE_LIST[CUST_CURVE_NUM][25] = {
-    "CustomCurveHystHigh",
-    "CustomCurveHystLow"
-};
+// define custom curve list
+const char CUST_CURVE_LIST[CUST_CURVE_NUM][25] = { "CustomCurveHystHigh", "CustomCurveHystLow" };
 
-//define command type list
+// define command type list
 const int CMD_TYPE_LIST[CMD_NUM + 1] = {
-    CMD_IO,
-    CMD_IO,
-    CMD_IO,
-    CMD_EXECUTION,
-    CMD_EXECUTION,
-    CMD_EXECUTION,
-    CMD_EXECUTION,
-    CMD_FLAGS,
-    CMD_FLAGS,
-    CMD_FLAGS,
-    UNKNOWN_COMMAND,
+    CMD_IO,        CMD_IO,    CMD_IO,    CMD_EXECUTION, CMD_EXECUTION,   CMD_EXECUTION,
+    CMD_EXECUTION, CMD_FLAGS, CMD_FLAGS, CMD_FLAGS,     UNKNOWN_COMMAND,
 };
 
-//define command list
+// define command list
 const char CMD_LIST[CMD_NUM][25] = {
-    "Save",
-    "Load",
-    "UseResult",
-    "EdgeDetect",
-    "Filter",
-    "Fuse",
-    "Segment",
-    "Synergistic",
-    "DisplayProgress",
-    "UseCustomWeightMap"
+    "Save", "Load",    "UseResult",   "EdgeDetect",      "Filter",
+    "Fuse", "Segment", "Synergistic", "DisplayProgress", "UseCustomWeightMap"
 };
 
-//define parameter list
-const char PARAM_LIST[PARAM_NUM][25] = {
-    "SpatialBandwidth",
-    "RangeBandwidth",
-    "MinimumRegionArea",
-    "GradientWindowRadius",
-    "MixtureParameter",
-    "EdgeStrengthThreshold",
-    "Speedup",
-    "MinimumLength",
-    "NmxRank",
-    "NmxConf",
-    "NmxType",
-    "HysterisisHighRank",
-    "HysterisisHighConf",
-    "HysterisisHighType",
-    "HysterisisLowRank",
-    "HysterisisLowConf",
-    "HysterisisLowType"
-};
+// define parameter list
+const char PARAM_LIST[PARAM_NUM][25] = { "SpatialBandwidth",
+                                         "RangeBandwidth",
+                                         "MinimumRegionArea",
+                                         "GradientWindowRadius",
+                                         "MixtureParameter",
+                                         "EdgeStrengthThreshold",
+                                         "Speedup",
+                                         "MinimumLength",
+                                         "NmxRank",
+                                         "NmxConf",
+                                         "NmxType",
+                                         "HysterisisHighRank",
+                                         "HysterisisHighConf",
+                                         "HysterisisHighType",
+                                         "HysterisisLowRank",
+                                         "HysterisisLowConf",
+                                         "HysterisisLowType" };
 
-//define parameter type list
+// define parameter type list
 const int PARAMTYPE_LIST[PARAM_NUM + 2 * CUST_CURVE_NUM] = {
-    PARAM_INTEGER,
-    PARAM_FLOAT,
-    PARAM_INTEGER,
-    PARAM_INTEGER,
-    PARAM_FLOAT,
-    PARAM_FLOAT,
-    PARAM_SPEEDUP_TYPE,
-    PARAM_INTEGER,
-    PARAM_FLOAT,
-    PARAM_FLOAT,
-    PARAM_CURVE_TYPE,
-    PARAM_FLOAT,
-    PARAM_FLOAT,
-    PARAM_CURVE_TYPE,
-    PARAM_FLOAT,
-    PARAM_FLOAT,
-    PARAM_CURVE_TYPE,
-    PARAM_FLOAT,
-    PARAM_INTEGER,
-    PARAM_FLOAT,
+    PARAM_INTEGER,    PARAM_FLOAT,        PARAM_INTEGER, PARAM_INTEGER,    PARAM_FLOAT,
+    PARAM_FLOAT,      PARAM_SPEEDUP_TYPE, PARAM_INTEGER, PARAM_FLOAT,      PARAM_FLOAT,
+    PARAM_CURVE_TYPE, PARAM_FLOAT,        PARAM_FLOAT,   PARAM_CURVE_TYPE, PARAM_FLOAT,
+    PARAM_FLOAT,      PARAM_CURVE_TYPE,   PARAM_FLOAT,   PARAM_INTEGER,    PARAM_FLOAT,
     PARAM_INTEGER
 };
 
-//define parameter lower bound list
-const float LBOUND_LIST[PARAM_NUM] = {
-    0, 0, 1, 1, 0,
-    0, 0, 1, 0, 0,
-    0, 0, 0, 0, 0,
-    0, 0
-};
+// define parameter lower bound list
+const float LBOUND_LIST[PARAM_NUM] = { 0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
-//define parameter lower bound list
-const float UBOUND_LIST[PARAM_NUM] = {
-    -1, -1, -1, -1, 1,
-        1, -1, -1,  1, 1,
-        -1,  1,  1, -1, 1,
-        1, -1
-    };
+// define parameter lower bound list
+const float UBOUND_LIST[PARAM_NUM] = { -1, -1, -1, -1, 1, 1, -1, -1, 1, 1, -1, 1, 1, -1, 1, 1, -1 };
 
-//define bounds message constants
-enum {
-    GREATER_THAN_ZERO,
-    GREATER_THAN_ONE,
-    BETWEEN_ZERO_ONE,
-    NOT_APPLICABLE
-};
+// define bounds message constants
+enum { GREATER_THAN_ZERO, GREATER_THAN_ONE, BETWEEN_ZERO_ONE, NOT_APPLICABLE };
 
-//define parameter bounds error table
-const char boundsTable[4][40] = {
-    "Must take a value > 0.",
-    "Must take a value >= 1.",
-    "Must take a value between 0 and 1.",
-    ""
-};
+// define parameter bounds error table
+const char boundsTable[4][40] = { "Must take a value > 0.", "Must take a value >= 1.",
+                                  "Must take a value between 0 and 1.", "" };
 
-//define parameter bounds error lookup table
-const int BOUNDS_TABLE[PARAM_NUM] = {
-    GREATER_THAN_ZERO,
-    GREATER_THAN_ZERO,
-    GREATER_THAN_ONE,
-    GREATER_THAN_ONE,
-    BETWEEN_ZERO_ONE,
-    BETWEEN_ZERO_ONE,
-    NOT_APPLICABLE,
-    GREATER_THAN_ONE,
-    BETWEEN_ZERO_ONE,
-    BETWEEN_ZERO_ONE,
-    NOT_APPLICABLE,
-    BETWEEN_ZERO_ONE,
-    BETWEEN_ZERO_ONE,
-    NOT_APPLICABLE,
-    BETWEEN_ZERO_ONE,
-    BETWEEN_ZERO_ONE,
-    NOT_APPLICABLE
-};
+// define parameter bounds error lookup table
+const int BOUNDS_TABLE[PARAM_NUM] = { GREATER_THAN_ZERO, GREATER_THAN_ZERO, GREATER_THAN_ONE,
+                                      GREATER_THAN_ONE,  BETWEEN_ZERO_ONE,  BETWEEN_ZERO_ONE,
+                                      NOT_APPLICABLE,    GREATER_THAN_ONE,  BETWEEN_ZERO_ONE,
+                                      BETWEEN_ZERO_ONE,  NOT_APPLICABLE,    BETWEEN_ZERO_ONE,
+                                      BETWEEN_ZERO_ONE,  NOT_APPLICABLE,    BETWEEN_ZERO_ONE,
+                                      BETWEEN_ZERO_ONE,  NOT_APPLICABLE };
 
-//define file type list
-const char FILETYPE_LIST[FILETYPE_NUM][15] = {
-    "PPM",
-    "PGM",
-    "PNG",
-    "PCX",
-    "PNM",
-    "JPG",
-    "MATLAB_ASCII"
-};
+// define file type list
+const char FILETYPE_LIST[FILETYPE_NUM][15] = { "PPM", "PGM", "PNG",         "PCX",
+                                               "PNM", "JPG", "MATLAB_ASCII" };
 
-//define file type header list
-const char FILETYPE_HEADER_LIST[FILETYPE_NUM - 1][3] = {
-    "P6", "P5", "XX", "XX", "XX", "XX"
-};
+// define file type header list
+const char FILETYPE_HEADER_LIST[FILETYPE_NUM - 1][3] = { "P6", "P5", "XX", "XX", "XX", "XX" };
 
-//define output type list
-const char OUTPUTTYPE_LIST[OUTPUTTYPE_NUM][25] = {
-    "SEGM_BOUNDARIES",
-    "SEGM_IMAGE",
-    "SEGM_IMAGE_BOUNDARIES",
-    "FILT_IMAGE",
-    "FILT_IMAGE_BOUNDARIES",
-    "GRADIENT_MAP",
-    "CONFIDENCE_MAP",
-    "WEIGHT_MAP",
-    "EDGES"
-};
+// define output type list
+const char OUTPUTTYPE_LIST[OUTPUTTYPE_NUM][25] = { "SEGM_BOUNDARIES",
+                                                   "SEGM_IMAGE",
+                                                   "SEGM_IMAGE_BOUNDARIES",
+                                                   "FILT_IMAGE",
+                                                   "FILT_IMAGE_BOUNDARIES",
+                                                   "GRADIENT_MAP",
+                                                   "CONFIDENCE_MAP",
+                                                   "WEIGHT_MAP",
+                                                   "EDGES" };
 
-//define input type list
-const char INPUTTYPE_LIST[INPUTTYPE_NUM][6] = {
-    "IMAGE",
-    "MAP"
-};
+// define input type list
+const char INPUTTYPE_LIST[INPUTTYPE_NUM][6] = { "IMAGE", "MAP" };
 
-//define speed type list
-const char SPEEDTYPE_LIST[SPEED_NUM][7] = {
-    "NONE",
-    "MEDIUM",
-    "HIGH"
-};
+// define speed type list
+const char SPEEDTYPE_LIST[SPEED_NUM][7] = { "NONE", "MEDIUM", "HIGH" };
 
-//define curve type list
-const char CURVETYPE_LIST[CURVE_NUM][20] = {
-    "ARC",
-    "VERTICAL_LINE",
-    "HORIZONTAL_LINE",
-    "LINE",
-    "BOX",
-    "CUSTOM"
-};
+// define curve type list
+const char CURVETYPE_LIST[CURVE_NUM][20] = { "ARC",  "VERTICAL_LINE", "HORIZONTAL_LINE",
+                                             "LINE", "BOX",           "CUSTOM" };
 
-//define syntax and execution error flags
+// define syntax and execution error flags
 enum {
     NO_ERRORS,
     SYN_ERROR,
@@ -364,61 +246,54 @@ enum {
     SYN_INVALID_FILE,
 };
 
-//define syntax error lookup table
-const char ErrorMsgTable[36][50] = {
-    "Unknown parameter or command format.",
-    "Expected: ;",
-    "Expected: (",
-    "Expected: )",
-    "Expected: {",
-    "Expected: }",
-    "Expected: '",
-    "Expected: ,",
-    "Expected: =",
-    "Incomplete point list.",
-    "Argument must be between 0 and 1.",
-    "Unknown file type.",
-    "Unknown input type.",
-    "Unknown output type.",
-    "Unknown flag.",
-    "Invalid parameter or command.",
-    "Integer data type expected.",
-    "Floating point data type expected.",
-    "Speedup enumeration expected.",
-    "Curve type enumeration expected.",
-    "Nmx suppr. curve may not be of a custom type.",
-    "Unsupported file format.",
-    "Invalid argument to function.",
-    "Aborting Execution.",
-    "Point list too large.",
-    "Needed parameter undefined.",
-    "Output un-defined",
-    "Input image un-defined.",
-    "Unsupported file format.",
-    "Unknown file format.",
-    "Out of memory.",
-    "Un-able to write file.",
-    "Un-able to read file.",
-    "Internal error. (Please contact vendor)",
-    "Hysterisis high custom curve is un-specified.",
-    "Hysterisis low custom curve is un-specified."
-};
+// define syntax error lookup table
+const char ErrorMsgTable[36][50] = { "Unknown parameter or command format.",
+                                     "Expected: ;",
+                                     "Expected: (",
+                                     "Expected: )",
+                                     "Expected: {",
+                                     "Expected: }",
+                                     "Expected: '",
+                                     "Expected: ,",
+                                     "Expected: =",
+                                     "Incomplete point list.",
+                                     "Argument must be between 0 and 1.",
+                                     "Unknown file type.",
+                                     "Unknown input type.",
+                                     "Unknown output type.",
+                                     "Unknown flag.",
+                                     "Invalid parameter or command.",
+                                     "Integer data type expected.",
+                                     "Floating point data type expected.",
+                                     "Speedup enumeration expected.",
+                                     "Curve type enumeration expected.",
+                                     "Nmx suppr. curve may not be of a custom type.",
+                                     "Unsupported file format.",
+                                     "Invalid argument to function.",
+                                     "Aborting Execution.",
+                                     "Point list too large.",
+                                     "Needed parameter undefined.",
+                                     "Output un-defined",
+                                     "Input image un-defined.",
+                                     "Unsupported file format.",
+                                     "Unknown file format.",
+                                     "Out of memory.",
+                                     "Un-able to write file.",
+                                     "Un-able to read file.",
+                                     "Internal error. (Please contact vendor)",
+                                     "Hysterisis high custom curve is un-specified.",
+                                     "Hysterisis low custom curve is un-specified." };
 
 ////////////////////////////////////////////////////
-//define global function prototypes
+// define global function prototypes
 ////////////////////////////////////////////////////
 
-void CmCPrompt(const char *, ...);
-unsigned char *CmCConvertToGrayscale(unsigned char *image, int height, int width);
-int CmCWriteImage(char *filename, unsigned char *image, int height, int width, int dim, int filetype);
-int CmCWriteMFile(char *filename, float *data, int rows, int cols, int dim);
-int CmCReadImage(char *filename, unsigned char **image, int& height, int& width, int& dim);
-int CmCReadMFile(char *filename, float **data, int rows, int cols);
+void CmCPrompt( const char*, ... );
+unsigned char* CmCConvertToGrayscale( unsigned char* image, int height, int width );
+int CmCWriteImage( char* filename, unsigned char* image, int height, int width, int dim,
+                   int filetype );
+int CmCWriteMFile( char* filename, float* data, int rows, int cols, int dim );
+int CmCReadImage( char* filename, unsigned char** image, int& height, int& width, int& dim );
+int CmCReadMFile( char* filename, float** data, int rows, int cols );
 
 #endif
-
-
-
-
-
-

@@ -27,41 +27,42 @@
 #ifndef G2O_BLOCK_SOLVER_H
 #define G2O_BLOCK_SOLVER_H
 #include <Eigen/Core>
-#include "solver.h"
+#include "../../config.h"
 #include "linear_solver.h"
+#include "openmp_mutex.h"
+#include "solver.h"
 #include "sparse_block_matrix.h"
 #include "sparse_block_matrix_diagonal.h"
-#include "openmp_mutex.h"
-#include "../../config.h"
 
-namespace g2o {
+namespace g2o
+{
 using namespace Eigen;
 
 /**
  * \brief traits to summarize the properties of the fixed size optimization problem
  */
-template <int _PoseDim, int _LandmarkDim>
+template < int _PoseDim, int _LandmarkDim >
 struct G2O_CORE_API BlockSolverTraits {
-    static const int PoseDim = _PoseDim;
+    static const int PoseDim     = _PoseDim;
     static const int LandmarkDim = _LandmarkDim;
-    typedef Matrix<double, PoseDim, PoseDim> PoseMatrixType;
-    typedef Matrix<double, LandmarkDim, LandmarkDim> LandmarkMatrixType;
-    typedef Matrix<double, PoseDim, LandmarkDim> PoseLandmarkMatrixType;
-    typedef Matrix<double, PoseDim, 1> PoseVectorType;
-    typedef Matrix<double, LandmarkDim, 1> LandmarkVectorType;
+    typedef Matrix< double, PoseDim, PoseDim > PoseMatrixType;
+    typedef Matrix< double, LandmarkDim, LandmarkDim > LandmarkMatrixType;
+    typedef Matrix< double, PoseDim, LandmarkDim > PoseLandmarkMatrixType;
+    typedef Matrix< double, PoseDim, 1 > PoseVectorType;
+    typedef Matrix< double, LandmarkDim, 1 > LandmarkVectorType;
 
-    typedef SparseBlockMatrix<PoseMatrixType> PoseHessianType;
-    typedef SparseBlockMatrix<LandmarkMatrixType> LandmarkHessianType;
-    typedef SparseBlockMatrix<PoseLandmarkMatrixType> PoseLandmarkHessianType;
-    typedef LinearSolver<PoseMatrixType> LinearSolverType;
+    typedef SparseBlockMatrix< PoseMatrixType > PoseHessianType;
+    typedef SparseBlockMatrix< LandmarkMatrixType > LandmarkHessianType;
+    typedef SparseBlockMatrix< PoseLandmarkMatrixType > PoseLandmarkHessianType;
+    typedef LinearSolver< PoseMatrixType > LinearSolverType;
 };
 
 /**
  * \brief traits to summarize the properties of the dynamic size optimization problem
  */
 template <>
-struct G2O_CORE_API BlockSolverTraits<Eigen::Dynamic, Eigen::Dynamic> {
-    static const int PoseDim = Eigen::Dynamic;
+struct G2O_CORE_API BlockSolverTraits< Eigen::Dynamic, Eigen::Dynamic > {
+    static const int PoseDim     = Eigen::Dynamic;
     static const int LandmarkDim = Eigen::Dynamic;
     typedef MatrixXd PoseMatrixType;
     typedef MatrixXd LandmarkMatrixType;
@@ -69,32 +70,31 @@ struct G2O_CORE_API BlockSolverTraits<Eigen::Dynamic, Eigen::Dynamic> {
     typedef VectorXd PoseVectorType;
     typedef VectorXd LandmarkVectorType;
 
-    typedef SparseBlockMatrix<PoseMatrixType> PoseHessianType;
-    typedef SparseBlockMatrix<LandmarkMatrixType> LandmarkHessianType;
-    typedef SparseBlockMatrix<PoseLandmarkMatrixType> PoseLandmarkHessianType;
-    typedef LinearSolver<PoseMatrixType> LinearSolverType;
+    typedef SparseBlockMatrix< PoseMatrixType > PoseHessianType;
+    typedef SparseBlockMatrix< LandmarkMatrixType > LandmarkHessianType;
+    typedef SparseBlockMatrix< PoseLandmarkMatrixType > PoseLandmarkHessianType;
+    typedef LinearSolver< PoseMatrixType > LinearSolverType;
 };
 
 /**
  * \brief base for the block solvers with some basic function interfaces
  */
 class BlockSolverBase : public Solver {
-public:
+  public:
     virtual ~BlockSolverBase() {}
     /**
      * compute dest = H * src
      */
-    virtual void multiplyHessian(double* dest, const double* src) const = 0;
+    virtual void multiplyHessian( double* dest, const double* src ) const = 0;
 };
 
 /**
  * \brief Implementation of a solver operating on the blocks of the Hessian
  */
-template <typename Traits>
+template < typename Traits >
 class BlockSolver : public BlockSolverBase {
-public:
-
-    static const int PoseDim = Traits::PoseDim;
+  public:
+    static const int PoseDim     = Traits::PoseDim;
     static const int LandmarkDim = Traits::LandmarkDim;
     typedef typename Traits::PoseMatrixType PoseMatrixType;
     typedef typename Traits::LandmarkMatrixType LandmarkMatrixType;
@@ -107,73 +107,66 @@ public:
     typedef typename Traits::PoseLandmarkHessianType PoseLandmarkHessianType;
     typedef typename Traits::LinearSolverType LinearSolverType;
 
-public:
-
+  public:
     /**
      * allocate a block solver ontop of the underlying linear solver.
-     * NOTE: The BlockSolver assumes exclusive access to the linear solver and will therefore free the pointer
+     * NOTE: The BlockSolver assumes exclusive access to the linear solver and will therefore free
+     * the pointer
      * in its destructor.
      */
-    BlockSolver(LinearSolverType* linearSolver);
+    BlockSolver( LinearSolverType* linearSolver );
     ~BlockSolver();
 
-    virtual bool init(SparseOptimizer* optmizer, bool online = false);
-    virtual bool buildStructure(bool zeroBlocks = false);
-    virtual bool updateStructure(const std::vector<HyperGraph::Vertex*>& vset, const HyperGraph::EdgeSet& edges);
+    virtual bool init( SparseOptimizer* optmizer, bool online = false );
+    virtual bool buildStructure( bool zeroBlocks = false );
+    virtual bool updateStructure( const std::vector< HyperGraph::Vertex* >& vset,
+                                  const HyperGraph::EdgeSet& edges );
     virtual bool buildSystem();
     virtual bool solve();
-    virtual bool computeMarginals(SparseBlockMatrix<MatrixXd>& spinv, const std::vector<std::pair<int, int> >& blockIndices);
-    virtual bool setLambda(double lambda, bool backup = false);
+    virtual bool computeMarginals( SparseBlockMatrix< MatrixXd >& spinv,
+                                   const std::vector< std::pair< int, int > >& blockIndices );
+    virtual bool setLambda( double lambda, bool backup = false );
     virtual void restoreDiagonal();
-    virtual bool supportsSchur() {
-        return true;
-    }
-    virtual bool schur() {
-        return _doSchur;
-    }
-    virtual void setSchur(bool s) {
-        _doSchur = s;
+    virtual bool supportsSchur() { return true; }
+    virtual bool schur() { return _doSchur; }
+    virtual void setSchur( bool s ) { _doSchur = s; }
+
+    LinearSolver< PoseMatrixType >* linearSolver() const { return _linearSolver; }
+
+    virtual void setWriteDebug( bool writeDebug );
+    virtual bool writeDebug() const { return _linearSolver->writeDebug(); }
+
+    virtual bool saveHessian( const std::string& fileName ) const;
+
+    virtual void multiplyHessian( double* dest, const double* src ) const {
+        _Hpp->multiplySymmetricUpperTriangle( dest, src );
     }
 
-    LinearSolver<PoseMatrixType>* linearSolver() const {
-        return _linearSolver;
-    }
-
-    virtual void setWriteDebug(bool writeDebug);
-    virtual bool writeDebug() const {
-        return _linearSolver->writeDebug();
-    }
-
-    virtual bool saveHessian(const std::string& fileName) const;
-
-    virtual void multiplyHessian(double* dest, const double* src) const {
-        _Hpp->multiplySymmetricUpperTriangle(dest, src);
-    }
-
-protected:
-    void resize(int* blockPoseIndices, int numPoseBlocks,
-                int* blockLandmarkIndices, int numLandmarkBlocks, int totalDim);
+  protected:
+    void resize( int* blockPoseIndices, int numPoseBlocks, int* blockLandmarkIndices,
+                 int numLandmarkBlocks, int totalDim );
 
     void deallocate();
 
-    SparseBlockMatrix<PoseMatrixType>* _Hpp;
-    SparseBlockMatrix<LandmarkMatrixType>* _Hll;
-    SparseBlockMatrix<PoseLandmarkMatrixType>* _Hpl;
+    SparseBlockMatrix< PoseMatrixType >* _Hpp;
+    SparseBlockMatrix< LandmarkMatrixType >* _Hll;
+    SparseBlockMatrix< PoseLandmarkMatrixType >* _Hpl;
 
-    SparseBlockMatrix<PoseMatrixType>* _Hschur;
-    SparseBlockMatrixDiagonal<LandmarkMatrixType>* _DInvSchur;
+    SparseBlockMatrix< PoseMatrixType >* _Hschur;
+    SparseBlockMatrixDiagonal< LandmarkMatrixType >* _DInvSchur;
 
-    SparseBlockMatrixCCS<PoseLandmarkMatrixType>* _HplCCS;
-    SparseBlockMatrixCCS<PoseMatrixType>* _HschurTransposedCCS;
+    SparseBlockMatrixCCS< PoseLandmarkMatrixType >* _HplCCS;
+    SparseBlockMatrixCCS< PoseMatrixType >* _HschurTransposedCCS;
 
-    LinearSolver<PoseMatrixType>* _linearSolver;
+    LinearSolver< PoseMatrixType >* _linearSolver;
 
-    std::vector<PoseVectorType, Eigen::aligned_allocator<PoseVectorType> > _diagonalBackupPose;
-    std::vector<LandmarkVectorType, Eigen::aligned_allocator<LandmarkVectorType> > _diagonalBackupLandmark;
+    std::vector< PoseVectorType, Eigen::aligned_allocator< PoseVectorType > > _diagonalBackupPose;
+    std::vector< LandmarkVectorType, Eigen::aligned_allocator< LandmarkVectorType > >
+        _diagonalBackupLandmark;
 
-#    ifdef G2O_OPENMP
-    std::vector<OpenMPMutex> _coefficientsMutex;
-#    endif
+#ifdef G2O_OPENMP
+    std::vector< OpenMPMutex > _coefficientsMutex;
+#endif
 
     bool _doSchur;
 
@@ -184,19 +177,18 @@ protected:
     int _sizePoses, _sizeLandmarks;
 };
 
-
-//variable size solver
-G2O_CORE_API typedef BlockSolver< BlockSolverTraits<Eigen::Dynamic, Eigen::Dynamic> > BlockSolverX;
+// variable size solver
+G2O_CORE_API typedef BlockSolver< BlockSolverTraits< Eigen::Dynamic, Eigen::Dynamic > >
+    BlockSolverX;
 // solver for BA/3D SLAM
-G2O_CORE_API typedef BlockSolver< BlockSolverTraits<6, 3> > BlockSolver_6_3;
+G2O_CORE_API typedef BlockSolver< BlockSolverTraits< 6, 3 > > BlockSolver_6_3;
 // solver fo BA with scale
-G2O_CORE_API typedef BlockSolver< BlockSolverTraits<7, 3> > BlockSolver_7_3;
+G2O_CORE_API typedef BlockSolver< BlockSolverTraits< 7, 3 > > BlockSolver_7_3;
 // 2Dof landmarks 3Dof poses
-G2O_CORE_API typedef BlockSolver< BlockSolverTraits<3, 2> > BlockSolver_3_2;
+G2O_CORE_API typedef BlockSolver< BlockSolverTraits< 3, 2 > > BlockSolver_3_2;
 
-} // end namespace
+}   // end namespace
 
 #include "block_solver.hpp"
-
 
 #endif

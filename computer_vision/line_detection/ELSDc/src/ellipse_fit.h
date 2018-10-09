@@ -22,15 +22,12 @@
 
 ------------------------------------------------------------------------------*/
 
-
 #ifndef ELLIPSE_FIT_H
 #define ELLIPSE_FIT_H
 
 #include "image.h"
 
-
-void conic_fit( PImageDouble gradx, PImageDouble grady, Point *reg,
-                int reg_size, double **buff, int *size_buff_max,
-                double *cparam, double *eparam );
+void conic_fit( PImageDouble gradx, PImageDouble grady, Point* reg, int reg_size, double** buff,
+                int* size_buff_max, double* cparam, double* eparam );
 
 #endif

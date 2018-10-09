@@ -21,14 +21,12 @@
 
 ------------------------------------------------------------------------------*/
 
-
 #ifndef ELSDC_H
 #define ELSDC_H
 
 #define POLYGON 'p'
-#define CURVE   'c'
+#define CURVE 'c'
 
-void ELSDc( PImageDouble in, int *ell_count, Ring **ell_out, int **ell_labels,
-            int *poly_count, Polygon **poly_out, int **poly_labels,
-            PImageInt out );
+void ELSDc( PImageDouble in, int* ell_count, Ring** ell_out, int** ell_labels, int* poly_count,
+            Polygon** poly_out, int** poly_labels, PImageInt out );
 #endif

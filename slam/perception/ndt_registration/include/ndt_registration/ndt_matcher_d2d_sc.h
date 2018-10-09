@@ -36,26 +36,28 @@
 #define NDTMATCHERD2DSC_HH
 
 #include <ndt_registration/ndt_matcher_d2d.h>
-namespace perception_oru {
+namespace perception_oru
+{
 /**
- * This class extends the NDT / NDT registration to also incorporate a soft constraint using an egomotion estimate
+ * This class extends the NDT / NDT registration to also incorporate a soft constraint using an
+ * egomotion estimate
  */
 class NDTMatcherD2DSC : public perception_oru::NDTMatcherD2D {
-public:
+  public:
     NDTMatcherD2DSC() : NDTMatcherD2D() {
-        nb_match_calls = 0;
-        nb_success_reg = 0;
-        only_xy_motion = false;
+        nb_match_calls  = 0;
+        nb_success_reg  = 0;
+        only_xy_motion  = false;
         lock_zrp_motion = false;
     }
-    NDTMatcherD2DSC(bool _isIrregularGrid,
-                    bool useDefaultGridResolutions, std::vector<double> _resolutions) : NDTMatcherD2D(_isIrregularGrid, useDefaultGridResolutions, _resolutions) {
-        nb_match_calls = 0;
-        nb_success_reg = 0;
-        only_xy_motion = false;
+    NDTMatcherD2DSC( bool _isIrregularGrid, bool useDefaultGridResolutions,
+                     std::vector< double > _resolutions )
+        : NDTMatcherD2D( _isIrregularGrid, useDefaultGridResolutions, _resolutions ) {
+        nb_match_calls  = 0;
+        nb_success_reg  = 0;
+        only_xy_motion  = false;
         lock_zrp_motion = false;
     }
-
 
     /**
        * Registers a point cloud to an NDT structure.
@@ -71,42 +73,28 @@ public:
        *   Covariance of the input pose parameter. This will be used to form
        *   an additional cost in the objective.
        */
-    bool match( NDTMap& target,
-                NDTMap& source,
-                Eigen::Transform<double, 3, Eigen::Affine, Eigen::ColMajor>& T,
-                const Eigen::MatrixXd& Tcov);
+    bool match( NDTMap& target, NDTMap& source,
+                Eigen::Transform< double, 3, Eigen::Affine, Eigen::ColMajor >& T,
+                const Eigen::MatrixXd& Tcov );
 
-    //perform line search to find the best descent rate (Mohre&Thuente)
-    double lineSearchMTSC(Eigen::Matrix<double, 6, 1> &increment,
-                          std::vector<NDTCell*> &sourceNDT,
-                          NDTMap &targetNDT,
-                          const Eigen::Matrix<double, 6, 1> &localpose,
-                          const Eigen::MatrixXd &Q,
-                          const Eigen::Transform<double, 3, Eigen::Affine, Eigen::ColMajor> &T);
+    // perform line search to find the best descent rate (Mohre&Thuente)
+    double lineSearchMTSC( Eigen::Matrix< double, 6, 1 >& increment,
+                           std::vector< NDTCell* >& sourceNDT, NDTMap& targetNDT,
+                           const Eigen::Matrix< double, 6, 1 >& localpose, const Eigen::MatrixXd& Q,
+                           const Eigen::Transform< double, 3, Eigen::Affine, Eigen::ColMajor >& T );
 
-
-
-    // compare the difference in scores for different local pose offsets. The assumption is that the T and TCov is expressed in the same frame
-    void scoreComparision( NDTMap& targetNDT,
-                           NDTMap& scoureNDT,
-                           const Eigen::Affine3d& T,
-                           const Eigen::MatrixXd& Tcov,
-                           double &score_NDT,
-                           double &score_NDT_SC,
-                           const Eigen::Affine3d &offset,
-                           const Eigen::Affine3d &odom_offset,
-                           double alpha);
-
+    // compare the difference in scores for different local pose offsets. The assumption is that the
+    // T and TCov is expressed in the same frame
+    void scoreComparision( NDTMap& targetNDT, NDTMap& scoureNDT, const Eigen::Affine3d& T,
+                           const Eigen::MatrixXd& Tcov, double& score_NDT, double& score_NDT_SC,
+                           const Eigen::Affine3d& offset, const Eigen::Affine3d& odom_offset,
+                           double alpha );
 
     bool only_xy_motion;
     bool lock_zrp_motion;
 
-protected:
-
-
-
+  protected:
 };
-} // namespace
-
+}   // namespace
 
 #endif

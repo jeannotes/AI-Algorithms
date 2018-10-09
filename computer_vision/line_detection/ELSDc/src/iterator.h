@@ -23,7 +23,6 @@
 
 ------------------------------------------------------------------------------*/
 
-
 #ifndef ITERATOR_H
 #define ITERATOR_H
 
@@ -34,12 +33,12 @@ typedef struct {
     double vx[4];
     double vy[4];
     double ys, ye;
-    int    x, y;
+    int x, y;
 } RectIter;
 
-void free_RectIter( RectIter *iter );
-int end_RectIter( RectIter *i );
-void inc_RectIter( RectIter *i );
-RectIter *ini_RectIter( Rectangle *r );
+void free_RectIter( RectIter* iter );
+int end_RectIter( RectIter* i );
+void inc_RectIter( RectIter* i );
+RectIter* ini_RectIter( Rectangle* r );
 
 #endif

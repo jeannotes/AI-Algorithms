@@ -26,13 +26,12 @@
 
 #include "parameter.h"
 
-namespace g2o {
+namespace g2o
+{
+Parameter::Parameter() : _id( -1 ) {}
 
-Parameter::Parameter() : _id(-1) {
-}
-
-void Parameter::setId(int id_) {
+void Parameter::setId( int id_ ) {
     _id = id_;
 }
 
-} // end namespace
+}   // end namespace

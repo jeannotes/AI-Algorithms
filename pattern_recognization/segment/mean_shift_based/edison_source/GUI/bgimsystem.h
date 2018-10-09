@@ -8,28 +8,28 @@
 // Version:     v0.1
 /////////////////////////////////////////////////////////////////////////////
 
-#include <wx/toolbar.h>
-#include <wx/image.h>
 #include <wx/bitmap.h>
-#include <wx/splitter.h>
-#include <wx/textfile.h>
-#include <wx/textctrl.h>
-#include <wx/spinctrl.h>
+#include <wx/image.h>
 #include <wx/log.h>
+#include <wx/spinctrl.h>
+#include <wx/splitter.h>
+#include <wx/textctrl.h>
+#include <wx/textfile.h>
+#include <wx/toolbar.h>
 
 // segmentation defaults
-#define BG_SEGM_OP_SIZEX	200
-#define BG_SEGM_OP_SIZEY	350
-#define BG_SP_WIDTH			170
-#define BG_SP_HEIGHT		110
-#define BG_SP_HEIGHT_2		93
-#define BG_SP_TOP_HEIGHT	70
-#define	BG_RIGHT_CELL		112
-#define BG_LEFT_CELL		8
-#define	HOVER_MENU_X		30
-#define	HOVER_MENU_Y		30
-#define HOVER_MENU_BOUND	10
-#define PLOT_MENU_HEIGHT	25
+#define BG_SEGM_OP_SIZEX 200
+#define BG_SEGM_OP_SIZEY 350
+#define BG_SP_WIDTH 170
+#define BG_SP_HEIGHT 110
+#define BG_SP_HEIGHT_2 93
+#define BG_SP_TOP_HEIGHT 70
+#define BG_RIGHT_CELL 112
+#define BG_LEFT_CELL 8
+#define HOVER_MENU_X 30
+#define HOVER_MENU_Y 30
+#define HOVER_MENU_BOUND 10
+#define PLOT_MENU_HEIGHT 25
 
 // end segmentation defaults
 
@@ -48,67 +48,63 @@
 
 #define MAX_CUSTOM_NODES 100
 
-#define RANK_CONF_IMSIZEX	256
-#define RANK_CONF_IMSIZEY	256
-#define RANK_CONF_MARGINX	70
-#define	RANK_CONF_MARGINY	40
+#define RANK_CONF_IMSIZEX 256
+#define RANK_CONF_IMSIZEY 256
+#define RANK_CONF_MARGINX 70
+#define RANK_CONF_MARGINY 40
 
-//window type identifier constants
+// window type identifier constants
 #define BG_EDGE_WINDOW 1
 #define BG_SEGM_WINDOW 2
 
-//max image size
-#define	MAX_WIDTH	1600
-#define	MAX_HEIGHT	1600
+// max image size
+#define MAX_WIDTH 1600
+#define MAX_HEIGHT 1600
 
-//min image size
-#define	MIN_WIDTH	16
-#define	MIN_HEIGHT	16
+// min image size
+#define MIN_WIDTH 16
+#define MIN_HEIGHT 16
 
-//determines zooming action
-#define ZOOM_OUT	0
-#define ZOOM_IN		1
+// determines zooming action
+#define ZOOM_OUT 0
+#define ZOOM_IN 1
 
 // log everything to a text window (GUI only of course)
 class bgLogTextCtrl : public wxLog {
-public:
-    bgLogTextCtrl(wxTextCtrl *pTextCtrl);
+  public:
+    bgLogTextCtrl( wxTextCtrl* pTextCtrl );
 
-private:
+  private:
     // implement sink function
-    virtual void DoLogString(const wxChar *szString, time_t t);
+    virtual void DoLogString( const wxChar* szString, time_t t );
 
     // the control we use
-    wxTextCtrl *m_pTextCtrl;
+    wxTextCtrl* m_pTextCtrl;
 };
 
 // Define a new application
 class BgApp : public wxApp {
-public:
+  public:
     bool OnInit();
 };
 
-
-
-
-
 class BgPointSet {
-public:
+  public:
     int* x_;
     int* y_;
     int n_;
     wxPen pen_;
-    int type_; // 0 circle
+    int type_;   // 0 circle
     // 1 point
 
     BgPointSet();
     ~BgPointSet();
     void CleanData();
-    void SetPoints(int*, int*, int);
+    void SetPoints( int*, int*, int );
 };
 
 class BgLineSet {
-public:
+  public:
     int* xs_;
     int* xe_;
     int* ys_;
@@ -120,13 +116,13 @@ public:
     BgLineSet();
     ~BgLineSet();
     void CleanData();
-    void SetLines(int*, int*, int*, int*, double*, int);
-    void SetLines(double*, double*, double*, int n);
+    void SetLines( int*, int*, int*, int*, double*, int );
+    void SetLines( double*, double*, double*, int n );
 };
 
 class BgCurveSet {
-public:
-    int type_; // standard curve types
+  public:
+    int type_;   // standard curve types
     int* x_;
     int* y_;
     int xs_;
@@ -141,174 +137,171 @@ public:
     BgCurveSet();
     ~BgCurveSet();
     void CleanData();
-    void SetParamCurve(int, double*, double*, int, int, int);
-    void GetParamCurve(double*, double*, int&, int&);
-    void DrawYourself(unsigned char*, int);
-    void DrawLine(unsigned char* buf, int, int, int, int, int);
-    void DrawPoint(unsigned char* buf, int, int, int);
-    void DrawEllipticArc(unsigned char* buf, int, int, int, int, int, int, int);
-    void SetCurve(BgCurveSet*);
-    void StartDragging(int, int);
-    void DragTo(int, int);
-    void EndDragging(int, int);
+    void SetParamCurve( int, double*, double*, int, int, int );
+    void GetParamCurve( double*, double*, int&, int& );
+    void DrawYourself( unsigned char*, int );
+    void DrawLine( unsigned char* buf, int, int, int, int, int );
+    void DrawPoint( unsigned char* buf, int, int, int );
+    void DrawEllipticArc( unsigned char* buf, int, int, int, int, int, int, int );
+    void SetCurve( BgCurveSet* );
+    void StartDragging( int, int );
+    void DragTo( int, int );
+    void EndDragging( int, int );
 };
 
 class BgText {
-public:
-    char	*text_;
-    wxFont	*font_;
-    int		x_, y_;
-    int		id_;
+  public:
+    char* text_;
+    wxFont* font_;
+    int x_, y_;
+    int id_;
 
-    BgText(void);
-    BgText(int, char*, wxFont, int, int);
-    ~BgText(void);
-    void SetText(char*);
-    void SetFont(wxFont);
-    void SetId(int);
-    void SetPlotLocation(int, int);
+    BgText( void );
+    BgText( int, char*, wxFont, int, int );
+    ~BgText( void );
+    void SetText( char* );
+    void SetFont( wxFont );
+    void SetId( int );
+    void SetPlotLocation( int, int );
 };
 
 class BgTextObj {
-public:
-    BgText *text_;
-    BgTextObj	*next_;
+  public:
+    BgText* text_;
+    BgTextObj* next_;
 
-    BgTextObj(void);
-    BgTextObj(BgText*);
-    ~BgTextObj(void);
+    BgTextObj( void );
+    BgTextObj( BgText* );
+    ~BgTextObj( void );
 };
 
 class BgTextList {
-public:
-    BgTextList(void);
-    ~BgTextList(void);
-    int AddText (BgText*);
-    int RemoveText(int);
-    BgText *GetText(void);
-    int	GetTextCount(void);
-    void ResetList(void);
+  public:
+    BgTextList( void );
+    ~BgTextList( void );
+    int AddText( BgText* );
+    int RemoveText( int );
+    BgText* GetText( void );
+    int GetTextCount( void );
+    void ResetList( void );
 
-private:
+  private:
     BgTextObj *head_, *cur_;
-    int	itemcount_;
-    void DeleteText(void);
+    int itemcount_;
+    void DeleteText( void );
 };
 
 class BgBitmap {
-public:
-    wxBitmap	*bitmap_;
-    int			location_x_, location_y_;
-    int			id_;
+  public:
+    wxBitmap* bitmap_;
+    int location_x_, location_y_;
+    int id_;
 
-    BgBitmap(void);
-    BgBitmap(wxBitmap*, int, int, int);
-    ~BgBitmap(void);
-    void SetMap(wxBitmap*);
-    void SetPlotLocation(int, int);
-    void SetId(int);
+    BgBitmap( void );
+    BgBitmap( wxBitmap*, int, int, int );
+    ~BgBitmap( void );
+    void SetMap( wxBitmap* );
+    void SetPlotLocation( int, int );
+    void SetId( int );
 };
 
 class BgBitmapObj {
-public:
-    BgBitmap	*bitmap_;
-    BgBitmapObj	*next_;
+  public:
+    BgBitmap* bitmap_;
+    BgBitmapObj* next_;
 
-    BgBitmapObj(void);
-    BgBitmapObj(BgBitmap*);
-    ~BgBitmapObj(void);
+    BgBitmapObj( void );
+    BgBitmapObj( BgBitmap* );
+    ~BgBitmapObj( void );
 };
 
 class BgBitmapList {
-public:
-    BgBitmapList(void);
-    ~BgBitmapList(void);
-    int AddBitmap (BgBitmap*);
-    void RemoveBitmap(BgBitmap*);
-    BgBitmap *GetBitmap(void);
-    void ResetList(void);
-    int	GetBitmapCount(void);
+  public:
+    BgBitmapList( void );
+    ~BgBitmapList( void );
+    int AddBitmap( BgBitmap* );
+    void RemoveBitmap( BgBitmap* );
+    BgBitmap* GetBitmap( void );
+    void ResetList( void );
+    int GetBitmapCount( void );
 
-private:
+  private:
     BgBitmapObj *head_, *cur_;
-    int	itemcount_;
-    void DeleteBitmap(void);
+    int itemcount_;
+    void DeleteBitmap( void );
 };
 
 class BgAxis {
-public:
-    int		start_x_, start_y_;		//plotting origin of axis
-    int		length_;				//axis length
-    int		direction_;				//0 - horizontal, 1 - vertical
-    int		ticknum_;				//number of ticks
-    float	start_val_, stop_val_;	//starting and stopping location of axis
-    BgText	*label_;				//axis label
-    int		label_x_, label_y_;		//axis label plot location
-    int		rotation_;				//sets rotation
+  public:
+    int start_x_, start_y_;        // plotting origin of axis
+    int length_;                   // axis length
+    int direction_;                // 0 - horizontal, 1 - vertical
+    int ticknum_;                  // number of ticks
+    float start_val_, stop_val_;   // starting and stopping location of axis
+    BgText* label_;                // axis label
+    int label_x_, label_y_;        // axis label plot location
+    int rotation_;                 // sets rotation
 
-    BgAxis(void);
-    BgAxis(int, int, int, int, int, float, float);
-    ~BgAxis(void);
+    BgAxis( void );
+    BgAxis( int, int, int, int, int, float, float );
+    ~BgAxis( void );
 
-    void SetPlotOrigin(int, int);
-    void SetLength(int);
-    void SetDirection(int);
-    void SetTicknum(int);
-    void SetBounds(float, float);
-    void Label(BgText*);
-    void RemoveLabel(void);
-    void SetLabelRotation(int);
-    void PlotAxis(wxDC *dc);
+    void SetPlotOrigin( int, int );
+    void SetLength( int );
+    void SetDirection( int );
+    void SetTicknum( int );
+    void SetBounds( float, float );
+    void Label( BgText* );
+    void RemoveLabel( void );
+    void SetLabelRotation( int );
+    void PlotAxis( wxDC* dc );
 };
 
 class BgThread : public wxThread {
-public:
-    BgThread(wxThreadKind, void foo(void*), void*);
+  public:
+    BgThread( wxThreadKind, void foo( void* ), void* );
     ~BgThread( void );
 
-private:
+  private:
+    // determines the entry point of the thread (foo)
+    void* Entry( void );
 
-    //determines the entry point of the thread (foo)
-    void *Entry( void );
-
-    //pointer to the function foo and its corresponding object
-    void *Object_;
-    void (*function_)(void*);
-
+    // pointer to the function foo and its corresponding object
+    void* Object_;
+    void ( *function_ )( void* );
 };
 
-//Custom dialog box that allows for the addition of bitmaps
-//and bold text (etc)
+// Custom dialog box that allows for the addition of bitmaps
+// and bold text (etc)
 class BgDialog : public wxDialog {
-public:
-    BgDialog(wxWindow*, wxWindowID, const wxString&, const wxPoint&, const wxSize&, long, const wxString&);
-    ~BgDialog(void);
+  public:
+    BgDialog( wxWindow*, wxWindowID, const wxString&, const wxPoint&, const wxSize&, long,
+              const wxString& );
+    ~BgDialog( void );
 
-    //add/remove objects....
-    void AddText(BgText *);
-    void RemoveText(int);
-    void AddBitmap(BgBitmap *);
-    void RemoveBitmap(BgBitmap *);
+    // add/remove objects....
+    void AddText( BgText* );
+    void RemoveText( int );
+    void AddBitmap( BgBitmap* );
+    void RemoveBitmap( BgBitmap* );
 
-    //paint/close dialog
-    virtual void OnPaint(wxPaintEvent& );
-    void OnExit(wxCommandEvent& );
+    // paint/close dialog
+    virtual void OnPaint( wxPaintEvent& );
+    void OnExit( wxCommandEvent& );
     wxButton* okButton_;
 
-    //declare an event table for this class
+    // declare an event table for this class
     DECLARE_EVENT_TABLE();
 
-private:
-
-    //text/bitmap lists...
-    BgTextList		tlist_;
-    BgBitmapList	blist_;
-
+  private:
+    // text/bitmap lists...
+    BgTextList tlist_;
+    BgBitmapList blist_;
 };
 
 class BgHoverBar : public wxWindow {
-public:
-    BgHoverBar(wxWindow*, wxWindowID, int, int, int, int, int, int, int);
+  public:
+    BgHoverBar( wxWindow*, wxWindowID, int, int, int, int, int, int, int );
     ~BgHoverBar( void );
 
     wxBitmapButton* menuButton1_;
@@ -318,20 +311,20 @@ public:
     wxMenu* view_menu;
     wxMenu* save_menu;
 
-    void ShowMenu(wxCommandEvent& );
-    void CheckViewItem(long);
+    void ShowMenu( wxCommandEvent& );
+    void CheckViewItem( long );
     void Update( void );
 
-    int	gradViewId_, confViewId_, weitViewId_, custViewId_;
-    int	gradSaveId_, confSaveId_, weitSaveId_;
+    int gradViewId_, confViewId_, weitViewId_, custViewId_;
+    int gradSaveId_, confSaveId_, weitSaveId_;
 
-    //declare an event table for this class
+    // declare an event table for this class
     DECLARE_EVENT_TABLE();
 };
 
 class BgMenuPanel : public wxPanel {
-public:
-    BgMenuPanel(wxWindow*, wxWindowID, int, int, int, int, int, int, int);
+  public:
+    BgMenuPanel( wxWindow*, wxWindowID, int, int, int, int, int, int, int );
     ~BgMenuPanel( void );
 
     wxBitmapButton* menuButton1_;
@@ -342,42 +335,39 @@ public:
     wxMenu* save_menu;
     wxWindow* scrollWindow_;
 
-    void ShowMenu(wxCommandEvent& );
-    void CheckViewItem(long);
+    void ShowMenu( wxCommandEvent& );
+    void CheckViewItem( long );
     void Update( void );
-    void EnableMenu(bool);
-    void OnSize(wxSizeEvent& );
-    void SetScrollWindow(wxWindow*);
+    void EnableMenu( bool );
+    void OnSize( wxSizeEvent& );
+    void SetScrollWindow( wxWindow* );
 
-    int	gradViewId_, confViewId_, weitViewId_, custViewId_;
-    int	gradSaveId_, confSaveId_, weitSaveId_;
+    int gradViewId_, confViewId_, weitViewId_, custViewId_;
+    int gradSaveId_, confSaveId_, weitSaveId_;
 
-    //declare an event table for this class
+    // declare an event table for this class
     DECLARE_EVENT_TABLE();
 };
 
 class BgImCanvas : public wxScrolledWindow {
-public:
-
-    BgImCanvas(wxWindow* child_frame, wxWindow *parent, const wxPoint& pos, const wxSize& size);
+  public:
+    BgImCanvas( wxWindow* child_frame, wxWindow* parent, const wxPoint& pos, const wxSize& size );
     ~BgImCanvas();
-    virtual void OnDraw(wxDC& dc);
-//   void OnEraseBackground(wxEraseEvent& );
-    bool IsDirty() const {
-        return m_dirty;
-    }
+    virtual void OnDraw( wxDC& dc );
+    //   void OnEraseBackground(wxEraseEvent& );
+    bool IsDirty() const { return m_dirty; }
 
-    void OnEvent(wxMouseEvent&);
-    void OnMouseRightDown(wxMouseEvent&);
-    //void OnScroll(wxScrollWinEvent&);
-    void AdjustScroll(int, int, int);
+    void OnEvent( wxMouseEvent& );
+    void OnMouseRightDown( wxMouseEvent& );
+    // void OnScroll(wxScrollWinEvent&);
+    void AdjustScroll( int, int, int );
 
-    wxBitmap *pbitmap;
-    wxImage *pimage;
+    wxBitmap* pbitmap;
+    wxImage* pimage;
     bool hasbitmap;
     bool showbitmap_;
 
-    wxMenu *localMenu_;
+    wxMenu* localMenu_;
     int lmEventX_;
     int lmEventY_;
     int lmEventCurve_;
@@ -406,187 +396,184 @@ public:
     int crossCursor_;
     int m_x_, m_y_;
 
-    //keep track of certain the window events
-    bool	has_focus;
-    bool	leaving;
+    // keep track of certain the window events
+    bool has_focus;
+    bool leaving;
 
-    //text list object
+    // text list object
     BgTextList tlist_;
 
-    //keep track of the number of un-plotted
-    //text objects
-    int	textObjectCount_;
+    // keep track of the number of un-plotted
+    // text objects
+    int textObjectCount_;
 
-    //x and y axis objects
-    BgAxis	*xAxis, *yAxis;
+    // x and y axis objects
+    BgAxis *xAxis, *yAxis;
 
-    //list of bitmaps
+    // list of bitmaps
     BgBitmapList blist_;
 
-    //clear display
-    bool	clear_display_;
+    // clear display
+    bool clear_display_;
 
-    //do not update display
-    bool	noUpdate_;
+    // do not update display
+    bool noUpdate_;
 
-    //determines if zooming is requested
-    bool	zoom_in, zoom_out, zoom_window;
+    // determines if zooming is requested
+    bool zoom_in, zoom_out, zoom_window;
 
-    //zooming window parameters
-    int	zoom_level, max_zoom_level, min_zoom_level;
+    // zooming window parameters
+    int zoom_level, max_zoom_level, min_zoom_level;
 
-    //zoom buffers
-    unsigned char *buf;
+    // zoom buffers
+    unsigned char* buf;
 
-    //zoom cursors
-    wxCursor	*bgCURSOR_MAGNIFIER_PLUS;
-    wxCursor *bgCURSOR_MAGNIFIER_MINUS;
+    // zoom cursors
+    wxCursor* bgCURSOR_MAGNIFIER_PLUS;
+    wxCursor* bgCURSOR_MAGNIFIER_MINUS;
 
-    //maintain copy of zoomed image
-    unsigned char *zImg;
+    // maintain copy of zoomed image
+    unsigned char* zImg;
 
-    //define zoom box image
-    wxImage	*zoombox;
+    // define zoom box image
+    wxImage* zoombox;
 
-    //defein refresh box image
-    wxImage	*refresh_box;
+    // defein refresh box image
+    wxImage* refresh_box;
 
-    //maintain point map for reconstruction
-    //of image boundaries
-    bool		*point_map;
-    wxColour	*point_colour;
+    // maintain point map for reconstruction
+    // of image boundaries
+    bool* point_map;
+    wxColour* point_colour;
 
-    //define upper corner of zoom and refresh box
+    // define upper corner of zoom and refresh box
     int cx, cy;
 
-    //popup menu window
-    int	menuXl_, menuXu_, menuYl_, menuYu_;
-    int	popup;
+    // popup menu window
+    int menuXl_, menuXu_, menuYl_, menuYu_;
+    int popup;
     wxWindow* menuWindow;
 
-    void AddPointSet(BgPointSet*);
-    void RemovePointSet(BgPointSet*);
-    void AddLineSet(BgLineSet*);
-    void RemoveLineSet(BgLineSet*);
-    void AddCurveSet(BgCurveSet*);
-    void RemoveCurveSet(BgCurveSet*);
-    void AddText(BgText*);
-    void RemoveText(int);
-    void AddHorizontalAxis(int, int, int, int, float, float);
-    void AddVerticalAxis	 (int, int, int, int, float, float);
+    void AddPointSet( BgPointSet* );
+    void RemovePointSet( BgPointSet* );
+    void AddLineSet( BgLineSet* );
+    void RemoveLineSet( BgLineSet* );
+    void AddCurveSet( BgCurveSet* );
+    void RemoveCurveSet( BgCurveSet* );
+    void AddText( BgText* );
+    void RemoveText( int );
+    void AddHorizontalAxis( int, int, int, int, float, float );
+    void AddVerticalAxis( int, int, int, int, float, float );
     void ClearAxis();
-    void LabelHorizontalAxis(BgText*);
-    void LabelVerticalAxis(BgText*);
-    void RemoveHorizontalAxisLabel(void);
-    void RemoveVerticalAxisLabel(void);
-    void RotateHorizontalAxisLabel(int);
-    void RotateVerticalAxisLabel(int);
-    void AddBitmap(BgBitmap*);
-    void RemoveBitmap(BgBitmap*);
-    void ClearDisplay(void);
+    void LabelHorizontalAxis( BgText* );
+    void LabelVerticalAxis( BgText* );
+    void RemoveHorizontalAxisLabel( void );
+    void RemoveVerticalAxisLabel( void );
+    void RotateHorizontalAxisLabel( int );
+    void RotateVerticalAxisLabel( int );
+    void AddBitmap( BgBitmap* );
+    void RemoveBitmap( BgBitmap* );
+    void ClearDisplay( void );
 
-    void AddTrackSet(int, int, int, int);
+    void AddTrackSet( int, int, int, int );
     void RemoveTrackSet();
 
-    int	SetImage(wxString imname);
-    void SetImage(wxImage& image);
-    void SetSameImage(wxImage& image);
-    void SetImageFromGray(unsigned char* data, int w, int h);
-    void SetImage(unsigned char* data, int w, int h, bool color = false);
-    void ShowBitmap(bool);
-    void ClearData(int refresh = 0);
-    void AddMargin(int, int);
+    int SetImage( wxString imname );
+    void SetImage( wxImage& image );
+    void SetSameImage( wxImage& image );
+    void SetImageFromGray( unsigned char* data, int w, int h );
+    void SetImage( unsigned char* data, int w, int h, bool color = false );
+    void ShowBitmap( bool );
+    void ClearData( int refresh = 0 );
+    void AddMargin( int, int );
 
-    int	Zoom(int);
-    int	Zoom(int, int, int);
-    int	ZoomIn(int, int);
-    int	ZoomOut(int, int);
-    void SetMaxZoomLevel(int);
-    void SetMinZoomLevel(int);
-    void DisplayZoomWindow(int, int);
+    int Zoom( int );
+    int Zoom( int, int, int );
+    int ZoomIn( int, int );
+    int ZoomOut( int, int );
+    void SetMaxZoomLevel( int );
+    void SetMinZoomLevel( int );
+    void DisplayZoomWindow( int, int );
 
-    void OnCustomAddNode(wxCommandEvent&);
-    void OnCustomDeleteNode(wxCommandEvent&);
-    void OnCTypeEllipse(wxCommandEvent&);
-    void OnCTypeVLine(wxCommandEvent&);
-    void OnCTypeHLine(wxCommandEvent&);
-    void OnCTypeLine(wxCommandEvent&);
-    void OnCTypeBox(wxCommandEvent&);
-    void OnCTypeCustom(wxCommandEvent&);
+    void OnCustomAddNode( wxCommandEvent& );
+    void OnCustomDeleteNode( wxCommandEvent& );
+    void OnCTypeEllipse( wxCommandEvent& );
+    void OnCTypeVLine( wxCommandEvent& );
+    void OnCTypeHLine( wxCommandEvent& );
+    void OnCTypeLine( wxCommandEvent& );
+    void OnCTypeBox( wxCommandEvent& );
+    void OnCTypeCustom( wxCommandEvent& );
 
-    void AddHoverWindow(wxWindow*, int);
-    void SetHoverWindowLocation(int, int);
+    void AddHoverWindow( wxWindow*, int );
+    void SetHoverWindowLocation( int, int );
 
     //*************************
 
-private:
+  private:
     bool m_dirty;
-    int	x_offset_, y_offset_;
-    void MyDrawEllipticArc(wxDC& dc, int x, int y, int w, int h, int sa, int ea);
-    wxWindow	*child_frame_;
+    int x_offset_, y_offset_;
+    void MyDrawEllipticArc( wxDC& dc, int x, int y, int w, int h, int sa, int ea );
+    wxWindow* child_frame_;
 
-    //used for zoom window
-    void DefineZoomBox(int, int, int, int);
-    void DefineRefreshBox(void);
-    void CreatePointMap(int, int);
-    void AddPoints(unsigned char*, int);
+    // used for zoom window
+    void DefineZoomBox( int, int, int, int );
+    void DefineRefreshBox( void );
+    void CreatePointMap( int, int );
+    void AddPoints( unsigned char*, int );
 
     DECLARE_EVENT_TABLE()
 };
 
-
 class BgParameterHistory {
-public:
+  public:
     BgParameterHistory( void );
-    BgParameterHistory(void*, int);
+    BgParameterHistory( void*, int );
     ~BgParameterHistory();
 
-    void				*params_;
-    int					listSize_;
-    BgParameterHistory	*next_;
+    void* params_;
+    int listSize_;
+    BgParameterHistory* next_;
 };
 
-
-//parameter history box tool
-//IMPORTANT: WHEN ADDING A PARAMETER LIST, THIS OBJECT OBTAINS OWNERSHIP
+// parameter history box tool
+// IMPORTANT: WHEN ADDING A PARAMETER LIST, THIS OBJECT OBTAINS OWNERSHIP
 //			 OF THAT LIST (I.E. IT WILL DELETE THE MEMORY FOR YOU!!!!).
 class BgParameterHistoryBox : public wxComboBox {
-public:
-    BgParameterHistoryBox(wxWindow*, wxWindowID, const wxString&, const wxPoint&, const wxSize&, int, long, const wxValidator&, const wxString&);
+  public:
+    BgParameterHistoryBox( wxWindow*, wxWindowID, const wxString&, const wxPoint&, const wxSize&,
+                           int, long, const wxValidator&, const wxString& );
     ~BgParameterHistoryBox( void );
 
-    //add/get parameter lists
-    void AddParameterList(void*, int);
-    void *GetParameterListData(int);
-    int GetParameterListCount(int);
+    // add/get parameter lists
+    void AddParameterList( void*, int );
+    void* GetParameterListData( int );
+    int GetParameterListCount( int );
 
-    //keep track of parameter history
-    void SetCurrentList(void*, int);
+    // keep track of parameter history
+    void SetCurrentList( void*, int );
     void* GetCurrentListData( void );
     int GetCurrentListCount( void );
-    void UseParameterList(int);
+    void UseParameterList( int );
 
-private:
-
-    //paramter list array...
-    BgParameterHistory	*historyList_, currentList_;
-    int					listCount_, maxCount_;
-
+  private:
+    // paramter list array...
+    BgParameterHistory *historyList_, currentList_;
+    int listCount_, maxCount_;
 };
-
 
 // Define the parameter dialog box
 
 class BgParamDialog : public wxDialog {
-public:
-    BgParamDialog(wxWindow* parent, wxWindowID id, const wxString& title,
-                  const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize,
-                  long style = wxDEFAULT_DIALOG_STYLE, const wxString& name = "dialogBox");
+  public:
+    BgParamDialog( wxWindow* parent, wxWindowID id, const wxString& title,
+                   const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize,
+                   long style = wxDEFAULT_DIALOG_STYLE, const wxString& name = "dialogBox" );
     ~BgParamDialog();
-    void OnOk(wxCommandEvent& );
-    void OnCancel(wxCommandEvent& );
-    void SetValues(double, double, double, double, double, double, int, int, int, int, int);
-    void GetValues(double&, double&, double&, double&, double&, double&, int&, int&, int&, int&, int&);
+    void OnOk( wxCommandEvent& );
+    void OnCancel( wxCommandEvent& );
+    void SetValues( double, double, double, double, double, double, int, int, int, int, int );
+    void GetValues( double&, double&, double&, double&, double&, double&, int&, int&, int&, int&,
+                    int& );
 
     // dialog parameters
     wxButton* okButton_;
@@ -616,20 +603,19 @@ public:
     wxChoice* valHLType_;
     wxTextCtrl* valKernelSize_;
 
-
     DECLARE_EVENT_TABLE()
 };
 
 class BgSpeedSelect : public wxDialog {
-public:
-    BgSpeedSelect(wxWindow* parent, wxWindowID id, const wxString& title,
-                  const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize,
-                  long style = wxDEFAULT_DIALOG_STYLE, const wxString& name = "dialogBox");
+  public:
+    BgSpeedSelect( wxWindow* parent, wxWindowID id, const wxString& title,
+                   const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize,
+                   long style = wxDEFAULT_DIALOG_STYLE, const wxString& name = "dialogBox" );
     ~BgSpeedSelect();
-    void OnOk(wxCommandEvent& );
-    void OnCancel(wxCommandEvent& );
-    void SetSliderValue(float);
-    void GetSliderValue(float&);
+    void OnOk( wxCommandEvent& );
+    void OnCancel( wxCommandEvent& );
+    void SetSliderValue( float );
+    void GetSliderValue( float& );
 
     // dialog parameters
     wxButton* okButton_;
@@ -638,50 +624,49 @@ public:
     wxStaticText* txtQuality_;
     wxStaticText* txtSpeed_;
 
-    wxSlider *sldSpeed_;
+    wxSlider* sldSpeed_;
     DECLARE_EVENT_TABLE()
 };
 
-
 // Define a new frame
 class BgMdiFrame : public wxMDIParentFrame {
-public:
-//   wxTextCtrl *textWindow;
-//   wxLogWindow* logwind_;
-    wxTextCtrl    *logtext_;
-    wxLog *logTargetOld_;
+  public:
+    //   wxTextCtrl *textWindow;
+    //   wxLogWindow* logwind_;
+    wxTextCtrl* logtext_;
+    wxLog* logTargetOld_;
     int logsize_;
     bgLogTextCtrl* bglogctrl_;
     char programDir_[1000];
     char helpDir_[1000];
 
-    BgMdiFrame(wxWindow *parent, const wxWindowID id, const wxString& title,
-               const wxPoint& pos, const wxSize& size, const long style);
+    BgMdiFrame( wxWindow* parent, const wxWindowID id, const wxString& title, const wxPoint& pos,
+                const wxSize& size, const long style );
 
-    void InitToolBar(wxToolBar* toolBar);
+    void InitToolBar( wxToolBar* toolBar );
 
-    void	GetImageFileInfo(char**, char**);
-    void ZoomControl(wxCommandEvent& );
-    void OnSize(wxSizeEvent&);
-    void OnAbout(wxCommandEvent&);
-    void OnHelp(wxCommandEvent&);
-    void OnNewEdgeWindow(wxCommandEvent&);
-    void OnNewSegmWindow(wxCommandEvent&);
-    void OnLoadImage(wxCommandEvent&);
-    void OnLoadImageEdge(wxCommandEvent&);
-    void OnLoadImageSegm(wxCommandEvent&);
-    void OnSaveResult(wxCommandEvent& WXUNUSED(event));
-    void OnQuit(wxCommandEvent&);
-    void OnClose(wxCloseEvent&);
-    void SetChildTitle(wxMDIChildFrame*, int, int, int);
-    void UpdateZoomControl(wxMDIChildFrame*, int, int);
+    void GetImageFileInfo( char**, char** );
+    void ZoomControl( wxCommandEvent& );
+    void OnSize( wxSizeEvent& );
+    void OnAbout( wxCommandEvent& );
+    void OnHelp( wxCommandEvent& );
+    void OnNewEdgeWindow( wxCommandEvent& );
+    void OnNewSegmWindow( wxCommandEvent& );
+    void OnLoadImage( wxCommandEvent& );
+    void OnLoadImageEdge( wxCommandEvent& );
+    void OnLoadImageSegm( wxCommandEvent& );
+    void OnSaveResult( wxCommandEvent& WXUNUSED( event ) );
+    void OnQuit( wxCommandEvent& );
+    void OnClose( wxCloseEvent& );
+    void SetChildTitle( wxMDIChildFrame*, int, int, int );
+    void UpdateZoomControl( wxMDIChildFrame*, int, int );
 
     DECLARE_EVENT_TABLE()
 };
 
-class BgMdiEdgeChild: public wxMDIChildFrame {
-public:
-    //edge detection stuff
+class BgMdiEdgeChild : public wxMDIChildFrame {
+  public:
+    // edge detection stuff
     double rankNmx_;
     double confNmx_;
     double rankH_;
@@ -706,7 +691,7 @@ public:
     BgEdgeList* cbgEdgeList_;
     BgPointSet cbgPointSet_;
 
-    //window stuff
+    // window stuff
     wxSplitterWindow* imagePlotSplitter_;
     wxSplitterWindow* plotSplitter_;
 
@@ -759,84 +744,85 @@ public:
     wxStaticText* valKernelSize_;
 
     int loopset_;
-    //parent toolbar
-    wxToolBar *toolbar;
+    // parent toolbar
+    wxToolBar* toolbar;
 
-    //keep track of current number of frames open
+    // keep track of current number of frames open
     bool window_open;
 
-    //keep track of max/min zoom
-    bool	maxZoom_, minZoom_;
+    // keep track of max/min zoom
+    bool maxZoom_, minZoom_;
 
-    //keep track of filename and window number
-    char *filename_;
-    int	window_number_;
+    // keep track of filename and window number
+    char* filename_;
+    int window_number_;
 
-    //keep track of display image width, height, and zoom level
-    int	width_, height_;
+    // keep track of display image width, height, and zoom level
+    int width_, height_;
 
-    BgMdiEdgeChild(wxMDIParentFrame *parent, const wxString& title, const wxPoint& pos, const wxSize& size, const long style);
+    BgMdiEdgeChild( wxMDIParentFrame* parent, const wxString& title, const wxPoint& pos,
+                    const wxSize& size, const long style );
     ~BgMdiEdgeChild();
-    void OnQuit(wxCommandEvent& );
-    void OnClose(wxCloseEvent& );
-    void OnFocus(wxFocusEvent& );
-    void NoZoom(void);
-    void ZoomWindow(void);
-    void ZoomIn(void);
-    void ZoomOut(void);
-    void UpdateZoomControl(void);
-    void RunEnable(void);
-    void SaveEnable(void);
-    void UpdateToolBar(void);
-    void ResetToolBar(void);
-    void ReadImage(char*, char*);
-    void OnLoadImage(wxCommandEvent& );
-    void OnSaveEdgeMap(wxCommandEvent& );
-    void OnEdgeDetect(wxCommandEvent& );
-    void OnChangeParam(wxCommandEvent& );
-    void OnViewOrig(wxCommandEvent& );
-    void OnViewEdge(wxCommandEvent& );
-    void OnCViewOrig(wxCommandEvent& );
-    void OnCViewEdge(wxCommandEvent& );
-    void OnSize(wxSizeEvent& );
-    void SetTotalImage(void);
-    void SetNmxImage(void);
+    void OnQuit( wxCommandEvent& );
+    void OnClose( wxCloseEvent& );
+    void OnFocus( wxFocusEvent& );
+    void NoZoom( void );
+    void ZoomWindow( void );
+    void ZoomIn( void );
+    void ZoomOut( void );
+    void UpdateZoomControl( void );
+    void RunEnable( void );
+    void SaveEnable( void );
+    void UpdateToolBar( void );
+    void ResetToolBar( void );
+    void ReadImage( char*, char* );
+    void OnLoadImage( wxCommandEvent& );
+    void OnSaveEdgeMap( wxCommandEvent& );
+    void OnEdgeDetect( wxCommandEvent& );
+    void OnChangeParam( wxCommandEvent& );
+    void OnViewOrig( wxCommandEvent& );
+    void OnViewEdge( wxCommandEvent& );
+    void OnCViewOrig( wxCommandEvent& );
+    void OnCViewEdge( wxCommandEvent& );
+    void OnSize( wxSizeEvent& );
+    void SetTotalImage( void );
+    void SetNmxImage( void );
 
     // param events
-    void SetParametersNum(void);
-    void SetParametersStr(void);
-    void OnUpdateNum(wxCommandEvent& );
+    void SetParametersNum( void );
+    void SetParametersStr( void );
+    void OnUpdateNum( wxCommandEvent& );
 
     DECLARE_EVENT_TABLE()
 };
 
-class BgMdiSegmentChild: public wxMDIChildFrame {
-public:
+class BgMdiSegmentChild : public wxMDIChildFrame {
+  public:
     BgImage* cbgImage_;
     BgImage* filtImage_;
     BgImage* segmImage_;
     BgImage* whiteImage_;
 
-    //segmemtation parameters
-    int		sigmaS, minRegion, kernelSize;
-    float	sigmaR, aij, epsilon, *gradMap_, *confMap_, *weightMap_, *customMap_;
-    bool		edgeParamsHaveChanged_;
-    SpeedUpLevel	speedUpLevel_;
+    // segmemtation parameters
+    int sigmaS, minRegion, kernelSize;
+    float sigmaR, aij, epsilon, *gradMap_, *confMap_, *weightMap_, *customMap_;
+    bool edgeParamsHaveChanged_;
+    SpeedUpLevel speedUpLevel_;
     float speedUpThreshold_;
 
-    //point set used to draw boundaries
+    // point set used to draw boundaries
     BgPointSet* boundaries_;
 
-    //window stuff
+    // window stuff
     BgImCanvas* displayImage_;
 
-    //confidence map image
+    // confidence map image
     BgImCanvas* plotWindow1_;
 
-    //rank map image
+    // rank map image
     BgImCanvas* plotWindow2_;
 
-    //ph diagram
+    // ph diagram
     BgImCanvas* phDiagram_;
 
     int hasBoundaries_;
@@ -845,11 +831,11 @@ public:
     int hasSegment_;
 
     // left panel stuff
-    wxPanel*	optionsPanel_;
+    wxPanel* optionsPanel_;
     wxPanel* subPanel1_;
     wxPanel* subPanel2_;
     wxPanel* subPanel3_;
-    BgMenuPanel*	winPanel1_;
+    BgMenuPanel* winPanel1_;
     BgMenuPanel* winPanel2_;
     wxStaticBox* subPanelBox1_;
     wxStaticBox* subPanelBox2_;
@@ -881,72 +867,73 @@ public:
     wxStaticText* textMinRegion_;
     wxTextCtrl* txtMinRegion_;
 
-    bool	isCurrentHistory_;
+    bool isCurrentHistory_;
     bool checkTextBoxes_;
     wxStaticText* textParamBox_;
-    BgParameterHistoryBox*	paramComboBox_;
+    BgParameterHistoryBox* paramComboBox_;
 
     wxCheckBox* useWeightMap_;
 
-    //used to split the window to display ph diagram
+    // used to split the window to display ph diagram
     wxSplitterWindow* imagePlotSplitter_;
     wxSplitterWindow* plotMapSplitter_;
     wxSplitterWindow* mapSplitter_;
 
-    //store pointer to parent frame toolbar
-    wxToolBar *toolbar;
+    // store pointer to parent frame toolbar
+    wxToolBar* toolbar;
 
-    //keep track of current number of frames open
+    // keep track of current number of frames open
     bool window_open;
 
-    //keep track of filename and window number
-    char *filename_;
-    int	window_number_;
+    // keep track of filename and window number
+    char* filename_;
+    int window_number_;
 
-    //keep track of display image width, height, and zoom level
-    int	width_, height_;
+    // keep track of display image width, height, and zoom level
+    int width_, height_;
 
-    //keep track if max/min zoom occurred
-    int	maxZoom_, minZoom_;
+    // keep track if max/min zoom occurred
+    int maxZoom_, minZoom_;
 
-    BgMdiSegmentChild(wxMDIParentFrame *parent, const wxString& title, const wxPoint& pos, const wxSize& size, const long style);
+    BgMdiSegmentChild( wxMDIParentFrame* parent, const wxString& title, const wxPoint& pos,
+                       const wxSize& size, const long style );
     ~BgMdiSegmentChild();
 
-    void OnQuit(wxCommandEvent& );
-    void OnClose(wxCloseEvent& );
-    void OnFocus(wxFocusEvent& );
-    void ZoomWindow(void);
-    void ZoomIn(void);
-    void ZoomOut(void);
-    void NoZoom(void);
-    void UpdateZoomControl(void);
-    void RunEnable(void);
-    void SaveEnable(void);
-    void UpdateToolBar(void);
-    void ResetToolBar(void);
-    void ReadImage(char*, char*);
-    void OnLoadImage(wxCommandEvent& );
-    void LoadCustomWeightMap(wxCommandEvent&);
-    void OnSaveSegmentedImage(wxCommandEvent& );
-    void OnSaveBoundaries(char*, int);
-    void OnSegment(wxCommandEvent& );
-    void Segment(void);
-    void SetphDiagram(int, float*, float*);
-    void OnViewImSeg(wxCommandEvent& );
-    void OnChangeOperation(wxCommandEvent& );
-    void OnChangeParameters(wxCommandEvent& );
-    void	OnUpdateTextBoxes(wxCommandEvent& );
-    void OnUpdateSpeedUpLevel(wxCommandEvent& );
-    void OnViewBoundaries(wxCommandEvent& );
-    void OnUseWeightMap(wxCommandEvent& );
-    void OnUpdatePlotWindow1(wxCommandEvent& );
-    void OnUpdatePlotWindow2(wxCommandEvent& );
-    void OnSaveEdgeInformation(wxCommandEvent& );
-    //void OnChangeView
-    void OnSize(wxSizeEvent& );
+    void OnQuit( wxCommandEvent& );
+    void OnClose( wxCloseEvent& );
+    void OnFocus( wxFocusEvent& );
+    void ZoomWindow( void );
+    void ZoomIn( void );
+    void ZoomOut( void );
+    void NoZoom( void );
+    void UpdateZoomControl( void );
+    void RunEnable( void );
+    void SaveEnable( void );
+    void UpdateToolBar( void );
+    void ResetToolBar( void );
+    void ReadImage( char*, char* );
+    void OnLoadImage( wxCommandEvent& );
+    void LoadCustomWeightMap( wxCommandEvent& );
+    void OnSaveSegmentedImage( wxCommandEvent& );
+    void OnSaveBoundaries( char*, int );
+    void OnSegment( wxCommandEvent& );
+    void Segment( void );
+    void SetphDiagram( int, float*, float* );
+    void OnViewImSeg( wxCommandEvent& );
+    void OnChangeOperation( wxCommandEvent& );
+    void OnChangeParameters( wxCommandEvent& );
+    void OnUpdateTextBoxes( wxCommandEvent& );
+    void OnUpdateSpeedUpLevel( wxCommandEvent& );
+    void OnViewBoundaries( wxCommandEvent& );
+    void OnUseWeightMap( wxCommandEvent& );
+    void OnUpdatePlotWindow1( wxCommandEvent& );
+    void OnUpdatePlotWindow2( wxCommandEvent& );
+    void OnSaveEdgeInformation( wxCommandEvent& );
+    // void OnChangeView
+    void OnSize( wxSizeEvent& );
     void ClearDisplay( void );
-    void UpdateDisplay(bool);
-    int  GetParameters(int&, float&, float&, float&, int&, int&, int);
+    void UpdateDisplay( bool );
+    int GetParameters( int&, float&, float&, float&, int&, int&, int );
     DECLARE_EVENT_TABLE()
 };
 

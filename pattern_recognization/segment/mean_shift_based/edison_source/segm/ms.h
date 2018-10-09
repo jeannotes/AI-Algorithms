@@ -1,38 +1,38 @@
 /*******************************************************
 
                  Mean Shift Analysis Library
-	=============================================
+    =============================================
 
-	The mean shift library is a collection of routines
-	that use the mean shift algorithm. Using this algorithm,
-	the necessary output will be generated needed
-	to analyze a given input set of data.
+    The mean shift library is a collection of routines
+    that use the mean shift algorithm. Using this algorithm,
+    the necessary output will be generated needed
+    to analyze a given input set of data.
 
   MeanShift Base Class:
   ====================
 
-	The mean shift library of routines is realized
-	via the creation of a MeanShift base class. This class
-	provides a mechanism for calculating the mean shift vector
-	at a specified data point, using an arbitrary N-dimensional
-	data set, and a user-defined kernel.
+    The mean shift library of routines is realized
+    via the creation of a MeanShift base class. This class
+    provides a mechanism for calculating the mean shift vector
+    at a specified data point, using an arbitrary N-dimensional
+    data set, and a user-defined kernel.
 
-	For image processing the mean shift base class also allows
-	for the definition of a data set that is on a two-dimensional
-	lattice. The amount of time needed to compute the mean shift
-	vector using such a data set is much less than that of an
-	arbitrary one. Because images usually contain many data points,
-	defining the image input data points as being on a lattice
-	greatly improves computation time and makes algorithms such
-	as image filtering practical.
+    For image processing the mean shift base class also allows
+    for the definition of a data set that is on a two-dimensional
+    lattice. The amount of time needed to compute the mean shift
+    vector using such a data set is much less than that of an
+    arbitrary one. Because images usually contain many data points,
+    defining the image input data points as being on a lattice
+    greatly improves computation time and makes algorithms such
+    as image filtering practical.
 
-	The MeanShift class prototype is provided below. Its
-	definition is provided in 'ms.cc'.
+    The MeanShift class prototype is provided below. Its
+    definition is provided in 'ms.cc'.
 
 The theory is described in the papers:
 
   D. Comaniciu, P. Meer: Mean Shift: A robust approach toward feature
-									 space analysis.
+                                     space analysis.
 
   C. Christoudias, B. Georgescu, P. Meer: Synergism in low level vision.
 
@@ -45,91 +45,90 @@ Implemented by Chris M. Christoudias, Bogdan Georgescu
 #ifndef MS_H
 #define MS_H
 
-//Included needed libraries
+// Included needed libraries
 
-//Include type definitions
-#include	"tdef.h"
+// Include type definitions
+#include "tdef.h"
 
-//include mean shift system used
-//for function timing and system output
-#include	"msSys.h"
+// include mean shift system used
+// for function timing and system output
+#include "msSys.h"
 
-//Include Debugging Constant
+// Include Debugging Constant
 //#define	DEBUG
 
-//Define Prompt - Prompts user on progress of Mean Shift algorithm
-#define	PROMPT
+// Define Prompt - Prompts user on progress of Mean Shift algorithm
+#define PROMPT
 
-//Define Show Progress - Prompts user on percent complete of a given
+// Define Show Progress - Prompts user on percent complete of a given
 //                       mean shift algorithm
 //#define SHOW_PROGRESS
 
-//Define Progress Rate - Indicates the number of convergences before
+// Define Progress Rate - Indicates the number of convergences before
 //						 checking progress
-#define PROGRESS_RATE	100
+#define PROGRESS_RATE 100
 
 // Define Macros
-#define	SWAP(d_a, d_b) temp=(d_a);(d_a)=(d_b);(d_b)=temp;
+#define SWAP( d_a, d_b ) \
+    temp    = ( d_a );   \
+    ( d_a ) = ( d_b );   \
+    ( d_b ) = temp;
 
 // Define Structures
 
-//k-Dimensional Binary Search Tree
+// k-Dimensional Binary Search Tree
 struct tree {
-    float *x;
-    tree  *right;
-    tree  *left;
-    tree  *parent;
+    float* x;
+    tree* right;
+    tree* left;
+    tree* parent;
 };
 
 // User Defined Weight Function
 struct userWeightFunct {
-
-    double			*w;
-    double			halfWindow;
-    int				sampleNumber;
-    int				subspace;
-    userWeightFunct	*next;
-
+    double* w;
+    double halfWindow;
+    int sampleNumber;
+    int subspace;
+    userWeightFunct* next;
 };
 
-//Define class state structure
+// Define class state structure
 struct ClassStateStruct {
-    bool	KERNEL_DEFINED;
-    bool	INPUT_DEFINED;
-    bool	LATTICE_DEFINED;
-    bool	OUTPUT_DEFINED;
+    bool KERNEL_DEFINED;
+    bool INPUT_DEFINED;
+    bool LATTICE_DEFINED;
+    bool OUTPUT_DEFINED;
 };
 
 // Define Constants
 
 // Threshold
-const double	EPSILON		= 0.01;			// define threshold (approx. Value of Mh at a peak or plateau)
-const double	MU				= 0.05;		// define threshold required that window is near convergence
-const double	TC_DIST_FACTOR	= 0.5;		// cluster search windows near convergence that are a distance
+const double EPSILON        = 0.01;   // define threshold (approx. Value of Mh at a peak or plateau)
+const double MU             = 0.05;   // define threshold required that window is near convergence
+const double TC_DIST_FACTOR = 0.5;    // cluster search windows near convergence that are a distance
 // h[i]*TC_DIST_FACTOR of one another (transitive closure)
-const double	SQ_TC_DFACTOR	= 0.0625;	// (TC_DIST_FACTOR)^2
-const int		LIMIT           = 100;		// define max. # of iterations to find mode
+const double SQ_TC_DFACTOR = 0.0625;   // (TC_DIST_FACTOR)^2
+const int LIMIT            = 100;      // define max. # of iterations to find mode
 
 // Gaussian Lookup Table
-const int		GAUSS_NUM_ELS   = 16;		// take 16 samples of exp(-u/2)
-const double	GAUSS_LIMIT     = 2.9;		// GAUSS_LIMIT     = c
-const double	GAUSS_INCREMENT = GAUSS_LIMIT * GAUSS_LIMIT / GAUSS_NUM_ELS;
+const int GAUSS_NUM_ELS      = 16;    // take 16 samples of exp(-u/2)
+const double GAUSS_LIMIT     = 2.9;   // GAUSS_LIMIT     = c
+const double GAUSS_INCREMENT = GAUSS_LIMIT * GAUSS_LIMIT / GAUSS_NUM_ELS;
 // GAUSS_INCREMENT = (c^2)/(# of samples)
 
 // Numerical Analysis
-const double	DELTA           = 0.00001;	// used for floating point to integer conversion
+const double DELTA = 0.00001;   // used for floating point to integer conversion
 
-//MeanShift Prototype
+// MeanShift Prototype
 class MeanShift {
-
-public:
-
+  public:
     /*/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\*/
     /* Class Constructor and Destructor */
     /*\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/*/
 
-    MeanShift( void ); //Default Constructor
-    ~MeanShift( void ); //Class Destructor
+    MeanShift( void );    // Default Constructor
+    ~MeanShift( void );   // Class Destructor
 
     /*/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\*/
     /* Creation/Initialization of Mean Shift Kernel */
@@ -182,7 +181,7 @@ public:
     //<--------------------------------------------------->|//
     //--\\||//--\\||//--\\||//--\\||//--\\||//--\\||//--\\||//
 
-    void  DefineKernel(kernelType*, float*, int*, int);
+    void DefineKernel( kernelType*, float*, int*, int );
 
     //--\\||//--\\||//--\\||//--\\||//--\\||//--\\||//--\\||//
     //<--------------------------------------------------->|//
@@ -252,7 +251,7 @@ public:
     //<--------------------------------------------------->|//
     //--\\||//--\\||//--\\||//--\\||//--\\||//--\\||//--\\||//
 
-    void AddWeightFunction(double g(double), float, int, int);
+    void AddWeightFunction( double g( double ), float, int, int );
 
     //--\\||//--\\||//--\\||//--\\||//--\\||//--\\||//--\\||//
     //<--------------------------------------------------->|//
@@ -319,7 +318,7 @@ public:
     //<--------------------------------------------------->|//
     //--\\||//--\\||//--\\||//--\\||//--\\||//--\\||//--\\||//
 
-    void	DefineInput(float*, int, int);
+    void DefineInput( float*, int, int );
 
     //--\\||//--\\||//--\\||//--\\||//--\\||//--\\||//--\\||//
     //<--------------------------------------------------->|//
@@ -360,7 +359,7 @@ public:
     //<--------------------------------------------------->|//
     //--\\||//--\\||//--\\||//--\\||//--\\||//--\\||//--\\||//
 
-    void	DefineLInput(float*, int, int, int);
+    void DefineLInput( float*, int, int, int );
 
     /*/\/\/\/\/\/\/\/\/\/\/\*/
     /*  Lattice Weight Map  */
@@ -411,7 +410,7 @@ public:
     //<--------------------------------------------------->|//
     //--\\||//--\\||//--\\||//--\\||//--\\||//--\\||//--\\||//
 
-    void SetLatticeWeightMap(float*);
+    void SetLatticeWeightMap( float* );
 
     //--\\||//--\\||//--\\||//--\\||//--\\||//--\\||//--\\||//
     //<--------------------------------------------------->|//
@@ -438,7 +437,7 @@ public:
     //<--------------------------------------------------->|//
     //--\\||//--\\||//--\\||//--\\||//--\\||//--\\||//--\\||//
 
-    void RemoveLatticeWeightMap(void);
+    void RemoveLatticeWeightMap( void );
 
     /*/\/\/\/\/\/\/\/\/\/\/\/\*/
     /* Mean Shift Operations  */
@@ -480,7 +479,7 @@ public:
     //<--------------------------------------------------->|//
     //--\\||//--\\||//--\\||//--\\||//--\\||//--\\||//--\\||//
 
-    void	msVector(double*, double*);
+    void msVector( double*, double* );
 
     //--\\||//--\\||//--\\||//--\\||//--\\||//--\\||//--\\||//
     //<--------------------------------------------------->|//
@@ -525,7 +524,7 @@ public:
     //<--------------------------------------------------->|//
     //--\\||//--\\||//--\\||//--\\||//--\\||//--\\||//--\\||//
 
-    void	latticeMSVector(double*, double*);
+    void latticeMSVector( double*, double* );
 
     //--\\||//--\\||//--\\||//--\\||//--\\||//--\\||//--\\||//
     //<--------------------------------------------------->|//
@@ -563,7 +562,7 @@ public:
     //<--------------------------------------------------->|//
     //--\\||//--\\||//--\\||//--\\||//--\\||//--\\||//--\\||//
 
-    void FindMode(double*, double*);
+    void FindMode( double*, double* );
 
     //--\\||//--\\||//--\\||//--\\||//--\\||//--\\||//--\\||//
     //<--------------------------------------------------->|//
@@ -608,7 +607,7 @@ public:
     //<--------------------------------------------------->|//
     //--\\||//--\\||//--\\||//--\\||//--\\||//--\\||//--\\||//
 
-    void FindLMode(double*, double*);
+    void FindLMode( double*, double* );
 
     /*/\/\/\/\/\/\/\/\/\/\/\/\/\*/
     /*  Error Handler Mechanism */
@@ -626,7 +625,7 @@ public:
     //<--------------------------------------------------->|//
     //--\\||//--\\||//--\\||//--\\||//--\\||//--\\||//--\\||//
 
-    char			*ErrorMessage;
+    char* ErrorMessage;
 
     //--\\||//--\\||//--\\||//--\\||//--\\||//--\\||//--\\||//
     //<--------------------------------------------------->|//
@@ -645,10 +644,9 @@ public:
     //<--------------------------------------------------->|//
     //--\\||//--\\||//--\\||//--\\||//--\\||//--\\||//--\\||//
 
-    ErrorLevel	ErrorStatus;
+    ErrorLevel ErrorStatus;
 
-protected:
-
+  protected:
     //==========================
     // *** Protected Methods ***
     //==========================
@@ -661,7 +659,7 @@ protected:
     // <<*>> Usage: MSVector(Mh, yk) <<*>> //
     /////////////////////////////////////////
 
-    void MSVector      (double*, double*);               // Computes the mean shift vector at a specified
+    void MSVector( double*, double* );   // Computes the mean shift vector at a specified
     // window location yk in the data set x given
     // the vector yk
     /*/\/\/\/\/\/\/\/\/\/\/\/\/\/\*/
@@ -672,14 +670,16 @@ protected:
     // <<*>> Usage: LatticeMSVector(Mh, yk) <<*>> //
     ////////////////////////////////////////////////
 
-    void	LatticeMSVector     (double*, double*);			// Uses the lattice defined by DefineLattice to compute the
+    void LatticeMSVector( double*,
+                          double* );   // Uses the lattice defined by DefineLattice to compute the
     // mean shift vector at a specified window location yk
 
     ///////////////////////////////////////////////////
     // <<*>> Usage: OptLatticeMSVector(Mh, yk) <<*>> //
     ///////////////////////////////////////////////////
 
-    void	OptLatticeMSVector     (double*, double*);      // Uses the lattice defined by DefineLattice to compute the
+    void OptLatticeMSVector( double*, double* );   // Uses the lattice defined by DefineLattice to
+                                                   // compute the
     // mean shift vector at a specified window location yk using
     // the basin of attraction optimization for better performace
     // during mean shift filtering - used by a derived class
@@ -692,7 +692,8 @@ protected:
     // <<*>> Usage: classConsistencyCheck(N) <<*>> //
     /////////////////////////////////////////////////
 
-    void classConsistencyCheck(int, bool);				// checks to see that a kernel is created and input defined, as
+    void classConsistencyCheck( int, bool );   // checks to see that a kernel is created and input
+                                               // defined, as
     // well as the specified dimension of the data set matches that of
     // the kernel, if not an error is flagged and the program is halted
 
@@ -705,8 +706,7 @@ protected:
     //			className, functName, errMessage)     //
     /////////////////////////////////////////////////////
 
-    void ErrorHandler(char*, char*, char*);				// flags an error and halts the system
-
+    void ErrorHandler( char*, char*, char* );   // flags an error and halts the system
 
     //===============================
     // *** Protected Data Members ***
@@ -716,21 +716,20 @@ protected:
     //#########   MEAN SHIFT SYSTEM   ##########
     //##########################################
 
-    msSystem		msSys;								// used for function timing and system output
+    msSystem msSys;   // used for function timing and system output
 
     //##########################################
     //######### INPUT DATA PARAMETERS ##########
     //##########################################
 
-    int				L, N, kp, *P;						// length, dimension, subspace number, and subspace dimensions
-
+    int L, N, kp, *P;   // length, dimension, subspace number, and subspace dimensions
 
     //##########################################
     //######### INPUT DATA STORAGE    ##########
     //##########################################
 
     ////////Linear Storage (used by lattice and bst)////////
-    float			*data;								// memory allocated for data points stored by tree nodes
+    float* data;   // memory allocated for data points stored by tree nodes
     // when used by the lattice data structure data does not store
     // the lattice information; format of data:
     // data = <x11, x12, ..., x1N,...,xL1, xL2, ..., xLN>
@@ -741,34 +740,33 @@ protected:
     //##########################################
 
     ////////Lattice Data Structure////////
-    int				height, width;						// Height and width of lattice
+    int height, width;   // Height and width of lattice
 
     //##########################################
     //######### KERNEL DATA STRUCTURE ##########
     //##########################################
 
-    float			*h;									// bandwidth vector
+    float* h;   // bandwidth vector
 
-    float			*offset;							// defines bandwidth offset caused by the use of a Gaussian kernel
+    float* offset;   // defines bandwidth offset caused by the use of a Gaussian kernel
     // (for example)
 
     //##########################################
     //#########  BASIN OF ATTRACTION  ##########
     //##########################################
 
-    unsigned char	*modeTable;							// Assigns a marking to each data point specifying whether
+    unsigned char* modeTable;   // Assigns a marking to each data point specifying whether
     // or not it has been assigned a mode. These labels are:
     // modeTable[i] = 0 - data point i is not associated with a mode
     // modeTable[i] = 1 - data point i is associated with a mode
     // modeTable[i] = 2 - data point i is associated with a mode
     //                    however its mode is yet to be determined
 
-    int				*pointList;							// a list of data points that due to basin of attraction will
+    int* pointList;   // a list of data points that due to basin of attraction will
     // converge to the same mode as the mode that mean shift is
     // currently being applied to
 
-    int				pointCount;							// the number of points stored by the point list
-
+    int pointCount;   // the number of points stored by the point list
 
     //##########################################
     //#########  WEIGHT MAP USED      ##########
@@ -776,21 +774,21 @@ protected:
     //#########  SHIFT ON A LATTICE   ##########
     //##########################################
 
-    float			*weightMap;							// weight map that may be used to weight the kernel
+    float* weightMap;   // weight map that may be used to weight the kernel
     // upon performing mean shift on a lattice
 
-    bool			weightMapDefined;					// used to indicate if a lattice weight map has been
+    bool weightMapDefined;   // used to indicate if a lattice weight map has been
     // defined
 
     //##########################################
     //#######        CLASS STATE        ########
     //##########################################
 
-    ClassStateStruct	class_state;					//specifies the state of the class(i.e if data has been loaded into
-    //the class, if a kernel has been defined, etc.)
+    ClassStateStruct class_state;   // specifies the state of the class(i.e if data has been loaded
+                                    // into
+                                    // the class, if a kernel has been defined, etc.)
 
-private:
-
+  private:
     //========================
     // *** Private Methods ***
     //========================
@@ -799,20 +797,20 @@ private:
     /* Kernel Creation/Manipulation */
     /*\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/*/
 
-    void	generateLookupTable ( void );                  // Generates Weight Function Lookup Table
+    void generateLookupTable( void );   // Generates Weight Function Lookup Table
 
-    void	DestroyKernel       ( void );                  // Destroys mean shift kernel, re-initializes kernel
-
+    void DestroyKernel( void );   // Destroys mean shift kernel, re-initializes kernel
 
     /*/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\*/
     /* Input Data Initialization/Destruction  */
     /*\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/*/
 
-    void	CreateBST		( void );						// Upload input into a kd-BST
+    void CreateBST( void );   // Upload input into a kd-BST
 
-    void	InitializeInput	(float*);						// Allocates memory for and initializes the input data structure
+    void InitializeInput( float* );   // Allocates memory for and initializes the input data
+                                      // structure
 
-    void	ResetInput		( void );						// de-allocate memory for and re-initialize input data structure
+    void ResetInput( void );   // de-allocate memory for and re-initialize input data structure
     // and mode structure
 
     /*/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\*/
@@ -820,10 +818,11 @@ private:
     /*\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/*/
 
     ////////Data Search Tree/////////
-    tree  *BuildKDTree (tree*,  int, int, tree* );       // Builds a kd tree given a subset of points initialized
+    tree* BuildKDTree( tree*, int, int,
+                       tree* );   // Builds a kd tree given a subset of points initialized
     // at depth 0 (dimension 0) (for Tree Structure)
 
-    void  QuickMedian (tree*, int, int, int );           // Finds the median tree in a forest of trees using
+    void QuickMedian( tree*, int, int, int );   // Finds the median tree in a forest of trees using
     // dimension d, placing the median tree in the array of tree
     // nodes at L/2, in which all trees to the left of the median tree
     // have values less than that of the median tree in dimension d
@@ -835,12 +834,14 @@ private:
     /* Mean Shift: Using kd-Tree  */
     /*\/\/\/\/\/\/\/\/\/\/\/\/\/\/*/
 
-    void uniformSearch (tree*, int, double*, double*);     // uses kdbst to perform range search on input data,
+    void uniformSearch( tree*, int, double*,
+                        double* );   // uses kdbst to perform range search on input data,
     // computing the weighted sum of these points using
     // a uniform kernel and storing the result into Mh
     // (called by uniformMSVector)
 
-    void generalSearch (tree*, int, double*, double*);     // uses kdbst to perform range search on input data,
+    void generalSearch( tree*, int, double*,
+                        double* );   // uses kdbst to perform range search on input data,
     // computing the weighted sum of these points using
     // a general kernel and storing the result into Mh
     // (called by generalMSVector)
@@ -849,24 +850,27 @@ private:
     /*  Mean Shift: Using Lattice */
     /*\/\/\/\/\/\/\/\/\/\/\/\/\/\/*/
 
-    void	uniformLSearch	 (double *, double *);			// given a center location and mean shift vector, a lattice
+    void uniformLSearch( double*,
+                         double* );   // given a center location and mean shift vector, a lattice
     // search is performed to compute the mean shift vector
     // using a uniform kernel
 
-    void optUniformLSearch(double *, double *);			// given a center location and mean shift vector, a lattice
+    void optUniformLSearch( double*,
+                            double* );   // given a center location and mean shift vector, a lattice
     // search is performed to compute the mean shift vector
     // using a uniform kernel and the basin of attraction
     // optimization for better performance
 
-    void generalLSearch	 (double *, double *);			// given a center location and mean shift vector, a lattice
+    void generalLSearch( double*,
+                         double* );   // given a center location and mean shift vector, a lattice
     // search is performed to compute the mean shift vector
     // using a general kernel
 
-    void optGeneralLSearch(double *, double *);			// given a center location and mean shift vector, a lattice
+    void optGeneralLSearch( double*,
+                            double* );   // given a center location and mean shift vector, a lattice
     // search is performed to compute the mean shift vector
     // using a general kernel and the basin of attraction
     // optimization for better performance
-
 
     //=============================
     // *** Private Data Members ***
@@ -876,27 +880,26 @@ private:
     //######### KERNEL DATA STRUCTURE ##########
     //##########################################
 
-    kernelType		*kernel;							// kernel types for each subspace S[i]
+    kernelType* kernel;   // kernel types for each subspace S[i]
 
-    double			**w;								// weight function lookup table
+    double** w;   // weight function lookup table
 
-    double			*increment;							// increment used by weight hashing function
+    double* increment;   // increment used by weight hashing function
 
-    bool			uniformKernel;						// flag used to indicate if the kernel is uniform or not
+    bool uniformKernel;   // flag used to indicate if the kernel is uniform or not
 
-    userWeightFunct	*head, *cur;						// user defined weight function linked list
-
+    userWeightFunct *head, *cur;   // user defined weight function linked list
 
     //##########################################
     //######### INPUT DATA STORAGE    ##########
     //##########################################
 
     ////////Range Searching on General Input Data Set////////
-    tree			*root;								// root of kdBST used to store input
+    tree* root;   // root of kdBST used to store input
 
-    tree			*forest;							// memory allocated for tree nodes
+    tree* forest;   // memory allocated for tree nodes
 
-    float			*range;								// range vector used to perform range search on kd tree, indexed
+    float* range;   // range vector used to perform range search on kd tree, indexed
     // by dimension of input - format:
     // range = {Lower_Limit_1, Upper_Limit_1, ..., Lower_Limit_N, Upper_Limit_N}
 
@@ -905,22 +908,21 @@ private:
     //######### DATA STRUCTURES       ##########
     //##########################################
 
-    double			*uv;								// stores normalized distance vector between
+    double* uv;   // stores normalized distance vector between
     // yk and xi
 
-    double			wsum;								// sum of weights calculated at data points within the sphere
+    double wsum;   // sum of weights calculated at data points within the sphere
 
     //##########################################
     //######### LATTICE DATA STRUCTURE #########
     //##########################################
 
     ////////Lattice Data Structure////////
-    int				LowerBoundX, UpperBoundX;			// Upper and lower bounds for lattice search window
+    int LowerBoundX, UpperBoundX;   // Upper and lower bounds for lattice search window
     // in the x dimension
 
-    int				LowerBoundY, UpperBoundY;			// Upper and lower bounds for lattice search window
+    int LowerBoundY, UpperBoundY;   // Upper and lower bounds for lattice search window
     // in the y dimension
-
 };
 
 #endif

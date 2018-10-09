@@ -31,18 +31,18 @@
 #include <Eigen/Geometry>
 #include "../core/g2o_core_api.h"
 
-namespace g2o {
+namespace g2o
+{
 using namespace Eigen;
 
-inline G2O_CORE_API Matrix3d skew(const Vector3d&v);
-inline G2O_CORE_API Vector3d deltaR(const Matrix3d& R);
-inline G2O_CORE_API Vector2d project(const Vector3d&);
-inline G2O_CORE_API Vector3d project(const Vector4d&);
-inline G2O_CORE_API Vector3d unproject(const Vector2d&);
-inline G2O_CORE_API Vector4d unproject(const Vector3d&);
+inline G2O_CORE_API Matrix3d skew( const Vector3d& v );
+inline G2O_CORE_API Vector3d deltaR( const Matrix3d& R );
+inline G2O_CORE_API Vector2d project( const Vector3d& );
+inline G2O_CORE_API Vector3d project( const Vector4d& );
+inline G2O_CORE_API Vector3d unproject( const Vector2d& );
+inline G2O_CORE_API Vector4d unproject( const Vector3d& );
 
 #include "se3_ops.hpp"
-
 }
 
-#endif //MATH_STUFF
+#endif   // MATH_STUFF

@@ -39,9 +39,8 @@
 
 #include "g2o_core_api.h"
 
-
-namespace g2o {
-
+namespace g2o
+{
 /**
  * \brief base for all robust cost functions
  *
@@ -54,9 +53,9 @@ namespace g2o {
  * chi^2 = sum_{e} rho( e^T Omega e )
  */
 class G2O_CORE_API RobustKernel {
-public:
+  public:
     RobustKernel();
-    explicit RobustKernel(double delta);
+    explicit RobustKernel( double delta );
     virtual ~RobustKernel() {}
     /**
      * compute the scaling factor for a error:
@@ -66,22 +65,20 @@ public:
      * rho[1]: First derivative of the scaling function
      * rho[2]: Second derivative of the scaling function
      */
-    virtual void robustify(double squaredError, Eigen::Vector3d& rho) const = 0;
+    virtual void robustify( double squaredError, Eigen::Vector3d& rho ) const = 0;
 
     /**
      * set the window size of the error. A squared error above delta^2 is considered
      * as outlier in the data.
      */
-    virtual void setDelta(double delta);
-    double delta() const {
-        return _delta;
-    }
+    virtual void setDelta( double delta );
+    double delta() const { return _delta; }
 
-protected:
+  protected:
     double _delta;
 };
-typedef std::tr1::shared_ptr<RobustKernel> RobustKernelPtr;
+typedef std::tr1::shared_ptr< RobustKernel > RobustKernelPtr;
 
-} // end namespace g2o
+}   // end namespace g2o
 
 #endif

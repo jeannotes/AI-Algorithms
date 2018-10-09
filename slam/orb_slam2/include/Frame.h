@@ -21,18 +21,19 @@
 #ifndef FRAME_H
 #define FRAME_H
 
-#include<vector>
+#include <vector>
 
+#include "KeyFrame.h"
 #include "MapPoint.h"
+#include "ORBVocabulary.h"
+#include "ORBextractor.h"
 #include "Thirdparty/DBoW2/DBoW2/BowVector.h"
 #include "Thirdparty/DBoW2/DBoW2/FeatureVector.h"
-#include "ORBVocabulary.h"
-#include "KeyFrame.h"
-#include "ORBextractor.h"
 
 #include <opencv2/opencv.hpp>
 
-namespace ORB_SLAM2 {
+namespace ORB_SLAM2
+{
 #define FRAME_GRID_ROWS 48
 #define FRAME_GRID_COLS 64
 
@@ -40,25 +41,31 @@ class MapPoint;
 class KeyFrame;
 
 class Frame {
-public:
+  public:
     Frame();
 
     // Copy constructor.
-    Frame(const Frame &frame);
+    Frame( const Frame& frame );
 
     // Constructor for stereo cameras.
-    Frame(const cv::Mat &imLeft, const cv::Mat &imRight, const double &timeStamp, ORBextractor* extractorLeft, ORBextractor* extractorRight, ORBVocabulary* voc, cv::Mat &K, cv::Mat &distCoef, const float &bf, const float &thDepth);
+    Frame( const cv::Mat& imLeft, const cv::Mat& imRight, const double& timeStamp,
+           ORBextractor* extractorLeft, ORBextractor* extractorRight, ORBVocabulary* voc,
+           cv::Mat& K, cv::Mat& distCoef, const float& bf, const float& thDepth );
 
     // Constructor for RGB-D cameras.
-    Frame(const cv::Mat &imGray, const cv::Mat &imDepth, const double &timeStamp, ORBextractor* extractor, ORBVocabulary* voc, cv::Mat &K, cv::Mat &distCoef, const float &bf, const float &thDepth);
+    Frame( const cv::Mat& imGray, const cv::Mat& imDepth, const double& timeStamp,
+           ORBextractor* extractor, ORBVocabulary* voc, cv::Mat& K, cv::Mat& distCoef,
+           const float& bf, const float& thDepth );
 
     // Constructor for Monocular cameras.
-    Frame(const cv::Mat &imGray, const double &timeStamp, ORBextractor* extractor, ORBVocabulary* voc, cv::Mat &K, cv::Mat &distCoef, const float &bf, const float &thDepth);
+    Frame( const cv::Mat& imGray, const double& timeStamp, ORBextractor* extractor,
+           ORBVocabulary* voc, cv::Mat& K, cv::Mat& distCoef, const float& bf,
+           const float& thDepth );
 
     // Extract ORB on the image. 0 for left image and 1 for right image.
     // 提取的关键点存放在mvKeys和mDescriptors中
     // ORB是直接调orbExtractor提取的
-    void ExtractORB(int flag, const cv::Mat &im);
+    void ExtractORB( int flag, const cv::Mat& im );
 
     // Compute Bag of Words representation.
     // 存放在mBowVec中
@@ -66,47 +73,45 @@ public:
 
     // Set the camera pose.
     // 用Tcw更新mTcw
-    void SetPose(cv::Mat Tcw);
+    void SetPose( cv::Mat Tcw );
 
     // Computes rotation, translation and camera center matrices from the camera pose.
     void UpdatePoseMatrices();
 
     // Returns the camera center.
-    inline cv::Mat GetCameraCenter() {
-        return mOw.clone();
-    }
+    inline cv::Mat GetCameraCenter() { return mOw.clone(); }
 
     // Returns inverse of rotation
-    inline cv::Mat GetRotationInverse() {
-        return mRwc.clone();
-    }
+    inline cv::Mat GetRotationInverse() { return mRwc.clone(); }
 
     // Check if a MapPoint is in the frustum of the camera
     // and fill variables of the MapPoint to be used by the tracking
     // 判断路标点是否在视野中
-    bool isInFrustum(MapPoint* pMP, float viewingCosLimit);
+    bool isInFrustum( MapPoint* pMP, float viewingCosLimit );
 
     // Compute the cell of a keypoint (return false if outside the grid)
-    bool PosInGrid(const cv::KeyPoint &kp, int &posX, int &posY);
+    bool PosInGrid( const cv::KeyPoint& kp, int& posX, int& posY );
 
-    vector<size_t> GetFeaturesInArea(const float &x, const float  &y, const float  &r, const int minLevel = -1, const int maxLevel = -1) const;
+    vector< size_t > GetFeaturesInArea( const float& x, const float& y, const float& r,
+                                        const int minLevel = -1, const int maxLevel = -1 ) const;
 
     // Search a match for each keypoint in the left image to a keypoint in the right image.
-    // If there is a match, depth is computed and the right coordinate associated to the left keypoint is stored.
+    // If there is a match, depth is computed and the right coordinate associated to the left
+    // keypoint is stored.
     void ComputeStereoMatches();
 
     // Associate a "right" coordinate to a keypoint if there is valid depth in the depthmap.
-    void ComputeStereoFromRGBD(const cv::Mat &imDepth);
+    void ComputeStereoFromRGBD( const cv::Mat& imDepth );
 
     // Backprojects a keypoint (if stereo/depth info available) into 3D world coordinates.
-    cv::Mat UnprojectStereo(const int &i);
+    cv::Mat UnprojectStereo( const int& i );
 
-public:
+  public:
     // Vocabulary used for relocalization.
     ORBVocabulary* mpORBvocabulary;
 
     // Feature extractor. The right is used only in the stereo case.
-    ORBextractor* mpORBextractorLeft, *mpORBextractorRight;
+    ORBextractor *mpORBextractorLeft, *mpORBextractorRight;
 
     // Frame timestamp.
     double mTimeStamp;
@@ -132,28 +137,31 @@ public:
     float mThDepth;
 
     // Number of KeyPoints.
-    int N; ///< KeyPoints数量
+    int N;   ///< KeyPoints数量
 
-    // Vector of keypoints (original for visualization) and undistorted (actually used by the system).
+    // Vector of keypoints (original for visualization) and undistorted (actually used by the
+    // system).
     // In the stereo case, mvKeysUn is redundant as images must be rectified.
     // In the RGB-D case, RGB images can be distorted.
     // mvKeys:原始左图像提取出的特征点（未校正）
     // mvKeysRight:原始右图像提取出的特征点（未校正）
     // mvKeysUn:校正mvKeys后的特征点，对于双目摄像头，一般得到的图像都是校正好的，再校正一次有点多余
-    std::vector<cv::KeyPoint> mvKeys, mvKeysRight;
-    std::vector<cv::KeyPoint> mvKeysUn;
+    std::vector< cv::KeyPoint > mvKeys, mvKeysRight;
+    std::vector< cv::KeyPoint > mvKeysUn;
 
     // Corresponding stereo coordinate and depth for each keypoint.
     // "Monocular" keypoints have a negative value.
     // 对于双目，mvuRight存储了左目像素点在右目中的对应点的横坐标
     // mvDepth对应的深度
     // 单目摄像头，这两个容器中存的都是-1
-    std::vector<float> mvuRight;// left image (x,y) --> right image (x,y)// in P105, using disparity
-    std::vector<float> mvDepth;
+    std::vector< float > mvuRight;   // left image (x,y) --> right image (x,y)// in P105, using
+                                     // disparity
+    std::vector< float > mvDepth;
 
     // Bag of Words Vector structures.
-    DBoW2::BowVector mBowVec;//map<WordId, WordValue>
-    //map<NodeId, std::vector<unsigned int> > for one wordID, it could be detected many times, vector stores the indexes(which sequence)
+    DBoW2::BowVector mBowVec;   // map<WordId, WordValue>
+    // map<NodeId, std::vector<unsigned int> > for one wordID, it could be detected many times,
+    // vector stores the indexes(which sequence)
     DBoW2::FeatureVector mFeatVec;
 
     // ORB descriptor, each row associated to a keypoint.
@@ -162,39 +170,40 @@ public:
 
     // MapPoints associated to keypoints, NULL pointer if no association.
     // 每个特征点对应的MapPoint
-    std::vector<MapPoint*> mvpMapPoints;
+    std::vector< MapPoint* > mvpMapPoints;
 
     // Flag to identify outlier associations. cannot find 3D points in map
     // 观测不到Map中的3D点
-    std::vector<bool> mvbOutlier;
+    std::vector< bool > mvbOutlier;
 
-    // Keypoints are assigned to cells in a grid to reduce matching complexity when projecting MapPoints.
+    // Keypoints are assigned to cells in a grid to reduce matching complexity when projecting
+    // MapPoints.
     // 坐标乘以mfGridElementWidthInv和mfGridElementHeightInv就可以确定在哪个格子
     static float mfGridElementWidthInv;
     static float mfGridElementHeightInv;
     // 每个格子分配的特征点数，将图像分成格子，保证提取的特征点比较均匀
     // FRAME_GRID_ROWS 48
     // FRAME_GRID_COLS 64
-    std::vector<std::size_t> mGrid[FRAME_GRID_COLS][FRAME_GRID_ROWS];
+    std::vector< std::size_t > mGrid[FRAME_GRID_COLS][FRAME_GRID_ROWS];
 
     // Camera pose.
-    cv::Mat mTcw; ///< 相机姿态 世界坐标系到相机坐标坐标系的变换矩阵
+    cv::Mat mTcw;   ///< 相机姿态 世界坐标系到相机坐标坐标系的变换矩阵
 
     // Current and Next Frame id.
-    static long unsigned int nNextId; ///< Next Frame id.
-    long unsigned int mnId; ///< Current Frame id.
+    static long unsigned int nNextId;   ///< Next Frame id.
+    long unsigned int mnId;             ///< Current Frame id.
 
     // Reference Keyframe.
-    KeyFrame* mpReferenceKF;//指针，指向参考关键帧
+    KeyFrame* mpReferenceKF;   //指针，指向参考关键帧
 
     // Scale pyramid info.
-    int mnScaleLevels;//图像提金字塔的层数
-    float mfScaleFactor;//图像提金字塔的尺度因子
-    float mfLogScaleFactor;//
-    vector<float> mvScaleFactors;
-    vector<float> mvInvScaleFactors;
-    vector<float> mvLevelSigma2;
-    vector<float> mvInvLevelSigma2;
+    int mnScaleLevels;        //图像提金字塔的层数
+    float mfScaleFactor;      //图像提金字塔的尺度因子
+    float mfLogScaleFactor;   //
+    vector< float > mvScaleFactors;
+    vector< float > mvInvScaleFactors;
+    vector< float > mvLevelSigma2;
+    vector< float > mvInvLevelSigma2;
 
     // Undistorted Image Bounds (computed once).
     // 用于确定画格子时的边界
@@ -205,27 +214,25 @@ public:
 
     static bool mbInitialComputations;
 
-
-private:
-
+  private:
     // Undistort keypoints given OpenCV distortion parameters.
     // Only for the RGB-D case. Stereo must be already rectified!
     // (called in the constructor).
     void UndistortKeyPoints();
 
     // Computes image bounds for the undistorted image (called in the constructor).
-    void ComputeImageBounds(const cv::Mat &imLeft);
+    void ComputeImageBounds( const cv::Mat& imLeft );
 
     // Assign keypoints to the grid for speed up feature matching (called in the constructor).
     void AssignFeaturesToGrid();
 
     // Rotation, translation and camera center
-    cv::Mat mRcw; ///< Rotation from world to camera
-    cv::Mat mtcw; ///< Translation from world to camera
-    cv::Mat mRwc; ///< Rotation from camera to world
-    cv::Mat mOw;  ///< mtwc,Translation from camera to world
+    cv::Mat mRcw;   ///< Rotation from world to camera
+    cv::Mat mtcw;   ///< Translation from world to camera
+    cv::Mat mRwc;   ///< Rotation from camera to world
+    cv::Mat mOw;    ///< mtwc,Translation from camera to world
 };
 
-}// namespace ORB_SLAM
+}   // namespace ORB_SLAM
 
-#endif // FRAME_H
+#endif   // FRAME_H

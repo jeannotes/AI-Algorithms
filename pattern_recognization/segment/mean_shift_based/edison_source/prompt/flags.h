@@ -11,18 +11,18 @@
 #ifndef FLAGS_H
 #define FLAGS_H
 
-//segmentation flags
+// segmentation flags
 extern bool CmCSynergistic;
 extern bool CmCGradWinChanged;
 extern bool CmCMixtureChanged;
 extern bool CmCUseCustomWeightMap;
 
-//system flags
+// system flags
 extern bool CmCImageDefined;
 extern bool CmCMapDefined;
 extern bool CmCDisplayProgress;
 
-//edge detection flags
+// edge detection flags
 extern bool CmCRankMapDefined;
 extern bool CmCConfMapDefined;
 

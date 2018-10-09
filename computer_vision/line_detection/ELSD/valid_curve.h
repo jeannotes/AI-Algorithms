@@ -22,16 +22,14 @@
 #ifndef VALID_CURVE_H
 #define VALID_CURVE_H
 
-double valid_ellipse(struct point *reg, int reg_size, image_char used,
-                     double prec, double p, image_double angles,
-                     image_double grad, image_double gradx, image_double grady,
-                     double *param, double logNTE, int dir,
-                     int *pext, struct point3 *rege, int *rege_size, int min_size, double mlog10eps);
-double valid_circle(struct point *reg, int reg_size, image_char used,
-                    double prec, double p, image_double angles,
-                    image_double grad, image_double gradx, image_double grady,
-                    double *param, double logNTC, int dir,
-                    int *pext, struct point3 *regc, int *regc_size, int min_size, double mlog10eps);
-int isInAng(double ang, double ang1, double ang2);
+double valid_ellipse( struct point* reg, int reg_size, image_char used, double prec, double p,
+                      image_double angles, image_double grad, image_double gradx,
+                      image_double grady, double* param, double logNTE, int dir, int* pext,
+                      struct point3* rege, int* rege_size, int min_size, double mlog10eps );
+double valid_circle( struct point* reg, int reg_size, image_char used, double prec, double p,
+                     image_double angles, image_double grad, image_double gradx, image_double grady,
+                     double* param, double logNTC, int dir, int* pext, struct point3* regc,
+                     int* regc_size, int min_size, double mlog10eps );
+int isInAng( double ang, double ang1, double ang2 );
 
 #endif

@@ -33,38 +33,33 @@
 /** char image data type.
  */
 typedef struct ImageChar {
-    unsigned char *data;
+    unsigned char* data;
     unsigned int xsize, ysize;
-} *PImageChar; /* pointer to ImageChar */
+} * PImageChar; /* pointer to ImageChar */
 
 void free_PImageChar( PImageChar i );
 PImageChar new_PImageChar( unsigned int xsize, unsigned int ysize );
-PImageChar new_PImageChar_ini( unsigned int xsize, unsigned int ysize,
-                               unsigned char fill_value );
-
+PImageChar new_PImageChar_ini( unsigned int xsize, unsigned int ysize, unsigned char fill_value );
 
 /*----------------------------------------------------------------------------*/
 /** int image data type.
  */
 typedef struct ImageInt {
-    int *data;
+    int* data;
     unsigned int xsize, ysize;
-} *PImageInt; /* pointer to ImageInt */
+} * PImageInt; /* pointer to ImageInt */
 
 void free_PImageInt( PImageInt i );
 PImageInt new_PImageInt( unsigned int xsize, unsigned int ysize );
-PImageInt new_PImageInt_ini( unsigned int xsize, unsigned int ysize,
-                             int fill_value );
-
+PImageInt new_PImageInt_ini( unsigned int xsize, unsigned int ysize, int fill_value );
 
 /*----------------------------------------------------------------------------*/
 /** double image data type.
  */
 typedef struct ImageDouble {
-    double *data;
+    double* data;
     unsigned int xsize, ysize;
-} *PImageDouble; /* pointer to ImageDouble */
-
+} * PImageDouble; /* pointer to ImageDouble */
 
 /*----------------------------------------------------------------------------*/
 /** Data structure for linked list of point coordinates.
@@ -72,21 +67,18 @@ typedef struct ImageDouble {
 typedef struct list CoordList;
 struct list {
     int x, y;
-    CoordList *next;
+    CoordList* next;
 };
-
 
 void free_PImageDouble( PImageDouble i );
 PImageDouble new_PImageDouble( unsigned int xsize, unsigned int ysize );
-PImageDouble new_PImageDouble_ini( unsigned int xsize, unsigned int ysize,
-                                   double fill_value );
+PImageDouble new_PImageDouble_ini( unsigned int xsize, unsigned int ysize, double fill_value );
 
 PImageDouble img_gradient_angle( PImageDouble in, double threshold );
-void img_gradient_sort( PImageDouble in, double threshold, CoordList **list_p,
-                        void **mem_p, unsigned int n_bins, double max_grad,
-                        PImageDouble *angles, PImageDouble *gradmag,
-                        PImageDouble *gradx, PImageDouble *grady );
-void mark_img_pts( PImageInt im, Point *pts, int start, int end, int label );
-int in_image( int x, int y, unsigned int xsize, unsigned int ysize);
+void img_gradient_sort( PImageDouble in, double threshold, CoordList** list_p, void** mem_p,
+                        unsigned int n_bins, double max_grad, PImageDouble* angles,
+                        PImageDouble* gradmag, PImageDouble* gradx, PImageDouble* grady );
+void mark_img_pts( PImageInt im, Point* pts, int start, int end, int label );
+int in_image( int x, int y, unsigned int xsize, unsigned int ysize );
 int local_max( PImageDouble im, int x, int y );
 #endif

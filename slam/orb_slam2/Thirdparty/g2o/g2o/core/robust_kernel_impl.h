@@ -27,11 +27,11 @@
 #ifndef G2O_ROBUST_KERNEL_IMPL_H
 #define G2O_ROBUST_KERNEL_IMPL_H
 
-#include "robust_kernel.h"
 #include "g2o_core_api.h"
+#include "robust_kernel.h"
 
-namespace g2o {
-
+namespace g2o
+{
 /**
  * \brief scale a robust kernel to another delta (window size)
  *
@@ -40,24 +40,22 @@ namespace g2o {
  * size.
  */
 class G2O_CORE_API RobustKernelScaleDelta : public RobustKernel {
-public:
+  public:
     /**
      * construct the scaled kernel ontop of another kernel which might be shared accross
      * several scaled kernels
      */
-    explicit RobustKernelScaleDelta(const RobustKernelPtr& kernel, double delta = 1.);
-    explicit RobustKernelScaleDelta(double delta = 1.);
+    explicit RobustKernelScaleDelta( const RobustKernelPtr& kernel, double delta = 1. );
+    explicit RobustKernelScaleDelta( double delta = 1. );
 
     //! return the underlying kernel
-    const RobustKernelPtr kernel() const {
-        return _kernel;
-    }
+    const RobustKernelPtr kernel() const { return _kernel; }
     //! use another kernel for the underlying operation
-    void setKernel(const RobustKernelPtr& ptr);
+    void setKernel( const RobustKernelPtr& ptr );
 
-    void robustify(double error, Eigen::Vector3d& rho) const;
+    void robustify( double error, Eigen::Vector3d& rho ) const;
 
-protected:
+  protected:
     RobustKernelPtr _kernel;
 };
 
@@ -76,12 +74,12 @@ protected:
  * rho(e) = 2 d e    - d
  */
 class G2O_CORE_API RobustKernelHuber : public RobustKernel {
-public:
-    virtual void setDelta(double delta);
-    virtual void setDeltaSqr(const double &delta, const double &deltaSqr);
-    virtual void robustify(double e2, Eigen::Vector3d& rho) const;
+  public:
+    virtual void setDelta( double delta );
+    virtual void setDeltaSqr( const double& delta, const double& deltaSqr );
+    virtual void robustify( double e2, Eigen::Vector3d& rho ) const;
 
-private:
+  private:
     float dsqr;
 };
 
@@ -97,15 +95,14 @@ private:
 * rho(e) = delta2
 */
 class G2O_CORE_API RobustKernelTukey : public RobustKernel {
-public:
+  public:
+    virtual void setDeltaSqr( const double& deltaSqr, const double& inv );
+    virtual void robustify( double e2, Eigen::Vector3d& rho ) const;
 
-    virtual void setDeltaSqr(const double &deltaSqr, const double &inv);
-    virtual void robustify(double e2, Eigen::Vector3d& rho) const;
-private:
+  private:
     float _deltaSqr;
     float _invDeltaSqr;
 };
-
 
 /**
  * \brief Pseudo Huber Cost Function
@@ -119,8 +116,8 @@ private:
  *            d
  */
 class G2O_CORE_API RobustKernelPseudoHuber : public RobustKernel {
-public:
-    virtual void robustify(double e2, Eigen::Vector3d& rho) const;
+  public:
+    virtual void robustify( double e2, Eigen::Vector3d& rho ) const;
 };
 
 /**
@@ -132,8 +129,8 @@ public:
  *        d
  */
 class G2O_CORE_API RobustKernelCauchy : public RobustKernel {
-public:
-    virtual void robustify(double e2, Eigen::Vector3d& rho) const;
+  public:
+    virtual void robustify( double e2, Eigen::Vector3d& rho ) const;
 };
 
 /**
@@ -142,8 +139,8 @@ public:
  * The error is at most delta^2
  */
 class G2O_CORE_API RobustKernelSaturated : public RobustKernel {
-public:
-    virtual void robustify(double e2, Eigen::Vector3d& rho) const;
+  public:
+    virtual void robustify( double e2, Eigen::Vector3d& rho ) const;
 };
 
 /**
@@ -154,10 +151,10 @@ public:
  * delta is used as $phi$
  */
 class G2O_CORE_API RobustKernelDCS : public RobustKernel {
-public:
-    virtual void robustify(double e2, Eigen::Vector3d& rho) const;
+  public:
+    virtual void robustify( double e2, Eigen::Vector3d& rho ) const;
 };
 
-} // end namespace g2o
+}   // end namespace g2o
 
 #endif

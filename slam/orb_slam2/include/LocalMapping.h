@@ -22,32 +22,31 @@
 #define LOCALMAPPING_H
 
 #include "KeyFrame.h"
-#include "Map.h"
-#include "LoopClosing.h"
-#include "Tracking.h"
 #include "KeyFrameDatabase.h"
+#include "LoopClosing.h"
+#include "Map.h"
+#include "Tracking.h"
 
 #include <mutex>
 
-
-namespace ORB_SLAM2 {
-
+namespace ORB_SLAM2
+{
 class Tracking;
 class LoopClosing;
 class Map;
 
 class LocalMapping {
-public:
-    LocalMapping(Map* pMap, const float bMonocular);
+  public:
+    LocalMapping( Map* pMap, const float bMonocular );
 
-    void SetLoopCloser(LoopClosing* pLoopCloser);
+    void SetLoopCloser( LoopClosing* pLoopCloser );
 
-    void SetTracker(Tracking* pTracker);
+    void SetTracker( Tracking* pTracker );
 
     // Main function
     void Run();
 
-    void InsertKeyFrame(KeyFrame* pKF);
+    void InsertKeyFrame( KeyFrame* pKF );
 
     // Thread Synch
     void RequestStop();
@@ -57,8 +56,8 @@ public:
     bool isStopped();
     bool stopRequested();
     bool AcceptKeyFrames();
-    void SetAcceptKeyFrames(bool flag);
-    bool SetNotStop(bool flag);
+    void SetAcceptKeyFrames( bool flag );
+    bool SetNotStop( bool flag );
 
     void InterruptBA();
 
@@ -66,12 +65,11 @@ public:
     bool isFinished();
 
     int KeyframesInQueue() {
-        unique_lock<std::mutex> lock(mMutexNewKFs);
+        unique_lock< std::mutex > lock( mMutexNewKFs );
         return mlNewKeyFrames.size();
     }
 
-protected:
-
+  protected:
     bool CheckNewKeyFrames();
     void ProcessNewKeyFrame();
     void CreateNewMapPoints();
@@ -81,9 +79,9 @@ protected:
 
     void KeyFrameCulling();
 
-    cv::Mat ComputeF12(KeyFrame* &pKF1, KeyFrame* &pKF2);
+    cv::Mat ComputeF12( KeyFrame*& pKF1, KeyFrame*& pKF2 );
 
-    cv::Mat SkewSymmetricMatrix(const cv::Mat &v);
+    cv::Mat SkewSymmetricMatrix( const cv::Mat& v );
 
     bool mbMonocular;
 
@@ -103,11 +101,11 @@ protected:
     Tracking* mpTracker;
 
     // Tracking线程向LocalMapping中插入关键帧是先插入到该队列中
-    std::list<KeyFrame*> mlNewKeyFrames; ///< 等待处理的关键帧列表
+    std::list< KeyFrame* > mlNewKeyFrames;   ///< 等待处理的关键帧列表
 
     KeyFrame* mpCurrentKeyFrame;
 
-    std::list<MapPoint*> mlpRecentAddedMapPoints;
+    std::list< MapPoint* > mlpRecentAddedMapPoints;
 
     std::mutex mMutexNewKFs;
 
@@ -122,6 +120,6 @@ protected:
     std::mutex mMutexAccept;
 };
 
-} //namespace ORB_SLAM
+}   // namespace ORB_SLAM
 
-#endif // LOCALMAPPING_H
+#endif   // LOCALMAPPING_H

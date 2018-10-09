@@ -1,6 +1,8 @@
 #include "graph_localisation/localisation_type.h"
-namespace perception_oru {
-namespace  GraphMapLocalisation {
+namespace perception_oru
+{
+namespace GraphMapLocalisation
+{
 LocalisationType::~LocalisationType() {}
 std::string LocalisationType::ToString() {
     std::stringstream ss;
@@ -10,11 +12,6 @@ std::string LocalisationType::ToString() {
 }
 
 LocalisationParam::~LocalisationParam() {}
-LocalisationParam::LocalisationParam() {
-
-
-}
-
+LocalisationParam::LocalisationParam() {}
 }
 }
-

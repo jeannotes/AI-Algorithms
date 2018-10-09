@@ -1,31 +1,31 @@
 /*******************************************************
 
                  Mean Shift Analysis Library
-	=============================================
+    =============================================
 
-	The mean shift library is a collection of routines
-	that use the mean shift algorithm. Using this algorithm,
-	the necessary output will be generated needed
-	to analyze a given input set of data.
+    The mean shift library is a collection of routines
+    that use the mean shift algorithm. Using this algorithm,
+    the necessary output will be generated needed
+    to analyze a given input set of data.
 
   Mean Shift System:
   ==================
 
-	The Mean Shift System class provides a mechanism for the
-	mean shift library classes to prompt progress and to
-	time its computations. When porting the mean shift library
-	to an application the methods of this class may be changed
-	such that the output of the mean shift class prompts
-	will be given to whatever hardware or software device that
-	is desired.
+    The Mean Shift System class provides a mechanism for the
+    mean shift library classes to prompt progress and to
+    time its computations. When porting the mean shift library
+    to an application the methods of this class may be changed
+    such that the output of the mean shift class prompts
+    will be given to whatever hardware or software device that
+    is desired.
 
-	The definition for the mean shift system class is provided
-	below. Its prototype is provided in "msSys.cc".
+    The definition for the mean shift system class is provided
+    below. Its prototype is provided in "msSys.cc".
 
 The theory is described in the papers:
 
   D. Comaniciu, P. Meer: Mean Shift: A robust approach toward feature
-									 space analysis.
+                                     space analysis.
 
   C. Christoudias, B. Georgescu, P. Meer: Synergism in low level vision.
 
@@ -41,33 +41,34 @@ Implemented by Chris M. Christoudias, Bogdan Georgescu
 //   line version of EDISON.
 ////////////////////////////////////////////////////////////////////////
 
-//include the msSystem class prototype
-#include	"msSys.h"
+// include the msSystem class prototype
+#include "msSys.h"
 
-//include needed system libraries
-#include	<time.h>
-#include	<stdio.h>
-#include	<stdarg.h>
-#include	<stdlib.h>
+// include needed system libraries
+#include <stdarg.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
 
-//define bgLog
+// define bgLog
 extern bool CmCDisplayProgress;
-void bgLog(const char *PromptStr, ...) {
-    //obtain argument list using ANSI standard...
-    va_list	argList;
-    va_start(argList, PromptStr);
+void bgLog( const char* PromptStr, ... ) {
+    // obtain argument list using ANSI standard...
+    va_list argList;
+    va_start( argList, PromptStr );
 
-    //print the output string to stderr using
-    if (CmCDisplayProgress) vfprintf(stdout, PromptStr, argList);
-    va_end(argList);
+    // print the output string to stderr using
+    if ( CmCDisplayProgress ) vfprintf( stdout, PromptStr, argList );
+    va_end( argList );
 
-    //done.
+    // done.
     return;
 }
 
 /*@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@*/
 /*@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@*/
-/*@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@      PUBLIC METHODS     @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@*/
+/*@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@      PUBLIC METHODS
+ * @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@*/
 /*@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@*/
 /*@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@*/
 
@@ -86,12 +87,10 @@ void bgLog(const char *PromptStr, ...) {
 /*******************************************************/
 
 msSystem::msSystem( void ) {
-
-    //initialize currentTime
+    // initialize currentTime
     currentTime = clock();
 
-    //done.
-
+    // done.
 }
 
 /*******************************************************/
@@ -124,13 +123,11 @@ msSystem::~msSystem( void ) {
 /*******************************************************/
 
 void msSystem::StartTimer( void ) {
-
-    //set msSystem time to system time
+    // set msSystem time to system time
     currentTime = clock();
 
-    //done.
+    // done.
     return;
-
 }
 
 /*******************************************************/
@@ -145,11 +142,9 @@ void msSystem::StartTimer( void ) {
 /*******************************************************/
 
 double msSystem::ElapsedTime( void ) {
-
-    //return the amount of time elapsed in seconds
-    //since the msSystem time was last set...
-    return ((double) (clock() - currentTime)) / (CLOCKS_PER_SEC);
-
+    // return the amount of time elapsed in seconds
+    // since the msSystem time was last set...
+    return ( (double) ( clock() - currentTime ) ) / ( CLOCKS_PER_SEC );
 }
 
 /*/\/\/\/\/\/\/\/\/\/\*/
@@ -174,19 +169,17 @@ double msSystem::ElapsedTime( void ) {
 /*        has been output to the user.                 */
 /*******************************************************/
 
-void msSystem::Prompt(const char *PromptStr, ...) {
+void msSystem::Prompt( const char* PromptStr, ... ) {
+    // obtain argument list using ANSI standard...
+    va_list argList;
+    va_start( argList, PromptStr );
 
-    //obtain argument list using ANSI standard...
-    va_list	argList;
-    va_start(argList, PromptStr);
+    // print the output string to stderr using
+    if ( CmCDisplayProgress ) vfprintf( stdout, PromptStr, argList );
+    va_end( argList );
 
-    //print the output string to stderr using
-    if (CmCDisplayProgress) vfprintf(stdout, PromptStr, argList);
-    va_end(argList);
-
-    //done.
+    // done.
     return;
-
 }
 
 /*******************************************************/
@@ -209,17 +202,18 @@ void msSystem::Prompt(const char *PromptStr, ...) {
 /*******************************************************/
 
 ///////////////////////////////////////////////////////////////////
-//NOTE: This implementation is specific to EDISON. In order
+// NOTE: This implementation is specific to EDISON. In order
 //      for one to port the mean shift class to another project
 //      or program one must re-implement this method.
 ///////////////////////////////////////////////////////////////////
 
-ErrorLevel msSystem::Progress(float percentComplete) {
+ErrorLevel msSystem::Progress( float percentComplete ) {
     return EL_OKAY;
 }
 
 /*@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@*/
 /*@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@*/
-/*@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ END OF CLASS DEFINITION @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@*/
+/*@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ END OF CLASS DEFINITION
+ * @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@*/
 /*@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@*/
 /*@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@*/
