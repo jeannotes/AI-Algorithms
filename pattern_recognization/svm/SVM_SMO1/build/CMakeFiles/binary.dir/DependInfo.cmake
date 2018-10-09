@@ -4,7 +4,7 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_CXX
-  "/home/jean/Documents/Cpp/SVM_SMO/smo.cpp" "/home/jean/Documents/Cpp/SVM_SMO/build/CMakeFiles/binary.dir/smo.cpp.o"
+  "/home/jean/Documents/AI-Algorithms/pattern_recognization/svm/SVM_SMO1/smo.cpp" "/home/jean/Documents/AI-Algorithms/pattern_recognization/svm/SVM_SMO1/build/CMakeFiles/binary.dir/smo.cpp.o"
   )
 set(CMAKE_CXX_COMPILER_ID "GNU")
 

@@ -8,6 +8,7 @@ using namespace std;
 //}
 
 int main() {
+    // https://github.com/andycj7/machine-learning/blob/master/Project2/Project2/smo.cpp
     ofstream outClientFile(
         "data_result.txt",
         ios::out );   //如果指定的文件data_result.txt不存在，ofstream就用该文件名建立它。
@@ -65,7 +66,7 @@ int main() {
     }
     //输出，以及测试
     // cout<<error_rate()<<endl;
-    system( "pause" );
+    //system( "pause" );
 }
 
 /////////examineExample程序

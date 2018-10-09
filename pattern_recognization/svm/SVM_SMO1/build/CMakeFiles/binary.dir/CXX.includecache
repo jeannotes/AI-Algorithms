@@ -6,21 +6,21 @@
 
 #IncludeRegexTransform: 
 
-/home/jean/Documents/Cpp/SVM_SMO/smo.cpp
+/home/jean/Documents/AI-Algorithms/pattern_recognization/svm/SVM_SMO1/smo.cpp
 smo.h
-/home/jean/Documents/Cpp/SVM_SMO/smo.h
+/home/jean/Documents/AI-Algorithms/pattern_recognization/svm/SVM_SMO1/smo.h
 
-/home/jean/Documents/Cpp/SVM_SMO/smo.h
-iostream
--
+/home/jean/Documents/AI-Algorithms/pattern_recognization/svm/SVM_SMO1/smo.h
 fstream
 -
+iostream
+-
 ctype.h
-/home/jean/Documents/Cpp/SVM_SMO/ctype.h
+/home/jean/Documents/AI-Algorithms/pattern_recognization/svm/SVM_SMO1/ctype.h
 math.h
-/home/jean/Documents/Cpp/SVM_SMO/math.h
+/home/jean/Documents/AI-Algorithms/pattern_recognization/svm/SVM_SMO1/math.h
 stdlib.h
-/home/jean/Documents/Cpp/SVM_SMO/stdlib.h
+/home/jean/Documents/AI-Algorithms/pattern_recognization/svm/SVM_SMO1/stdlib.h
 time.h
-/home/jean/Documents/Cpp/SVM_SMO/time.h
+/home/jean/Documents/AI-Algorithms/pattern_recognization/svm/SVM_SMO1/time.h
 
