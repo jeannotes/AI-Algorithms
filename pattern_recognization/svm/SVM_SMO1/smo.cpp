@@ -91,6 +91,10 @@ int examineExample( int i1 ) {
     decision function based on the current alph vector.
     */
     r1 = y1 * E1;
+    /**
+     * y1 * E1 = y1*g() - 1
+     * this is actually the r1, then compare with tolerance
+     */
     //违反KKT(Karush-Kuhn-Tucker)条件的判断
     /*
     KKT condition:
@@ -294,7 +298,11 @@ int takeStep( int i1, int i2 ) {
     } else   //通过观察，7.107式子可以发现这里的eta必须是小于等于0的，程序运行到这个条件表明：两个样本值是相同的
     //在这种情况下，我们需要在两个端点L和H处计算目标函数，同时设置第二个乘子为使目标函数增大的值，目标函数为
     // obj=eta*a2^2/2 + (y2*(E1-E2)-eta*alph2)*a2+const,这里的公式应该是从125页7.101来的
+    // this is x1^2+x2^2-2*x1*x2=(x1-x2)^2.
+    // if equal to 0, means the same number
     {
+    // here, refer to svm_smo.ipynb, just want to make object function as large as possible\
+    // its function is strange
         double c1 = eta / 2;
         double c2 = y2 * ( E1 - E2 ) - eta * alph2;
         Lobj      = c1 * L * L + c2 * L;
@@ -326,6 +334,8 @@ int takeStep( int i1, int i2 ) {
         a2 += s * t;   //同上
         a1 = C;
     }
+    // again, update a1, a2 and b1,b2, refer to .ipnb notebook, 
+    // here, it's strange
     //更新阀值b
     // After each step, b is re-computed.
     {
@@ -455,7 +465,7 @@ double error_rate() {
 //设置样本X[]
 void setX() {
     //为了在需要时方便地检索要处理的数据，数据应保存在文件中。
-    ifstream inClientFile( "data2713_adjusted.txt", ios::in );   // ifstream用于从指定文件输入
+    ifstream inClientFile( "../data2713_adjusted.txt", ios::in );   // ifstream用于从指定文件输入
 
     // exit program if ifstream could not open file
     if ( !inClientFile )   //用!inClientFile条件判断文件是否打开成功
