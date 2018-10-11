@@ -78,30 +78,30 @@ def segmentation(fname):
         # Plotting the components greater than 25
         if mod_cck >= 100:
             plotPoints(points, ax)
-#             print(mod_cck)
-#             # getting point cloud data
-#             point_x1 =  ((np.min(points[:,0]) - 334) *15/ 100)
-#             point_x2 = ((np.max(points[:,0]) - 334) * 15/100)
-#             point_y1 = ((np.min(points[:,1]) - 334) * 15/100)
-#             point_y2 = ((np.max(points[:,1]) - 334) * 15/100)
-#             print(point_x1, point_x2, point_y1, point_y2)
-#             temp = point_cloud[(point_cloud[:,0]  >= point_x1) & 
-#                               (point_cloud[:,0]  <= point_x2) &
-#                               (point_cloud[:,1]  >= point_y1) &
-#                               (point_cloud[:,1]  <= point_y2)]
-            
-#             print(temp)
-#             print(len(temp))
-#             viz = plt.figure()
-#             # Generating a 3d plot 
-#             an = viz.add_subplot(111, projection='3d')
-#             xs = temp[:,0]
-#             ys = temp[:,1]
-#             zs = temp[:,2]
-#             c = temp[:,3]
-#             an.scatter(xs,ys,zs, s=c, alpha=0.5)
-#             plt.show()
-#             break
+#            print(mod_cck)
+#            # getting point cloud data
+#            point_x1 =  ((np.min(points[:,0]) - 334) *15/ 100)
+#            point_x2 = ((np.max(points[:,0]) - 334) * 15/100)
+#            point_y1 = ((np.min(points[:,1]) - 334) * 15/100)
+#            point_y2 = ((np.max(points[:,1]) - 334) * 15/100)
+#            print(point_x1, point_x2, point_y1, point_y2)
+#            temp = point_cloud[(point_cloud[:,0]  >= point_x1) & 
+#                              (point_cloud[:,0]  <= point_x2) &
+#                              (point_cloud[:,1]  >= point_y1) &
+#                              (point_cloud[:,1]  <= point_y2)]
+#          
+#            print(temp)
+#            print(len(temp))
+#            viz = plt.figure()
+#            # Generating a 3d plot 
+#            an = viz.add_subplot(111, projection='3d')
+#            xs = temp[:,0]
+#            ys = temp[:,1]
+#            zs = temp[:,2]
+#            c = temp[:,3]
+#            an.scatter(xs,ys,zs, s=c, alpha=0.5)
+#            plt.show()
+#            break
 
 
             
@@ -124,7 +124,7 @@ def plotPoints(points, ax):
 
 
 def main():
-    fname = '/media/ramrao/shiffrinlab/velodyne/training/velodyne/0000/000001.bin'
+    fname = '/home/jean/Downloads/kitti/2011_09_26/2011_09_26_drive_0048_sync/velodyne_points/data/0000000000.bin'
     segmentation(fname)
     return
 

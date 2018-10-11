@@ -1,5 +1,6 @@
 import numpy as np 
 import time
+import matplotlib.pyplot as plt
 
 
 def occupancy_grid(fname):
@@ -20,7 +21,7 @@ def occupancy_grid(fname):
     # Data structures to hold the new x and y values to feed into the occupancy grid
     temp = np.zeros((len(new_x), 2))
     temp[:,0] = new_x
-    temp[:,1] = new_y    
+    temp[:,1] = new_y
 
     temp1 = np.zeros((len(new_x), 3))
     temp1[:,0] = new_x
@@ -49,9 +50,9 @@ def occupancy_grid(fname):
     print(len(np.where(occupancy_grid > 0.15)[0]))
     tocktime = time.time()
     print("Total time taken:" + str(tocktime-tictime))
-#     res = np.flipud(occupancy_grid)
-#     imgplot = plt.imshow(res)
-#     plt.show()
+#    res = np.flipud(occupancy_grid)
+#    imgplot = plt.imshow(res)
+#    plt.show()
     rows = np.repeat(list(range(0,668)), 668)
     cols = np.tile(list(range(0,668)), 668)
     
