@@ -88,7 +88,9 @@ def segmentation(fname):
             # n = n+1
 
     # Saving the object dection file to 
-    fol_num = int(os.path.basename(os.path.dirname(fname)))
+    print(os.path.basename(os.path.dirname(fname)))
+    fol_num = int(float(os.path.basename(os.path.dirname(fname))))
+    #fol_num = int(os.path.basename(os.path.dirname(fname)))
     name = 'fol'+ str(fol_num) + str(int(os.path.basename(fname)[:-4]))
     fix.savefig(name)
         

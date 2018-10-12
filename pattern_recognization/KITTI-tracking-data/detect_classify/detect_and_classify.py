@@ -86,14 +86,16 @@ def detect_classify(fname, classifier):
             # fol_name = int(os.path.basename(os.path.dirname(fname)))
             # f_num = int(os.path.basename(fname)[:-4])
             # bname = '/scratch/ramrao/objects/fol' + str(fol_name) + '_' + str(f_num)+ 'obj' +str(num) + '.txt'
-            bname = '/home/ramrao/velodyne/objects/fol1' + '_' + 'obj' +str(num) + '.txt'
+            bname = '/home/jean/dataset/kitti/fol1' + '_' + 'obj' +str(num) + '.txt'
             print('Saving to {}'.format(bname))
             np.savetxt(bname, object_points)
             data = feature_extraction(bname)
             classify = joblib.load(classifier)
             res_class =  classify.predict([data])
             class_names = ['non-vehicles', 'vehicles']
-            print('resulting class of object num {} is {}'.format(num, class_names[int(res_class)]))
+            # print('resulting class of object num {} is {}'.format(num, class_names[int(res_class)]))
+            # print('resulting class of object num {} is {}'.format(num, class_names[int(res_class)]))
+            print(res_class)
             num = num+1 
 
     return

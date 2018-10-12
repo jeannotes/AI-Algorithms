@@ -124,7 +124,8 @@ def plotPoints(points, ax):
 
 
 def main():
-    fname = '/home/jean/Downloads/kitti/2011_09_26/2011_09_26_drive_0048_sync/velodyne_points/data/0000000000.bin'
+    #fname = '/home/jean/Downloads/kitti/2011_09_26/2011_09_26_drive_0048_sync/velodyne_points/data/0000000000.bin'
+    fname = '/home/jean/dataset/kitti/2011_09_28/2011_09_28_drive_0043_sync/velodyne_points/data/0000000000.bin'
     segmentation(fname)
     return
 
