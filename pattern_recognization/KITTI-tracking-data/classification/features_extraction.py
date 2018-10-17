@@ -37,7 +37,9 @@ def feature_extraction(filename):
 		dist, ind = tree.query([point_cloud[i]], k=21)     
 		dist = dist[0,1:]
 		ind = ind[0,1:]
+		print(ind)
 		ind = ind[(dist <= 0.5)[0]]
+		print(ind)
 		if len(ind) > 0:
 			ind = ind[0]
 			cck = (point_cloud[ind, :]).transpose()
