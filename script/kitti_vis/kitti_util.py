@@ -125,7 +125,6 @@ class Calibration(object):
                 key, value = line.split(':', 1)
                 # The only non-float values in these files are dates, which
                 # we don't care about anyway
-                print(key," ", value)
                 try:
                     data[key] = np.array([float(x) for x in value.split()])
                 except ValueError:

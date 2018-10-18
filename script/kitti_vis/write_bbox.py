@@ -1,8 +1,3 @@
-''' Helper class and functions for loading KITTI objects
-
-Author: Charles R. Qi
-Date: September 2017
-'''
 from __future__ import print_function
 
 import os
@@ -30,9 +25,9 @@ class kitti_object(object):
         self.root_dir = root_dir
         self.split = split
         self.split_dir = os.path.join(root_dir, split)
-
+        self.velodyne_file = os.path.join(root_dir, 'training/velodyne')
         if split == 'training':
-            self.num_samples = 3 #
+            self.num_samples = len([name for name in os.listdir(self.velodyne_file ) ]) #
         elif split == 'testing':
             self.num_samples = 7518
         else:
@@ -309,53 +304,34 @@ def dataset_viz(root_dir, args):
 
     print(root_dir)
     print(len(dataset))
-    data_range = [2]
-    for data_idx in data_range:#range(len(dataset)-2)
-        #print("=====================>"+str(data_idx))
+    for data_idx in range(len(dataset)):
         # Load data from dataset
-        # if not dataset.isexist_pred_objects(data_idx):
-        #     continue
         objects = dataset.get_label_objects(data_idx)
 
-        objects_pred = None
-        if args.pred:
-            objects_pred = dataset.get_pred_objects(data_idx)
-            objects_pred[0].print_object()
-
-        img = dataset.get_image(data_idx)
-        #print(data_idx, 'Image shape: ', type(img))
-        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-        img_height, img_width, img_channel = img.shape
-        #print(('Image shape: ', img.shape))
         pc_velo = dataset.get_lidar(data_idx)[:,0:4]
         calib = dataset.get_calibration(data_idx)
-        if args.stat:
-            stat_lidar_with_boxes(pc_velo, objects, calib)
-            continue
-        print("start printing object info:    ")
-        objects[0].print_object()
-        print("print object info over         ")
-        # Draw lidar top view
-        #show_lidar_topview_with_boxes(pc_velo, objects, calib, objects_pred)
-        pc_velo= pc_velo[:,0:3]
-        # Draw 2d and 3d boxes on image
-        #show_image_with_boxes(img, objects, calib, True)
-        # Draw 3d box in LiDAR point cloud
-        show_lidar_with_boxes(pc_velo, objects, calib, False, img_width, img_height, objects_pred)
-        # Show LiDAR points on image.
-        #show_lidar_on_image(pc_velo, img, calib, img_width, img_height)
-        input_str=raw_input()
+        path = "./out/"+str(data_idx )+'.txt'
+        f=open(path,'w+')
+        #compute bounding box
+        for obj in objects:
+            if obj.type=='DontCare':continue
+            # Draw 3d bounding box
+            box3d_pts_2d, box3d_pts_3d = utils.compute_box_3d(obj, calib.P)
+            box3d_pts_3d_velo = calib.project_rect_to_velo(box3d_pts_3d)
+            #box3d_pts_3d_velo = np.array(box3d_pts_3d_velo )
+            box3d_pts_3d_velo = np.reshape(box3d_pts_3d_velo, (1,-1))
+            # print(obj.type)
+            # print(box3d_pts_3d_velo[0][0])
+            # print(type(box3d_pts_3d_velo))
+            f.write("%s " % obj.type)
+            [f.write("%4.3f "% (box3d_pts_3d_velo[0][i])) for i in range(len(box3d_pts_3d_velo[0]))]
+            f.write("\n")
+        f.close()
 
-        mlab.close(all=True)
-        for proc in psutil.process_iter():
-            if proc.name() == "display":
-                proc.kill()
-        if input_str == "killall":
-            break
 
 if __name__=='__main__':
-    import mayavi.mlab as mlab
-    from viz_util import draw_lidar_simple, draw_lidar, draw_gt_boxes3d
+    #import mayavi.mlab as mlab
+    #from viz_util import draw_lidar_simple, draw_lidar, draw_gt_boxes3d
 
     parser = argparse.ArgumentParser(description='PyTorch Training RPN')
     parser.add_argument('-d', '--dir', type=str, default="data/object", metavar='N',
