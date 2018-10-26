@@ -534,7 +534,8 @@ int main( int argc, char** argv ) {
                     Tmotion      = vreader.getMotion();
                     added_motion = added_motion * Tmotion;
 
-                    // 					std::cout << std::endl << std::endl << "Tmotion " << Tmotion.matrix()
+                    // 					std::cout << std::endl << std::endl << "Tmotion " <<
+                    // Tmotion.matrix()
                     // <<
                     // std::endl << std::endl;
                     // 					std::cout <<  std::endl << std::endl << "Added motion " <<
@@ -605,7 +606,8 @@ int main( int argc, char** argv ) {
                 // 						std::cout << "Done." << std::endl;
                 // 					}
                 // 					else {
-                // 						std::cout << "Failed to save map, ndtslammer was not initiated(!)"
+                // 						std::cout << "Failed to save map, ndtslammer was not
+                // initiated(!)"
                 // <<
                 // std::endl;
                 // 					}

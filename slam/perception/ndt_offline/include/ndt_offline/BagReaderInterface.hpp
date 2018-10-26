@@ -227,7 +227,8 @@ class BagRangeReaderInterface : public BagReaderInterface< sensorMsgType, sensor
         }
 
         // 				exit(0);
-        // 				std::cout << "GOT " << m.getTopic() << " at " << this->global_scan->header.stamp
+        // 				std::cout << "GOT " << m.getTopic() << " at " <<
+        // this->global_scan->header.stamp
         // <<
         // std::endl;
 
@@ -296,7 +297,8 @@ class BagRangeReaderInterface : public BagReaderInterface< sensorMsgType, sensor
 
                 if ( use_odom_ == true ) { updateMotion(); }
                 if ( use_sensor_pose_ == true ) {
-                    // 							std::cout << "motion " << motion_.matrix() << std::endl
+                    // 							std::cout << "motion " << motion_.matrix() <<
+                    // std::endl
                     // <<
                     // std::endl;
                     updateSensorPose();
@@ -323,7 +325,8 @@ class BagRangeReaderInterface : public BagReaderInterface< sensorMsgType, sensor
         // 						tf::transformTFToEigen (pose_bl, _baselink_pose);
         transformtoAffine2d( pose_bl, _baselink_pose );
 
-        // 						std::cout << "last pose " <<_last_pose.matrix() << std::endl << std::endl <<
+        // 						std::cout << "last pose " <<_last_pose.matrix() << std::endl << std::endl
+        // <<
         // "base
         // link  " << _baselink_pose.matrix() << std::endl << std::endl;
 

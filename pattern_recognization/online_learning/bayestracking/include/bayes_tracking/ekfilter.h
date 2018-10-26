@@ -23,7 +23,6 @@
 #include <vector>
 #include "bayes_tracking/BayesFilter/covFlt.hpp"
 
-
 using namespace Bayesian_filter;
 using namespace Bayesian_filter_matrix;
 
@@ -32,92 +31,93 @@ EKF state estimator
 
 @author Nicola Bellotto
 */
-class EKFilter : public Covariance_scheme
-{
-public:
-   /**
-    * Constructor - include initialization with null state and null covariance
-    */
-   EKFilter(std::size_t x_size);
+class EKFilter : public Covariance_scheme {
+  public:
+    /**
+     * Constructor - include initialization with null state and null covariance
+     */
+    EKFilter( std::size_t x_size );
 
-   /**
-    * Constructor
-    * @param x0 State vector
-    * @param P0 Covariance matrix
-    */
-   EKFilter(const FM::Vec& x0, const FM::SymMatrix& P0);
-   
-   /**
-    * Destructor
-    */
-   ~EKFilter();
-   
-   /**
-    * Initialize state and covariance
-    * @param x0 State vector
-    * @param P0 Covariance matrix
-    */
-   void init(const FM::Vec& x0, const FM::SymMatrix& P0);
+    /**
+     * Constructor
+     * @param x0 State vector
+     * @param P0 Covariance matrix
+     */
+    EKFilter( const FM::Vec& x0, const FM::SymMatrix& P0 );
 
-   /**
-    * Prediction (include Jacobian update)
-    * @param f Linearized model
-    */
-   Bayes_base::Float predict (Linrz_predict_model& f);
-   
-   /**
-    * Prediction (include Jacobian update)
-    * @param f Gaussian model
-    */
-   Bayes_base::Float predict (Gaussian_predict_model& f);
-   
-   /**
-    * Perform prediction and correction to update the state
-    * @param predict_model
-    * @param observe_model 
-    * @param z 
-    */
-   void update(Linrz_predict_model& predict_model,
-               Linrz_correlated_observe_model& observe_model,
-               const FM::Vec& z);
+    /**
+     * Destructor
+     */
+    ~EKFilter();
 
-   /**
-    * Predict the observation from the last predicted state and the covariance R_p of the predicted observation
-    * @param observe_model Observation model
-    * @param z_pred Predicted observation (return)
-    * @param R_pred Predicted observation covariance (return)
-    */
-   void predict_observation(Linrz_correlated_observe_model& observe_model,
-                           FM::Vec& z_pred, FM::SymMatrix& R_pred);
-                           
-   /**
-    * Update the state from innovation and relative covariance.
-    * @param h Observation model
-    * @param si Innovation
-    * @param Si Modified innovation covariance
-    */
-   Bayes_base::Float observeInnovation(Linrz_correlated_observe_model& h, const Bayesian_filter_matrix::Vec& si, const Bayesian_filter_matrix::SymMatrix& Si);
- 
-   /** Override method */
-   Bayes_base::Float observe (Linrz_correlated_observe_model& h, const FM::Vec& z);
-   /** Override method */
-   Bayes_base::Float observe (Linrz_uncorrelated_observe_model& h, const FM::Vec& z);
-   
-   /**
-    * Return the logarithm of the (normalized) likelihhod after the last observation
-    * @return Logarithm of the likelihood
-    */
-   double logLikelihood();
+    /**
+     * Initialize state and covariance
+     * @param x0 State vector
+     * @param P0 Covariance matrix
+     */
+    void init( const FM::Vec& x0, const FM::SymMatrix& P0 );
 
-public:
-   /** Innovation */
-   FM::Vec s;
-   /** Predicted observation */
-   FM::Vec z_p;
+    /**
+     * Prediction (include Jacobian update)
+     * @param f Linearized model
+     */
+    Bayes_base::Float predict( Linrz_predict_model& f );
 
-private:
-   std::size_t x_size;
-   std::size_t X_size;
+    /**
+     * Prediction (include Jacobian update)
+     * @param f Gaussian model
+     */
+    Bayes_base::Float predict( Gaussian_predict_model& f );
+
+    /**
+     * Perform prediction and correction to update the state
+     * @param predict_model
+     * @param observe_model
+     * @param z
+     */
+    void update( Linrz_predict_model& predict_model, Linrz_correlated_observe_model& observe_model,
+                 const FM::Vec& z );
+
+    /**
+     * Predict the observation from the last predicted state and the covariance R_p of the predicted
+     * observation
+     * @param observe_model Observation model
+     * @param z_pred Predicted observation (return)
+     * @param R_pred Predicted observation covariance (return)
+     */
+    void predict_observation( Linrz_correlated_observe_model& observe_model, FM::Vec& z_pred,
+                              FM::SymMatrix& R_pred );
+
+    /**
+     * Update the state from innovation and relative covariance.
+     * @param h Observation model
+     * @param si Innovation
+     * @param Si Modified innovation covariance
+     */
+    Bayes_base::Float observeInnovation( Linrz_correlated_observe_model& h,
+                                         const Bayesian_filter_matrix::Vec& si,
+                                         const Bayesian_filter_matrix::SymMatrix& Si );
+
+    /** Override method */
+    Bayes_base::Float observe( Linrz_correlated_observe_model& h, const FM::Vec& z );
+    /** Override method */
+    Bayes_base::Float observe( Linrz_uncorrelated_observe_model& h, const FM::Vec& z );
+
+    /**
+     * Return the logarithm of the (normalized) likelihhod after the last observation
+     * @return Logarithm of the likelihood
+     */
+    double logLikelihood();
+
+  public:
+    /** Innovation */
+    FM::Vec s;
+    /** Predicted observation */
+    FM::Vec z_p;
+
+  private:
+    std::size_t x_size;
+    std::size_t X_size;
 };
 
 #endif

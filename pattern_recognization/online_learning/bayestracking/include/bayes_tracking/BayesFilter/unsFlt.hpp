@@ -37,7 +37,6 @@
 /* Filter namespace */
 namespace Bayesian_filter
 {
-
 class Unscented_predict_model : public Predict_model_base
 /* Specific Unscented prediction model for Additive noise
  *  x(k|k-1) = f(x(k-1|k-1)) + w(x(k))
@@ -47,90 +46,83 @@ class Unscented_predict_model : public Predict_model_base
  *  Q the covariance of the additive w(x(k)), w is specifically allow to be a function of state
  */
 {
-public:
-	Unscented_predict_model (std::size_t q_size)
-	{
-		q_unscented = q_size;
-	}
+  public:
+    Unscented_predict_model( std::size_t q_size ) { q_unscented = q_size; }
 
-	virtual const FM::Vec& f(const FM::Vec& x) const = 0;
-	// Functional part of additive model
-	// Note: Reference return value as a speed optimisation, MUST be copied by caller.
+    virtual const FM::Vec& f( const FM::Vec& x ) const = 0;
+    // Functional part of additive model
+    // Note: Reference return value as a speed optimisation, MUST be copied by caller.
 
-	virtual const FM::SymMatrix& Q(const FM::Vec& x) const = 0;
-	// Covariance of additive noise
-	// Note: Reference return value as a speed optimisation, MUST be copied by caller.
-private:
-	friend class Unscented_filter;	// Filter implementation need to know noise size
-	std::size_t q_unscented;
+    virtual const FM::SymMatrix& Q( const FM::Vec& x ) const = 0;
+    // Covariance of additive noise
+    // Note: Reference return value as a speed optimisation, MUST be copied by caller.
+  private:
+    friend class Unscented_filter;   // Filter implementation need to know noise size
+    std::size_t q_unscented;
 };
 
+class Unscented_scheme : public Linrz_kalman_filter, public Functional_filter {
+  private:
+    std::size_t q_max;   // Maximum size allocated for noise model, constructed before XX
+  public:
+    FM::ColMatrix XX;   // Unscented form of state, with associated Kappa
+    Float kappa;
 
-class Unscented_scheme : public Linrz_kalman_filter, public Functional_filter
-{
-private:
-	std::size_t q_max;			// Maximum size allocated for noise model, constructed before XX
-public:
-	FM::ColMatrix XX;		// Unscented form of state, with associated Kappa
-	Float kappa;
+    Unscented_scheme( std::size_t x_size, std::size_t z_initialsize = 0 );
+    Unscented_scheme& operator=( const Unscented_scheme& );
+    // Optimise copy assignment to only copy filter state
 
-	Unscented_scheme (std::size_t x_size, std::size_t z_initialsize = 0);
-	Unscented_scheme& operator= (const Unscented_scheme&);
-	// Optimise copy assignment to only copy filter state
+    void init();
+    void init_XX();
+    void update();
+    void update_XX( Float kappa );
 
-	void init ();
-	void init_XX ();
-	void update ();
-	void update_XX (Float kappa);
+    void predict( Unscented_predict_model& f );
+    // Efficient Unscented prediction
+    void predict( Functional_predict_model& f );
+    void predict( Additive_predict_model& f );
+    Float predict( Linrz_predict_model& f ) {   // Adapt to use the more general additive model
+        predict( static_cast< Additive_predict_model& >( f ) );
+        return 1.;   // Always well condition for additive predict
+    }
 
-	void predict (Unscented_predict_model& f);
-	// Efficient Unscented prediction 
-	void predict (Functional_predict_model& f);
-	void predict (Additive_predict_model& f);
-	Float predict (Linrz_predict_model& f)
-	{	// Adapt to use the more general additive model
-		predict(static_cast<Additive_predict_model&>(f));
-		return 1.;		// Always well condition for additive predict
-	}
-	
-	Float observe (Uncorrelated_additive_observe_model& h, const FM::Vec& z);
-	Float observe (Correlated_additive_observe_model& h, const FM::Vec& z);
-	// Unscented filter implements general additive observe models
-	
-	Float observe (Linrz_uncorrelated_observe_model& h, const FM::Vec& z)
-	{	// Adapt to use the more general additive model
-		return observe (static_cast<Uncorrelated_additive_observe_model&>(h),z);
-	}
-	Float observe (Linrz_correlated_observe_model& h, const FM::Vec& z)
-	{	// Adapt to use the more general additive model
-		return observe (static_cast<Correlated_additive_observe_model&>(h),z);
-	}
+    Float observe( Uncorrelated_additive_observe_model& h, const FM::Vec& z );
+    Float observe( Correlated_additive_observe_model& h, const FM::Vec& z );
+    // Unscented filter implements general additive observe models
 
-public:						// Exposed Numerical Results
-	FM::Vec s;					// Innovation
-	FM::SymMatrix S, SI;		// Innovation Covariance and Inverse
+    Float observe( Linrz_uncorrelated_observe_model& h,
+                   const FM::Vec& z ) {   // Adapt to use the more general additive model
+        return observe( static_cast< Uncorrelated_additive_observe_model& >( h ), z );
+    }
+    Float observe( Linrz_correlated_observe_model& h,
+                   const FM::Vec& z ) {   // Adapt to use the more general additive model
+        return observe( static_cast< Correlated_additive_observe_model& >( h ), z );
+    }
 
-protected:
-	virtual Float predict_Kappa (std::size_t size) const;
-	virtual Float observe_Kappa (std::size_t size) const;
-	/* Unscented Kappa values
-	   default uses the rule which minimise mean squared error of 4th order term
-	*/
+  public:                  // Exposed Numerical Results
+    FM::Vec s;             // Innovation
+    FM::SymMatrix S, SI;   // Innovation Covariance and Inverse
 
-protected:					// allow fast operation if z_size remains constant
-	std::size_t last_z_size;
-	void observe_size (std::size_t z_size);
+  protected:
+    virtual Float predict_Kappa( std::size_t size ) const;
+    virtual Float observe_Kappa( std::size_t size ) const;
+    /* Unscented Kappa values
+       default uses the rule which minimise mean squared error of 4th order term
+    */
 
-private:
-	void unscented (FM::ColMatrix& XX, const FM::Vec& x, const FM::SymMatrix& X, Float scale);
-	/* Determine Unscented points for a distribution */
-	std::size_t x_size;
-	std::size_t XX_size;	// 2*x_size+1
+  protected:   // allow fast operation if z_size remains constant
+    std::size_t last_z_size;
+    void observe_size( std::size_t z_size );
 
-protected:			   		// Permanently allocated temps
-	FM::ColMatrix fXX;
+  private:
+    void unscented( FM::ColMatrix& XX, const FM::Vec& x, const FM::SymMatrix& X, Float scale );
+    /* Determine Unscented points for a distribution */
+    std::size_t x_size;
+    std::size_t XX_size;   // 2*x_size+1
+
+  protected:   // Permanently allocated temps
+    FM::ColMatrix fXX;
 };
 
-
-}//namespace
+}   // namespace
 #endif

@@ -186,24 +186,27 @@ class map_converter {
 // 		for(size_t k = 0; k < floors[j].size(); k++){
 // 			double ccx, ccy, ccz;
 // 			floors[j][k]->getCenter(ccx, ccy, ccz);
-// 			for(double lx = ccx - sx / 2.0 + occ_resolution / 2.0; lx <= ccx + sx / 2.0 - occ_resolution
+// 			for(double lx = ccx - sx / 2.0 + occ_resolution / 2.0; lx <= ccx + sx / 2.0 -
+// occ_resolution
 // /
 // 2.0; lx += occ_resolution){
 // 				for(double ly = ccy - sy / 2.0 + occ_resolution / 2.0; ly <= ccy + sy / 2.0 -
 // occ_resolution
 // / 2.0; ly += occ_resolution){
 // 					double lccz = ccz;
-// 					int X = floor((lx + sx / 2.0) / occ_resolution + 0.5) + height / 2.0;   // round((lx
+// 					int X = floor((lx + sx / 2.0) / occ_resolution + 0.5) + height / 2.0;   //
+// round((lx
 // -
 // (occ_resolution - xs) / 2.0) / occ_resolution);
-// 					int Y = floor((ly + sy / 2.0) / occ_resolution + 0.5) + width / 2.0;    //round((ly
+// 					int Y = floor((ly + sy / 2.0) / occ_resolution + 0.5) + width / 2.0; //round((ly
 // -
 // (occ_resolution - ys) / 2.0) / occ_resolution);
 // 					pcl::PointXYZ p1(lx, ly, ccz - sz / 2.0);
 // 					pcl::PointXYZ p2(lx, ly, ccz + sz / 2.0);
 // 					Eigen::Vector3d out;
 // 					// ROS_INFO_STREAM(X<<" "<<Y);
-// 					// ROS_INFO_STREAM(p1<<" "<<p2<<" "<<floors[j][k]->computeMaximumLikelihoodAlongLine(p1,
+// 					// ROS_INFO_STREAM(p1<<" "<<p2<<"
+// "<<floors[j][k]->computeMaximumLikelihoodAlongLine(p1,
 // p2,
 // out)<<" "<<X<<" "<<Y);
 //

@@ -190,15 +190,14 @@ int main( int argc, char** argv ) {
         "velodyne packets topic used" )(
         "velodyne_frame_id",
         po::value< std::string >( &velodyne_frame_id )->default_value( std::string( "/velodyne" ) ),
-        "frame_id of the velodyne" )( "tf_base_link",
-                                      po::value< std::string >( &base_link_id )
-                                          ->default_value( std::string( "/odom_base_"
-                                                                        "link" ) ),
-                                      "tf_base_link" )(
-        "tf_gt_link",
-        po::value< std::string >( &gt_base_link_id )->default_value( std::string( "/state_base_"
-                                                                                  "link" ) ),
-        "tf ground truth link" )(
+        "frame_id of the velodyne" )(
+        "tf_base_link", po::value< std::string >( &base_link_id )
+                            ->default_value( std::string( "/odom_base_"
+                                                          "link" ) ),
+        "tf_base_link" )( "tf_gt_link", po::value< std::string >( &gt_base_link_id )
+                                            ->default_value( std::string( "/state_base_"
+                                                                          "link" ) ),
+                          "tf ground truth link" )(
         "tf_world_frame",
         po::value< std::string >( &tf_world_frame )->default_value( std::string( "/world" ) ),
         "tf world frame" )(

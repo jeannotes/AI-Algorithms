@@ -91,8 +91,8 @@ class OPENGL_IMPEXP CMyEllipsoid : public CRenderizableDisplayList {
     void setCovMatrix( const mrpt::math::CMatrixFloat& m,
                        int resizeToSize = -1 );   //!< Set the 2x2 or 3x3 covariance matrix that
                                                   //! will determine the aspect of the ellipsoid (if
-    //! resizeToSize>0, the matrix will be cut to the
-    //! square matrix of the given size).
+                                                  //! resizeToSize>0, the matrix will be cut to the
+                                                  //! square matrix of the given size).
 
     /**  Set the 2x2 or 3x3 covariance matrix that will determine the aspect of the ellipsoid (if
      * resizeToSize>0, the matrix will be cut to the square matrix of the given size)

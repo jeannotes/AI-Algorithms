@@ -23,7 +23,6 @@
 #include <vector>
 #include "bayes_tracking/BayesFilter/unsFlt.hpp"
 
-
 using namespace Bayesian_filter;
 using namespace Bayesian_filter_matrix;
 
@@ -32,80 +31,76 @@ UKF state estimator
 
 @author Nicola Bellotto
 */
-class UKFilter : public Unscented_scheme
-{
-public:
-   /**
-    * Constructor - include initialization with null state and null covariance
-    */
-   UKFilter(std::size_t x_size);
+class UKFilter : public Unscented_scheme {
+  public:
+    /**
+     * Constructor - include initialization with null state and null covariance
+     */
+    UKFilter( std::size_t x_size );
 
-   /**
-    * Constructor
-    * @param x0 State vector
-    * @param P0 Covariance matrix
-    */
-   UKFilter(const FM::Vec& x0, const FM::SymMatrix& P0);
-   
-   /**
-    * Destructor
-    */
-   ~UKFilter();
-   
-   /**
-    * Initialize state and covariance
-    * @param x0 State vector
-    * @param P0 Covariance matrix
-    */
-   void init(const FM::Vec& x0, const FM::SymMatrix& P0);
+    /**
+     * Constructor
+     * @param x0 State vector
+     * @param P0 Covariance matrix
+     */
+    UKFilter( const FM::Vec& x0, const FM::SymMatrix& P0 );
 
-   /**
-    * Perform prediction and correction to update the state
-    * @param predict_model
-    * @param observe_model 
-    * @param z 
-    */
-   void update(Additive_predict_model& predict_model,
-               Correlated_additive_observe_model& observe_model,
-               const FM::Vec& z);
+    /**
+     * Destructor
+     */
+    ~UKFilter();
 
-   /**
-    * Predict the observation from the last predicted state and the covariance R_p of the predicted observation
-    * @param observe_model Observation model
-    * @param z_pred Predicted observation (return)
-    * @param R_pred Predicted observation covariance (return)
-    */
-   void predict_observation(Correlated_additive_observe_model& observe_model,
-                            FM::Vec& z_pred, FM::SymMatrix& R_pred);
-                           
-   /**
-    * Update the state from innovation and relative covariance.
-    * @param h Observation model
-    * @param si Innovation
-    * @param Si Modified innovation covariance
-    */
-   Bayes_base::Float observeInnovation(Correlated_additive_observe_model& h,
-      const Vec& si, const SymMatrix& Si);
-      
-   /**
-    * Return the logarithm of the (normalized) likelihhod after the last observation
-    * @return Logarithm of the likelihood
-    */
-   double logLikelihood();
+    /**
+     * Initialize state and covariance
+     * @param x0 State vector
+     * @param P0 Covariance matrix
+     */
+    void init( const FM::Vec& x0, const FM::SymMatrix& P0 );
 
-public:
-   /** Predicted observation */
-   FM::Vec z_p;
+    /**
+     * Perform prediction and correction to update the state
+     * @param predict_model
+     * @param observe_model
+     * @param z
+     */
+    void update( Additive_predict_model& predict_model,
+                 Correlated_additive_observe_model& observe_model, const FM::Vec& z );
 
-private:
-   void unscented(FM::ColMatrix& XX,
-                  const FM::Vec& x,
-                  const FM::SymMatrix& X,
-                  Float scale);
+    /**
+     * Predict the observation from the last predicted state and the covariance R_p of the predicted
+     * observation
+     * @param observe_model Observation model
+     * @param z_pred Predicted observation (return)
+     * @param R_pred Predicted observation covariance (return)
+     */
+    void predict_observation( Correlated_additive_observe_model& observe_model, FM::Vec& z_pred,
+                              FM::SymMatrix& R_pred );
 
-private:
-   std::size_t x_size;
-   std::size_t XX_size;
+    /**
+     * Update the state from innovation and relative covariance.
+     * @param h Observation model
+     * @param si Innovation
+     * @param Si Modified innovation covariance
+     */
+    Bayes_base::Float observeInnovation( Correlated_additive_observe_model& h, const Vec& si,
+                                         const SymMatrix& Si );
+
+    /**
+     * Return the logarithm of the (normalized) likelihhod after the last observation
+     * @return Logarithm of the likelihood
+     */
+    double logLikelihood();
+
+  public:
+    /** Predicted observation */
+    FM::Vec z_p;
+
+  private:
+    void unscented( FM::ColMatrix& XX, const FM::Vec& x, const FM::SymMatrix& X, Float scale );
+
+  private:
+    std::size_t x_size;
+    std::size_t XX_size;
 };
 
 #endif

@@ -32,55 +32,51 @@
 /* Filter namespace */
 namespace Bayesian_filter
 {
+class Information_root_scheme : public Extended_kalman_filter {
+  public:
+    FM::Vec r;          // Information Root state
+    FM::UTriMatrix R;   // Information Root
 
-class Information_root_scheme : public Extended_kalman_filter
-{
-public:
-	FM::Vec r;			// Information Root state
-	FM::UTriMatrix R;	// Information Root
+    Information_root_scheme( std::size_t x_size, std::size_t z_initialsize = 0 );
 
-	Information_root_scheme (std::size_t x_size, std::size_t z_initialsize = 0);
+    void init();
+    void update();
+    // Covariance form state interface
 
-	void init ();
-	void update ();
-	// Covariance form state interface
+    Float predict( Linrz_predict_model& f, const FM::ColMatrix& invFx, bool linear_r );
+    /* Generalised form, using precomputed inverse of f.Fx */
+    Float predict( Linrz_predict_model& f );
+    /* Use linrz form for r, computes inverse model using inverse_Fx */
+    Float predict( Linear_predict_model& f );
+    /* Use linear form for r, computes inverse model using inverse_Fx */
+    Float predict( Linear_invertable_predict_model& f )
+    /* Use linear form for r, and use inv.Fx from invertible model */
+    {
+        return predict( f, f.inv.Fx, true );
+    }
 
-	Float predict (Linrz_predict_model& f, const FM::ColMatrix& invFx, bool linear_r);
-	/* Generalised form, using precomputed inverse of f.Fx */
-	Float predict (Linrz_predict_model& f);
-	/* Use linrz form for r, computes inverse model using inverse_Fx */
-	Float predict (Linear_predict_model& f);
-	/* Use linear form for r, computes inverse model using inverse_Fx */
-	Float predict (Linear_invertable_predict_model& f)
-	/* Use linear form for r, and use inv.Fx from invertible model */
-	{
-		return predict(f, f.inv.Fx, true);
-	}
+    Float observe_innovation( Linrz_uncorrelated_observe_model& h, const FM::Vec& s );
+    Float observe_innovation( Linrz_correlated_observe_model& h, const FM::Vec& s );
+    // Extended_kalman_filter observe
 
-	Float observe_innovation (Linrz_uncorrelated_observe_model& h, const FM::Vec& s);
-	Float observe_innovation (Linrz_correlated_observe_model& h, const FM::Vec& s);
-	// Extended_kalman_filter observe
-
-	static void inverse_Fx (FM::DenseColMatrix& invFx, const FM::Matrix& Fx);
-	/* Numerical Inversion of Fx using LU factorisation */
+    static void inverse_Fx( FM::DenseColMatrix& invFx, const FM::Matrix& Fx );
+    /* Numerical Inversion of Fx using LU factorisation */
 };
-
 
 /*
  * Information Root Filter Scheme with exposed information state
  * Augments Information_root_filter with y,Y in the interface
  */
 
-class Information_root_info_scheme : public Information_root_scheme, virtual public Information_state_filter
-{
-public:
-	Information_root_info_scheme (std::size_t x_size, std::size_t z_initialsize = 0);
+class Information_root_info_scheme : public Information_root_scheme,
+                                     virtual public Information_state_filter {
+  public:
+    Information_root_info_scheme( std::size_t x_size, std::size_t z_initialsize = 0 );
 
-	void init_yY ();
-	void update_yY ();
-	// Information form state interface
+    void init_yY();
+    void update_yY();
+    // Information form state interface
 };
 
-
-}//namespace
+}   // namespace
 #endif

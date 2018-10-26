@@ -473,11 +473,11 @@ class CParticleFilter {
   private:
     TPoseParticle* tmp;   ///< Particle distribution for SIR (Maintained for efficiency reasons
                           /// here)
-    /**
-     * Heap Sort algorithm
-     * @param *indx The index of values after sort
-     * @param N The number of values
-     **/
+                          /**
+                           * Heap Sort algorithm
+                           * @param *indx The index of values after sort
+                           * @param N The number of values
+                           **/
     void hpsrt( int* indx );
 };
 }

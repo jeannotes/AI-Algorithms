@@ -98,7 +98,8 @@ class NDTCornerBundle {
         side_point1_cell2 = cell2->getMean() + smallest_cell2.NormEigen();
         side_point2_cell2 = cell2->getMean() - smallest_cell2.NormEigen();
 
-        // 				std::cout << "All points " << side_point1_cell1 << " \n\n " << side_point1_cell2 <<
+        // 				std::cout << "All points " << side_point1_cell1 << " \n\n " << side_point1_cell2
+        // <<
         // "
         // \n\n " << side_point2_cell2 << std::endl <<  smallest_cell2.NormEigen() << std::endl;
 
@@ -106,7 +107,8 @@ class NDTCornerBundle {
         auto collision = collisionRay( biggest_cell1.eigenvec, side_point1_cell1,
                                        biggest_cell2.eigenvec, side_point1_cell2 );
 
-        // 				std::cout << "Collision " << collision << " nesxtr " << biggest_cell1.eigenvec <<
+        // 				std::cout << "Collision " << collision << " nesxtr " << biggest_cell1.eigenvec
+        // <<
         // "
         // nesxtr " << side_point1_cell1 << " nesxtr " << biggest_cell2.eigenvec << " nesxtr " <<
         // side_point1_cell2 << " " << std::endl;
@@ -114,7 +116,8 @@ class NDTCornerBundle {
         // needs to be only one.
         auto collision1 = collisionRay( biggest_cell1.eigenvec, side_point1_cell1,
                                         biggest_cell2.eigenvec, side_point2_cell2 );
-        // 				std::cout << "Collision2 " << collision1 << " nesxtr " << biggest_cell1.eigenvec <<
+        // 				std::cout << "Collision2 " << collision1 << " nesxtr " << biggest_cell1.eigenvec
+        // <<
         // "
         // nesxtr " << side_point1_cell1 << " nesxtr " << biggest_cell2.eigenvec << " nesxtr " <<
         // side_point2_cell2 << " " << std::endl;

@@ -59,7 +59,7 @@ struct svm_model {
                         SVs in the training set */
 
     /* for classification only */
- 
+
     int* label; /* label of each class (label[k]) */
     int* nSV;   /* number of SVs for each class (nSV[k]) */
     /* nSV[0] + nSV[1] + ... + nSV[k-1] = l */

@@ -1,7 +1,7 @@
 //
 // C++ Interface: jacobianmodel
 //
-// Description: 
+// Description:
 //
 //
 // Author: Nicola Bellotto <nbellotto@lincoln.ac.uk>, (C) 2011
@@ -18,16 +18,15 @@
 using namespace Bayesian_filter_matrix;
 
 class JacobianModel {
-public:
-  /** Contructor  */
-  virtual ~JacobianModel(){};
+  public:
+    /** Contructor  */
+    virtual ~JacobianModel(){};
 
-  /**
-   * Update Jacobian matrix of the model
-   * @p x state argument
-   */
-  virtual void updateJacobian(const Vec& x) = 0;
+    /**
+     * Update Jacobian matrix of the model
+     * @p x state argument
+     */
+    virtual void updateJacobian( const Vec& x ) = 0;
 };
 
-
-#endif  // JACOBIANMODEL_H
+#endif   // JACOBIANMODEL_H

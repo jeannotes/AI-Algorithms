@@ -20,23 +20,21 @@
 /* Filter Matrix Namespace */
 namespace Bayesian_filter_matrix
 {
-
-
 /*
  * Assertion support
  */
 #ifndef NDEBUG
-void assert_isPSD (const SymMatrix &M);
+void assert_isPSD( const SymMatrix& M );
 #else
-inline void assert_isPSD (const SymMatrix &M) {}
+inline void assert_isPSD( const SymMatrix& M ) {}
 #endif
 
 /*
  * Local support functions
  */
-bool isPSD (const SymMatrix &M);
-bool isSymmetric (const Matrix &M);
-void forceSymmetric (Matrix &M, bool bUpperToLower = false);
+bool isPSD( const SymMatrix& M );
+bool isSymmetric( const Matrix& M );
+void forceSymmetric( Matrix& M, bool bUpperToLower = false );
 
 /*
  * UdU' and LdL' and UU' Cholesky Factorisation and function
@@ -47,48 +45,48 @@ void forceSymmetric (Matrix &M, bool bUpperToLower = false);
  *  These values are documented for each algorithm and are important way to
  *  determine the validity of the results
  */
-Vec::value_type UdUrcond (const Vec& d);
-RowMatrix::value_type UdUrcond (const RowMatrix& UD);
-RowMatrix::value_type UdUrcond (const RowMatrix& UD, std::size_t n);
-UTriMatrix::value_type UCrcond (const UTriMatrix& UC);
-SymMatrix::value_type UdUdet (const SymMatrix& UD);
+Vec::value_type UdUrcond( const Vec& d );
+RowMatrix::value_type UdUrcond( const RowMatrix& UD );
+RowMatrix::value_type UdUrcond( const RowMatrix& UD, std::size_t n );
+UTriMatrix::value_type UCrcond( const UTriMatrix& UC );
+SymMatrix::value_type UdUdet( const SymMatrix& UD );
 
 // In-place factorisations
-RowMatrix::value_type UdUfactor_variant1 (RowMatrix& M, std::size_t n);
-RowMatrix::value_type UdUfactor_variant2 (RowMatrix& M, std::size_t n);
-inline RowMatrix::value_type UdUfactor (RowMatrix& M, std::size_t n)
-{	return UdUfactor_variant2(M,n);
+RowMatrix::value_type UdUfactor_variant1( RowMatrix& M, std::size_t n );
+RowMatrix::value_type UdUfactor_variant2( RowMatrix& M, std::size_t n );
+inline RowMatrix::value_type UdUfactor( RowMatrix& M, std::size_t n ) {
+    return UdUfactor_variant2( M, n );
 }
-LTriMatrix::value_type LdLfactor (LTriMatrix& M, std::size_t n);
-UTriMatrix::value_type UCfactor (UTriMatrix& M, std::size_t n);
+LTriMatrix::value_type LdLfactor( LTriMatrix& M, std::size_t n );
+UTriMatrix::value_type UCfactor( UTriMatrix& M, std::size_t n );
 
 // Copy factorisations
-RowMatrix::value_type UdUfactor (RowMatrix& UD, const SymMatrix& M);
-LTriMatrix::value_type LdLfactor (LTriMatrix& LD, const SymMatrix& M);
-UTriMatrix::value_type UCfactor (UTriMatrix& UC, const SymMatrix& M);
+RowMatrix::value_type UdUfactor( RowMatrix& UD, const SymMatrix& M );
+LTriMatrix::value_type LdLfactor( LTriMatrix& LD, const SymMatrix& M );
+UTriMatrix::value_type UCfactor( UTriMatrix& UC, const SymMatrix& M );
 
 // Factor manipulations
-bool UdUinverse (RowMatrix& UD);
-bool UTinverse (UTriMatrix& U);
-void UdUrecompose_transpose (RowMatrix& M);
-void UdUrecompose (RowMatrix& M);
-void UdUrecompose (SymMatrix& X, const RowMatrix& M);
-void UdUfromUCholesky (RowMatrix& U);
-void UdUseperate (RowMatrix& U, Vec& d, const RowMatrix& UD);
-void Lzero (RowMatrix& M);
-void Uzero (RowMatrix& M);
+bool UdUinverse( RowMatrix& UD );
+bool UTinverse( UTriMatrix& U );
+void UdUrecompose_transpose( RowMatrix& M );
+void UdUrecompose( RowMatrix& M );
+void UdUrecompose( SymMatrix& X, const RowMatrix& M );
+void UdUfromUCholesky( RowMatrix& U );
+void UdUseperate( RowMatrix& U, Vec& d, const RowMatrix& UD );
+void Lzero( RowMatrix& M );
+void Uzero( RowMatrix& M );
 
 /*
  * Functions using UdU factorisation:
  *  inverse of Positive Definite matrix returning rcond
  */
-SymMatrix::value_type UdUinversePDignoreInfinity (SymMatrix& M);
-SymMatrix::value_type UdUinversePD (SymMatrix& M);
-SymMatrix::value_type UdUinversePD (SymMatrix& M, SymMatrix::value_type& detM);
-SymMatrix::value_type UdUinversePD (SymMatrix& MI, const SymMatrix& M);
-SymMatrix::value_type UdUinversePD (SymMatrix& MI, SymMatrix::value_type& detM, const SymMatrix& M);
+SymMatrix::value_type UdUinversePDignoreInfinity( SymMatrix& M );
+SymMatrix::value_type UdUinversePD( SymMatrix& M );
+SymMatrix::value_type UdUinversePD( SymMatrix& M, SymMatrix::value_type& detM );
+SymMatrix::value_type UdUinversePD( SymMatrix& MI, const SymMatrix& M );
+SymMatrix::value_type UdUinversePD( SymMatrix& MI, SymMatrix::value_type& detM,
+                                    const SymMatrix& M );
 
-
-}//namespace
+}   // namespace
 
 #endif

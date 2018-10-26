@@ -63,7 +63,8 @@ inline double getAngleDirected( const Eigen::Vector2d& base, const Eigen::Vector
  */
 inline double getAngleG( const Eigen::VectorXd& base, const Eigen::VectorXd& toward ) {
     if ( base == toward ) {
-        // 				std::cout << "vectors base : " << base << std::endl << " toward : " << toward
+        // 				std::cout << "vectors base : " << base << std::endl << " toward : " <<
+        // toward
         // <<
         // std::endl;
         // LINE REMOVED TO ALLOW ASSERT
@@ -252,13 +253,16 @@ inline Eigen::Vector3d collisionRay( const Eigen::Vector3d& ray_direction,
         ( ray_direction( 2 ) * t_n( 0 ) ) + ray_point( 2 );
 
     // 			Eigen::Vector3d x_second;
-    // 			x_second << std::floor( (( ray_direction_second(0) * t_n(1) ) + ray_point_second(0)) *
+    // 			x_second << std::floor( (( ray_direction_second(0) * t_n(1) ) + ray_point_second(0))
+    // *
     // 10
     // + 0.5)/10,
-    // 						std::floor( (( ray_direction_second(1) * t_n(1) ) + ray_point_second(1)) * 10
+    // 						std::floor( (( ray_direction_second(1) * t_n(1) ) + ray_point_second(1)) *
+    // 10
     // +
     // 0.5)/10,
-    // 						std::floor( (( ray_direction_second(2) * t_n(1) ) + ray_point_second(2)) * 10
+    // 						std::floor( (( ray_direction_second(2) * t_n(1) ) + ray_point_second(2)) *
+    // 10
     // +
     // 0.5)/10;
 

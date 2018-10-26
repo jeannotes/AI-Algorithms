@@ -66,7 +66,7 @@ int main() {
     }
     //输出，以及测试
     // cout<<error_rate()<<endl;
-    //system( "pause" );
+    // system( "pause" );
 }
 
 /////////examineExample程序
@@ -301,7 +301,7 @@ int takeStep( int i1, int i2 ) {
     // this is x1^2+x2^2-2*x1*x2=(x1-x2)^2.
     // if equal to 0, means the same number
     {
-    // here, refer to svm_smo.ipynb, just want to make object function as large as possible\
+        // here, refer to svm_smo.ipynb, just want to make object function as large as possible\
     // its function is strange
         double c1 = eta / 2;
         double c2 = y2 * ( E1 - E2 ) - eta * alph2;
@@ -334,7 +334,7 @@ int takeStep( int i1, int i2 ) {
         a2 += s * t;   //同上
         a1 = C;
     }
-    // again, update a1, a2 and b1,b2, refer to .ipnb notebook, 
+    // again, update a1, a2 and b1,b2, refer to .ipnb notebook,
     // here, it's strange
     //更新阀值b
     // After each step, b is re-computed.

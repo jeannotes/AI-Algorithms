@@ -179,15 +179,18 @@ inline void orientationNDTCells( const perception_oru::NDTMap& map,
     // in between the gaussians after.
     // 			for(int i = 0; i < 2 ; ++i){
     //
-    // // 				std::cout << "collision data:  " << x_cell_size << " and i " << i << " orientation
+    // // 				std::cout << "collision data:  " << x_cell_size << " and i " << i << "
+    // orientation
     // "
     // << orientation << std::cos(orientation + (i * M_PI) ) <<  std::endl;
     //
     // 				pcl::PointXYZ forward_point;
-    // 				forward_point.x = collision_point(0) + (2 * x_cell_size * std::cos(orientation + (i
+    // 				forward_point.x = collision_point(0) + (2 * x_cell_size * std::cos(orientation +
+    // (i
     // *
     // M_PI) ) );
-    // 				forward_point.y = collision_point(1) + (2 * x_cell_size *  std::sin(orientation + (i
+    // 				forward_point.y = collision_point(1) + (2 * x_cell_size *  std::sin(orientation +
+    // (i
     // *
     // M_PI) ) );
     // 				forward_point.z = 0;
@@ -202,7 +205,8 @@ inline void orientationNDTCells( const perception_oru::NDTMap& map,
     // 				std::cout << "point forward " << forward_point.x <<" " << forward_point.y << " "
     // <<
     // forward_point.z <<  std::endl;
-    // 				std::cout << "point collision " << collision_point(0) <<" " << collision_point(1) << "
+    // 				std::cout << "point collision " << collision_point(0) <<" " << collision_point(1) <<
+    // "
     // "
     // << collision_point(2) <<  std::endl;
 
@@ -293,7 +297,8 @@ inline void orientationNDTCells( const perception_oru::NDTMap& map,
                 // angle_init_orientation_3dtest << std::endl;
                 // 							assert(angle_init_orientation ==
                 // angle_init_orientation_3dtest);
-                // 							double angle_init_orientation = atan2(vector_init(1), vector_init(0))
+                // 							double angle_init_orientation = atan2(vector_init(1),
+                // vector_init(0))
                 // -
                 // atan2(orientation_vector(1), orientation_vector(0));
 
@@ -368,13 +373,16 @@ inline void orientationNDTCells( const perception_oru::NDTMap& map,
     //
     // 					auto center_forward = cell->getCenter();
     //
-    // 					std::cout << "center point1 " << point_center.x << " " << point_center.y << " "
+    // 					std::cout << "center point1 " << point_center.x << " " << point_center.y << "
+    // "
     // <<
     // point_center.z << std::endl;
-    // 					std::cout << "center point2 " << point_center2.x << " " << point_center2.y << " "
+    // 					std::cout << "center point2 " << point_center2.x << " " << point_center2.y << "
+    // "
     // <<
     // point_center2.z << std::endl;
-    // 					std::cout << "center forward " << center_forward.x << " " << center_forward.y << " "
+    // 					std::cout << "center forward " << center_forward.x << " " << center_forward.y << "
+    // "
     // <<
     // center_forward.z << std::endl;
     //
@@ -383,7 +391,8 @@ inline void orientationNDTCells( const perception_oru::NDTMap& map,
     // center_forward.z == point_center.z){
     // 						std::cout << "SAME CELL AS CELL1" << std::endl;
     // 					}
-    // 					else if(center_forward.x == point_center2.x && center_forward.y == point_center2.y
+    // 					else if(center_forward.x == point_center2.x && center_forward.y ==
+    // point_center2.y
     // &&
     // center_forward.z == point_center2.z){
     // 						std::cout << "SAME CELL AS CELL2" << std::endl;
@@ -411,7 +420,8 @@ inline void orientationNDTCells( const perception_oru::NDTMap& map,
     // 							double angle_between = atan2(vector1(1), vector1(0)) -
     // atan2(orientation_vector(1),
     // orientation_vector(0));
-    // 							double angle_between2 = atan2(orientation_vector(1), orientation_vector(0))
+    // 							double angle_between2 = atan2(orientation_vector(1),
+    // orientation_vector(0))
     // -
     // atan2(vector2(1), vector2(0) );
     //
@@ -434,16 +444,19 @@ inline void orientationNDTCells( const perception_oru::NDTMap& map,
     // 							std::cout << "FINAL ANGLES " << angle_between << " " <<
     // angle_between2<<std::endl;
     //
-    // 							if(	(angle_between < ( angle_between2 + 0.1 ) ) && ( angle_between > (angle_between2
+    // 							if(	(angle_between < ( angle_between2 + 0.1 ) ) && ( angle_between >
+    // (angle_between2
     // -
     // 0.1 ) ) ){
-    // 								std::cout << "Pushing back " << orientation + (i * M_PI)<< " with " <<
+    // 								std::cout << "Pushing back " << orientation + (i * M_PI)<< " with "
+    // <<
     // angle_between
     // << " " << angle_between2 << std::endl;
     // 								angle_orientations.push_back(orientation + (i * M_PI));
     // 							}
     // 							else{
-    // 								std::cout << "Wrong angle " << angle_between << " " << angle_between2
+    // 								std::cout << "Wrong angle " << angle_between << " " <<
+    // angle_between2
     // <<
     // std::endl;
     // 							}

@@ -34,35 +34,32 @@
 /* Filter namespace */
 namespace Bayesian_filter
 {
+class CI_scheme : public Extended_kalman_filter {
+  public:
+    CI_scheme( std::size_t x_size, std::size_t z_initialsize = 0 );
+    CI_scheme& operator=( const CI_scheme& );
+    // Optimise copy assignment to only copy filter state
 
-class CI_scheme : public Extended_kalman_filter
-{
-public:
-	CI_scheme (std::size_t x_size, std::size_t z_initialsize = 0);
-	CI_scheme& operator= (const CI_scheme&);
-	// Optimise copy assignment to only copy filter state
+    void init();
+    void update();
+    Float predict( Linrz_predict_model& f );
+    Float observe_innovation( Linrz_uncorrelated_observe_model& h, const FM::Vec& s );
+    Float observe_innovation( Linrz_correlated_observe_model& h, const FM::Vec& s );
 
-	void init ();
-	void update ();
-	Float predict (Linrz_predict_model& f);
-	Float observe_innovation (Linrz_uncorrelated_observe_model& h, const FM::Vec& s);
-	Float observe_innovation (Linrz_correlated_observe_model& h, const FM::Vec& s);
+    virtual Float Omega( const FM::SymMatrix& Ai, const FM::SymMatrix& Bi, const FM::SymMatrix& A )
+    // Determine norm Omega 0..1 for the CI combination
+    // Default norm is the fixed value 0.5
+    {
+        return 0.5;
+    }
 
-	virtual Float Omega(const FM::SymMatrix& Ai, const FM::SymMatrix& Bi, const FM::SymMatrix& A)
-	// Determine norm Omega 0..1 for the CI combination
-	// Default norm is the fixed value 0.5
-	{
-		return 0.5;
-	}
+  public:                  // Exposed Numerical Results
+    FM::SymMatrix S, SI;   // Innovation Covariance and Inverse
 
-public:						// Exposed Numerical Results
-	FM::SymMatrix S, SI;		// Innovation Covariance and Inverse
-
-protected:					// allow fast operation if z_size remains constant
-	std::size_t last_z_size;
-	void observe_size (std::size_t z_size);
+  protected:   // allow fast operation if z_size remains constant
+    std::size_t last_z_size;
+    void observe_size( std::size_t z_size );
 };
 
-
-}//namespace
+}   // namespace
 #endif

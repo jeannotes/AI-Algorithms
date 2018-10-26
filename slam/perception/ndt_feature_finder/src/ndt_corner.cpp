@@ -365,10 +365,12 @@ bool perception_oru::ndt_feature_finder::NDTCorner::gotAngledNDT(
             if ( angle_between_test < 0 ) angle_between_test += 2 * M_PI;
             //
             //
-            // // 				std::cout << vector1 << "\n\n "<< orientation << "\n\n " << vector2 <<
+            // // 				std::cout << vector1 << "\n\n "<< orientation << "\n\n " << vector2
+            // <<
             // "
             // \n\n"<< orientation_tmp << std::endl;
-            // // 				std::cout << "means " << neighbor[i]->getMean() << " " << mean_cell_tmp <<
+            // // 				std::cout << "means " << neighbor[i]->getMean() << " " << mean_cell_tmp
+            // <<
             // "
             // and " <<neighbor[j]->getMean() << " " << mean_cell << " corner " << corner <<
             // std::endl << std::endl;;
@@ -394,7 +396,8 @@ bool perception_oru::ndt_feature_finder::NDTCorner::gotAngledNDT(
             //
             // 				//Move angle into [0 ; PI]
             if ( angle_tmp_test > M_PI ) { angle_tmp_test = ( M_PI * 2 ) - angle_tmp_test; }
-            // 				std::cout << "nsize " << neighbor.size() << " Angle of neighbor " << angle_tmp
+            // 				std::cout << "nsize " << neighbor.size() << " Angle of neighbor " <<
+            // angle_tmp
             // <<
             // " deg angle " << angle_tmp * 180 / M_PI << std::endl;
             // 			std::cout << "between " << std::endl << orientation << std::endl << " and "

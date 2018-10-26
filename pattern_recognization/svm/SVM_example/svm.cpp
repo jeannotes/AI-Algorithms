@@ -1704,9 +1704,9 @@ static void svm_group_classes( const svm_problem* prob, int* nr_class_ret, int**
     int l            = prob->l;
     int max_nr_class = 16;
     int nr_class     = 0;
-    int* label       = Malloc( int, max_nr_class );// stores original label from prob
-    int* count       = Malloc( int, max_nr_class );// store numbers of this label
-    int* data_label  = Malloc( int, l );// store label(start from 0: 0,1,2 ....nr_class-1  )
+    int* label       = Malloc( int, max_nr_class );   // stores original label from prob
+    int* count       = Malloc( int, max_nr_class );   // store numbers of this label
+    int* data_label  = Malloc( int, l );   // store label(start from 0: 0,1,2 ....nr_class-1  )
     int i;
 
     for ( i = 0; i < l; i++ ) {

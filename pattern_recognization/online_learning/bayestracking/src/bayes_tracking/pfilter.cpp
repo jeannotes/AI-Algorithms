@@ -19,115 +19,93 @@
  ***************************************************************************/
 #include "bayes_tracking/pfilter.h"
 
-PFilter::PFilter(std::size_t x_size, std::size_t s_size, SIR_random& random_helper) :
-        Sample_state_filter (x_size, s_size),
-        Kalman_state_filter(x_size),
-        SIR_kalman_scheme(x_size, s_size, random_helper),
-        w(wir)
-{
+PFilter::PFilter( std::size_t x_size, std::size_t s_size, SIR_random& random_helper )
+    : Sample_state_filter( x_size, s_size ),
+      Kalman_state_filter( x_size ),
+      SIR_kalman_scheme( x_size, s_size, random_helper ),
+      w( wir ) {
     PFilter::x_size = x_size;
-    FM::Vec x0(x_size);
+    FM::Vec x0( x_size );
     x0.clear();
-    FM::SymMatrix P0(x_size, x_size);
+    FM::SymMatrix P0( x_size, x_size );
     P0.clear();
-    init(x0, P0);
+    init( x0, P0 );
 }
 
-
-PFilter::PFilter(std::size_t x_size, std::size_t s_size) :
-        Sample_state_filter (x_size, s_size),
-        Kalman_state_filter(x_size),
-        SIR_kalman_scheme(x_size, s_size, rnd),
-        w(wir)
-{
+PFilter::PFilter( std::size_t x_size, std::size_t s_size )
+    : Sample_state_filter( x_size, s_size ),
+      Kalman_state_filter( x_size ),
+      SIR_kalman_scheme( x_size, s_size, rnd ),
+      w( wir ) {
     PFilter::x_size = x_size;
-    FM::Vec x0(x_size);
+    FM::Vec x0( x_size );
     x0.clear();
-    FM::SymMatrix P0(x_size, x_size);
+    FM::SymMatrix P0( x_size, x_size );
     P0.clear();
-    init(x0, P0);
+    init( x0, P0 );
 }
 
-
-PFilter::PFilter(const FM::Vec& x0,
-                 const FM::SymMatrix& P0,
-                 std::size_t s_size,
-                 SIR_random& random_helper) :
-        Sample_state_filter (x0.size(), s_size),
-        Kalman_state_filter(x0.size()),
-        SIR_kalman_scheme(x0.size(), s_size, random_helper),
-        w(wir)
-{
+PFilter::PFilter( const FM::Vec& x0, const FM::SymMatrix& P0, std::size_t s_size,
+                  SIR_random& random_helper )
+    : Sample_state_filter( x0.size(), s_size ),
+      Kalman_state_filter( x0.size() ),
+      SIR_kalman_scheme( x0.size(), s_size, random_helper ),
+      w( wir ) {
     PFilter::x_size = x0.size();
-    init(x0, P0);
+    init( x0, P0 );
 }
 
-
-PFilter::PFilter(const FM::Vec& x0,
-                 const FM::SymMatrix& P0,
-                 std::size_t s_size) :
-        Sample_state_filter (x0.size(), s_size),
-        Kalman_state_filter(x0.size()),
-        SIR_kalman_scheme(x0.size(), s_size, rnd),
-        w(wir)
-{
+PFilter::PFilter( const FM::Vec& x0, const FM::SymMatrix& P0, std::size_t s_size )
+    : Sample_state_filter( x0.size(), s_size ),
+      Kalman_state_filter( x0.size() ),
+      SIR_kalman_scheme( x0.size(), s_size, rnd ),
+      w( wir ) {
     PFilter::x_size = x0.size();
-    init(x0, P0);
+    init( x0, P0 );
 }
 
+PFilter::~PFilter() {}
 
-PFilter::~PFilter()
-{
-}
-
-
-void PFilter::init(const FM::Vec& x0, const FM::SymMatrix& P0)
-{
-    SIR_kalman_scheme::init_kalman(x0, P0);
+void PFilter::init( const FM::Vec& x0, const FM::SymMatrix& P0 ) {
+    SIR_kalman_scheme::init_kalman( x0, P0 );
     m_likelihood = 0.;
 }
 
-
-void PFilter::predict(Sampled_predict_model& predict_model)
-{
-    SIR_kalman_scheme::predict(predict_model);
+void PFilter::predict( Sampled_predict_model& predict_model ) {
+    SIR_kalman_scheme::predict( predict_model );
     update_statistics();
 }
 
-
-void PFilter::predict_observation(Correlated_additive_observe_model& observe_model, FM::Vec& z_pred, FM::SymMatrix& R_pred)
-{
+void PFilter::predict_observation( Correlated_additive_observe_model& observe_model,
+                                   FM::Vec& z_pred, FM::SymMatrix& R_pred ) {
     z_pred.clear();   // mean
     const std::size_t nSamples = S.size2();
-    for (std::size_t i = 0; i != nSamples; ++i) {
-        FM::ColMatrix::Column Si(S,i);
-        z_pred.plus_assign (observe_model.h(Si));
+    for ( std::size_t i = 0; i != nSamples; ++i ) {
+        FM::ColMatrix::Column Si( S, i );
+        z_pred.plus_assign( observe_model.h( Si ) );
     }
-    z_pred /= Float(S.size2());
+    z_pred /= Float( S.size2() );
 
     R_pred.clear();   // Covariance
-    for (std::size_t i = 0; i != nSamples; ++i) {
-        FM::ColMatrix::Column Si(S,i);
-        R_pred.plus_assign (FM::outer_prod(observe_model.h(Si)-z_pred, observe_model.h(Si)-z_pred));
+    for ( std::size_t i = 0; i != nSamples; ++i ) {
+        FM::ColMatrix::Column Si( S, i );
+        R_pred.plus_assign(
+            FM::outer_prod( observe_model.h( Si ) - z_pred, observe_model.h( Si ) - z_pred ) );
     }
-    R_pred /= Float(nSamples);
+    R_pred /= Float( nSamples );
 }
 
-
-void PFilter::observe(Likelihood_observe_model& observe_model, const FM::Vec& z)
-{
-    SIR_kalman_scheme::observe(observe_model, z);
+void PFilter::observe( Likelihood_observe_model& observe_model, const FM::Vec& z ) {
+    SIR_kalman_scheme::observe( observe_model, z );
     // keep note of the weight sum (non-normalized likelihood)
     const std::size_t nSamples = S.size2();
-    m_likelihood = 0;
-    for (std::size_t i = 0; i != nSamples; ++i) {
-        m_likelihood += wir[i];
-    }
+    m_likelihood               = 0;
+    for ( std::size_t i = 0; i != nSamples; ++i ) { m_likelihood += wir[i]; }
     // resample
-    SIR_kalman_scheme::update_resample(/*Systematic_resampler()*/);
+    SIR_kalman_scheme::update_resample( /*Systematic_resampler()*/ );
 }
 
-
 double PFilter::logLikelihood() {
-    return log(m_likelihood) - log(S.size2());   // normalized likelihood (S are samples, not covariance)
+    return log( m_likelihood ) -
+           log( S.size2() );   // normalized likelihood (S are samples, not covariance)
 }

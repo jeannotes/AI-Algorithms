@@ -115,7 +115,8 @@ class NDTCorner {
     // 			}
     // 			void exportAccurateCorners(std::ostream& out){
     // 				for(size_t i = 0 ; i < _opencv_corners_position.size() ; ++i){
-    // 					std::cout << _opencv_corners_position[i].x << " " << _opencv_corners_position[i].y
+    // 					std::cout << _opencv_corners_position[i].x << " " <<
+    // _opencv_corners_position[i].y
     // <<
     // std::endl;
     // 					out << _opencv_corners_position[i].x << " " << _opencv_corners_position[i].y
