@@ -332,7 +332,7 @@ def dataset_viz(root_dir, args):
         #show_lidar_topview_with_boxes(pc_velo, objects, calib, objects_pred)
         pc_velo= pc_velo[:,0:3]
         # Draw 2d and 3d boxes on image
-        #show_image_with_boxes(img, objects, calib, True)
+        show_image_with_boxes(img, objects, calib, True)
         # Draw 3d box in LiDAR point cloud
         show_lidar_with_boxes(pc_velo, objects, calib, True, img_width, img_height, objects_pred)
         # Show LiDAR points on image.
