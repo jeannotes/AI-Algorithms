@@ -51,7 +51,7 @@ class clustering:
         #pick the first node at random
         point_ = rand.choice(points)
         if self.debug:
-            print ('point#0: %f %f' % (point_.latit, point_.longit)))
+            print ("point#0: %f %f" % (point_.latit, point_.longit))
         clusters = dict()
         clusters.setdefault(0, []).append(point_)
         points.remove(point_)
@@ -59,7 +59,7 @@ class clustering:
         for i in range(1, self.k):
             point_ = self.next_random(i, points, clusters)
             if self.debug:
-                print ('point#%d: %f %f' % (i, point_.latit, point_.longit))
+                print ("point#%d: %f %f" % (i, point_.latit, point_.longit))
             #clusters.append([point_])
             clusters.setdefault(i, []).append(point_)
             points.remove(point_)
