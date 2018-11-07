@@ -24,6 +24,9 @@ class PCA(BaseEstimator):
         n_components : int
         solver : str, default 'svd'
             {'svd', 'eigen'}
+        papers: A Singularly Valuable Decomposition The SVD of a Matrix
+        http://www.ams.org/publicoutreach/feature-column/fcarc-svd
+        http://andrew.gibiansky.com/blog/mathematics/cool-linear-algebra-singular-value-decomposition/
         """
         self.solver = solver
         self.n_components = n_components
@@ -47,7 +50,9 @@ class PCA(BaseEstimator):
 
         s_squared = s ** 2
         variance_ratio = s_squared / (s_squared).sum()
-        logging.info('Explained variance ratio: %s' % (variance_ratio[0:self.n_components]))
+        logging.info('Explained variance ratio: %s' %
+                     (variance_ratio[0:self.n_components]))
+        # chosse the most important 15 features
         self.components = Vh[0:self.n_components]
 
     def transform(self, X):
