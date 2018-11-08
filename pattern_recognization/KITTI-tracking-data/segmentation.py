@@ -37,8 +37,8 @@ def segmentation(fname):
         cck = np.zeros((2, len(indexes[0])))
         cck_old = np.zeros((2, len(indexes[0])))
         mod_cck = conn.number_in_comps[i]
-        cck_old[0,:] = indexes[0] 
-        cck_old[1,:] = indexes[1]
+        cck_old[0,:] = indexes[0] # x coordinate
+        cck_old[1,:] = indexes[1] # y coordinate
         cck[0,:] = indexes[0] - np.mean(indexes[0])
         cck[1,:] = indexes[1] - np.mean(indexes[1])
 
@@ -102,12 +102,7 @@ def segmentation(fname):
 #            an.scatter(xs,ys,zs, s=c, alpha=0.5)
 #            plt.show()
 #            break
-
-
-            
-
     plt.show()
-        
 
 def plotPoints(points, ax):
     scaling = 0.2
@@ -125,7 +120,7 @@ def plotPoints(points, ax):
 
 def main():
     #fname = '/home/jean/Downloads/kitti/2011_09_26/2011_09_26_drive_0048_sync/velodyne_points/data/0000000000.bin'
-    fname = '/home/jean/dataset/kitti/2011_09_28/2011_09_28_drive_0043_sync/velodyne_points/data/0000000000.bin'
+    fname = '/home/jean/Documents/AI-Algorithms/script/kitti_vis/data/object/training/velodyne/000000.bin'
     segmentation(fname)
     return
 
