@@ -22,27 +22,26 @@ if edgeStruct.useMex && all(clamped~=-1)
    edgeStruct.nEdges = size(edgeEnds,1);
    edgeStruct.V = V;
    edgeStruct.E = E;
-else
-    
+else 
 [nNodes,maxState] = size(nodePot);
 nEdges = size(edgePot,3);
 edgeEnds = edgeStruct.edgeEnds;
 V = edgeStruct.V;
 E = edgeStruct.E;
-nStates = edgeStruct.nStates;
-
+nStates = edgeStruct.nStates; 
 % Absorb clamped neighbors into node potentials
 nodeNum = 1;
 nodeMap = zeros(nNodes,1);
 for n = 1:nNodes
-    if clamped(n) == 0
+    if clamped(n) == 0 % make sure the node is unknown
         edges = E(V(n):V(n+1)-1);
         for e = edges(:)'
             n1 = edgeEnds(e,1);
             n2 = edgeEnds(e,2);
-
-            if n == edgeEnds(e,1)
-                if clamped(n2) ~= 0
+            % get those nodes connect with this edge(s)
+            % these edges are from those don't konw nodes.
+            if n == edgeEnds(e,1) %first node is unknown
+                if clamped(n2) ~= 0 %second node is known
                     if clamped(n2) == -1
                         % Use Mean-Field approximation of n2
                         b = zeros(1,nStates(n));
@@ -52,6 +51,8 @@ for n = 1:nNodes
                         nodePot(n,1:nStates(n)) = nodePot(n,1:nStates(n)).*exp(b);
                     else
                         % Clamp n2 to Fixed State
+                        % actually psai(x2,x1)=psai(x2|x1)*psai(x1), we
+                        % know x2
                         nodePot(n,1:nStates(n)) = nodePot(n,1:nStates(n)).*edgePot(1:nStates(n),clamped(n2),e)';
                     end
                 end
@@ -65,7 +66,33 @@ for n = 1:nNodes
                         end
                         nodePot(n,1:nStates(n)) = nodePot(n,1:nStates(n)).*exp(b);
                     else
-                        % Clamp n1 to Fixed State
+%{
+Clamp n1 to Fixed State
+here, 1:nStates(n) means that a node may have lots of states, and 1:nStates(n) just iterate
+through them                         
+aa
+aa(:,:,1) =
+     5     7     8
+     0     1     9
+     4     3     6
+aa(:,:,2) =
+     1     0     4
+     3     5     6
+     9     8     7
+aa(1,2,1)
+ans =
+     7
+aa(3,1,1)
+ans =
+     4                      
+  here, I think the inside meaning is that, we know the first node, but
+  next node we don't know, but we still need to construct edge, and we
+  multiply the edgepot(which is transmition prob), but the mathmatical
+  meaning is in
+  https://www.cs.ubc.ca/~schmidtm/Software/UGM/condition.html,
+  in ##conditioning, see p(x1,x4|x2,x3), the new nodePot is actually 
+psai(x1)*psai(x1,x2), psai(x1,x2)=nodepot*edgepot
+%}
                         nodePot(n,1:nStates(n)) = nodePot(n,1:nStates(n)).*edgePot(clamped(n1),1:nStates(n),e);
                     end
                 end
@@ -76,8 +103,7 @@ for n = 1:nNodes
         nodeNum = nodeNum+1;
     end
 end
-
-killedNodes = find(clamped~=0);
+killedNodes = find(clamped~=0);% return the index
 
 killedEdges = zeros(nEdges,1);
 k = 0;
@@ -103,6 +129,7 @@ edgePot(:,:,killedEdges) = [];
 edgeStruct.nStates(killedNodes) = [];
 
 edgeEnds(killedEdges,:) = [];
+
 [V,E] = UGM_makeEdgeVE(edgeEnds,nodeNum-1,edgeStruct.useMex);
 
 edgeStruct.nEdges = size(edgeEnds,1);

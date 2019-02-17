@@ -1,3 +1,4 @@
+close all
 clear all
 
 % Make edgeStruct
@@ -26,13 +27,13 @@ transitions = [.08 .9 .01 0 0 0 .01
     0 0 0 .01 .01 .97 .01
     0 0 0 0 0 0 1];
 edgePot = repmat(transitions,[1 1 edgeStruct.nEdges]);
-%labels = {'Rockband','Industry','GradSchool','RockbandPhD','IndustryPhD','Academia','Dead'};
-%drawGraph(edgePot,'labels',labels);
+%  labels = {'Rockband','Industry','GradSchool','RockbandPhD','IndustryPhD','Academia','Dead'};
+%  drawGraph(edgePot,'labels',labels);
 
-optimalDecoding = UGM_Decode_Chain(nodePot,edgePot,edgeStruct)
+optimalDecoding = UGM_Decode_Chain(nodePot,edgePot,edgeStruct);
 
 [nodeBel,edgeBel,logZ] = UGM_Infer_Chain(nodePot,edgePot,edgeStruct);
-nodeBel
+% nodeBel
 figure
 imagesc(nodeBel)
 colorbar

@@ -81,6 +81,7 @@ optimalDecoding = UGM_Decode_Exact(nodePot,edgePot,edgeStruct)
 fprintf('Computing Node Marginals, Edge Marginals, and Log of Normalizing Constant...\n');
 [nodeBel,edgeBel,logZ] = UGM_Infer_Exact(nodePot,edgePot,edgeStruct);
 nodeBel
+edgeBel
 fprintf('Normalization constant: %f\n',exp(logZ));
 
 edgeStruct.maxIter = 100;

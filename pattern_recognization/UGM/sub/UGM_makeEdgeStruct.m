@@ -13,11 +13,11 @@ if nargin < 4
 end
 
 nNodes = int32(length(adj));
-nNodes
-adj
-find(adj)
+% nNodes
+% adj
+% find(adj)
 [i j] = ind2sub([nNodes nNodes],find(adj));
-[i j]
+% [i j]
 nEdges = length(i)/2;
 edgeEnds = zeros(nEdges,2,'int32');
 eNum = 0;
@@ -27,7 +27,7 @@ for e = 1:nEdges*2
        eNum = eNum+1;
    end
 end
-edgeEnds
+% edgeEnds
 [V,E] = UGM_makeEdgeVE(edgeEnds,nNodes,useMex);
 
 

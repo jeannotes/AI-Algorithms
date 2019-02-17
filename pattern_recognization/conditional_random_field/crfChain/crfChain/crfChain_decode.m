@@ -10,7 +10,7 @@ alpha(1,:) = alpha(1,:)/Z(1);
 for n = 2:nNodes % Forward Pass
     tmp = repmatC(alpha(n-1,:)',1,nStates).*edgePot;
     alpha(n,:) = nodePot(n,:).*max(tmp);
-    [mxPot mxState(n,:)] = max(tmp); 
+    [mxPot mxState(n,:)] = max(tmp); % in mxState we have indices
     % Normalize
     Z(n) = sum(alpha(n,:));
     alpha(n,:) = alpha(n,:)/Z(n);

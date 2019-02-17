@@ -27,3 +27,7 @@ nodeLabels = zeros(nNodes,1);
 for n = nNodes-1:-1:1
    nodeLabels(n) = mxState(n+1,nodeLabels(n+1));
 end
+%{
+actually vitebi algorithm
+in P185
+%}

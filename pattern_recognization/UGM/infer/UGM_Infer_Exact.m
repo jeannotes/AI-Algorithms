@@ -32,8 +32,15 @@ edgeBel = zeros(size(edgePot));
 y = ones(1,nNodes);
 Z = 0;
 i = 1;
-while 1
-    
+% iterate through all nodes 
+%{
+ 0 0 0 0
+ 0 0 0 1
+ 0 0 1 0
+ 0 0 1 1
+%}
+%
+while 1    
     pot = UGM_ConfigurationPotential(y,nodePot,edgePot,edgeEnds);
     
     % Update nodeBel

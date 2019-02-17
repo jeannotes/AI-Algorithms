@@ -10,7 +10,7 @@ adj(2,3) = 1;
 adj(3,4) = 1;
 adj = adj + adj';
 nStates = 2;
-edgeStruct = UGM_makeEdgeStruct(adj,nStates);
+edgeStruct = UGM_makeEdgeStruct(adj,nStates, 0);
 nodePot = [1 3
     9 1
     1 3
@@ -21,13 +21,12 @@ edgePot(:,:,2) = [2 1 ; 1 2];
 edgePot(:,:,3) = [2 1 ; 1 2];
 
 clamped = zeros(nNodes,1);
-clamped(1) = 2;
+clamped(2) = 2;
 clamped(3) = 2;
 
 [nodeBel,edgeBel,logZ] = UGM_Infer_Conditional(nodePot,edgePot,edgeStruct,clamped,@UGM_Infer_Exact);
 nodeBel
-pause
-
+edgeBel
 clamped(1) = 1;
 clamped(3) = 1;
 [nodeBel,edgeBel,logZ] = UGM_Infer_Conditional(nodePot,edgePot,edgeStruct,clamped,@UGM_Infer_Exact);

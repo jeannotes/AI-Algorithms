@@ -40,6 +40,7 @@ else
 
     % Compute Node Beliefs
     nodeBel = zeros(size(nodePot));
+    % in chapter 201, 11.32
     for n = 1:nNodes
         tmp = alpha(n,1:nStates(n)).*beta(n,1:nStates(n));
         nodeBel(n,1:nStates(n)) = tmp/sum(tmp);

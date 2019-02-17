@@ -22,3 +22,4 @@ for s = 1:maxIter
     end
     samples(:,s) = y;
 end
+size(y)

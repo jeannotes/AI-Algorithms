@@ -11,6 +11,13 @@ for n = 2:nNodes % Forward Pass
     tmp = repmatC(alpha(n-1,:)',1,nStates).*edgePot;
     % this actually computes another part summing, which is transition
     % probability
+    %{
+  in all this is equall to:
+    
+  alpha * [ sig(node_1.*edge_1) sig(node_2.*edge_2) sig(node_3.*edge_3).... sig(node_n.*edge_n)  ]
+    sig means sum
+    
+    %}
     alpha(n,:) = nodePot(n,:).*sum(tmp);
     % Normalize
     Z(n) = sum(alpha(n,:));

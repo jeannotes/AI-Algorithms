@@ -6,24 +6,25 @@ nEdges = size(edgePot,3);
 edgeEnds = edgeStruct.edgeEnds;
 
 [clampedNP,clampedEP,clampedES,edgeMap] = UGM_makeClampedPotentials(nodePot,edgePot,edgeStruct,clamped);
-
+% [nodePot,edgePot,edgeStruct,edgeMap]
 [clampedNB,clampedEB,logZ] = inferFunc(clampedNP,clampedEP,clampedES);
-
+clampedEB
 % Construct node beliefs
 nodeBel = zeros(size(nodePot));
-clampedSet = find(clamped~=0);
+clampedSet = find(clamped~=0);% nodes we know
 clampVar = 1;
 regulVar = 1;
 for n = 1:nNodes
    if clampVar <= length(clampedSet) && n == clampedSet(clampVar)
+       % originally its all zero, we if we know the node, set it 1
        nodeBel(n,clamped(clampedSet(clampVar))) = 1;
        clampVar = clampVar+1;
    else
+       % we don't know the node, copy from clampedNB
        nodeBel(n,:) = clampedNB(regulVar,:);
        regulVar = regulVar + 1;
    end
 end
-
 % Construct edge beliefs
 edgeBel = zeros(size(edgePot));
 for e = 1:nEdges
@@ -54,3 +55,4 @@ for e = 1:nEdges
        end
    end
 end
+edgeBel
