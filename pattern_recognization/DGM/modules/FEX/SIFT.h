@@ -19,11 +19,11 @@ class CSIFT : public ILocalFeatureExtractor {
 		* @brief Constructor.
 		* @param img Input image of type \b CV_8UC1 or \b CV_8UC3.
 		*/
-    DllExport CSIFT( const Mat& img )
+    CSIFT( const Mat& img )
         : ILocalFeatureExtractor( img ) {}
-    DllExport virtual ~CSIFT( void ) {}
+    virtual ~CSIFT( void ) {}
 
-    DllExport virtual Mat get( void ) const { return get( m_img ); }
+    virtual Mat get( void ) const { return get( m_img ); }
 
     /**
 		* @brief Extracts the SIFT feature.
@@ -31,7 +31,7 @@ class CSIFT : public ILocalFeatureExtractor {
 		* @param img Input image of type \b CV_8UC1 or \b CV_8UC3.
 		* @return Common feature extractor class with extracted SIFT feature of type \b CV_8UC{128}.
 		*/
-    DllExport static Mat get( const Mat& img );
+    static Mat get( const Mat& img );
 };
 }
 }

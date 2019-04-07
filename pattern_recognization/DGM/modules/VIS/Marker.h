@@ -92,14 +92,14 @@ class CMarker {
 		* @brief Constructor with a default palette
 		* @param palette One of the default palletes (Ref. @ref default_pallete).
 		*/
-    DllExport CMarker( default_pallete palette = DEF_PALETTE_12 );
+    CMarker( default_pallete palette = DEF_PALETTE_12 );
     /**
 		* @brief Constructor with a custom palette
 		* @param vPalette Custom palette. It is represented as a std::vector of the custom entries of type: @code std::make_pair(CV_RGB(r, g, b), "class name"). @endcode
 		* For optimal performance, class name should have maximal 10 symbols. 
 		*/
-    DllExport CMarker( const vec_nColor_t& vPalette );
-    DllExport virtual ~CMarker( void );
+    CMarker( const vec_nColor_t& vPalette );
+    virtual ~CMarker( void );
 
     /**
 		* @brief Visualizes the classes.
@@ -108,8 +108,8 @@ class CMarker {
 		* @param[in] classes Class map image. Image of type: CV_8UC1.
 		* @param[in] flag Mapping flag (Ref. @ref mark_flags).
 		*/
-    DllExport void markClasses( Mat& base, const Mat& classes, byte flag = 0 ) const;   // Does nothing on error
-    /**
+    void markClasses( Mat& base, const Mat& classes, byte flag = 0 ) const;   // Does nothing on error
+                                                                              /**
 		* @brief Visualizes the potentials
 		* @details Draws <node / edge / triplet> [potential / prior] <vector / matrix / voxel>
 		* > This function is also suit for the confusion matrix visualization, but function drawConfusionMatrix() is more preferable for such task
@@ -118,7 +118,7 @@ class CMarker {
 		* @returns Figure with visualized potential or prior
 		* @note This function curently does not support triplet [potential / prior] voxels
 		*/
-    DllExport Mat drawPotentials( const Mat& potential, byte flag = 0 ) const;
+    Mat drawPotentials( const Mat& potential, byte flag = 0 ) const;
     /**
 		* @brief Visualizes a confusion matrix
 		* @details This function visualizes a confusion matrix, where gthe values are given in percents ofthe overall number of estimated samples. 
@@ -128,7 +128,7 @@ class CMarker {
 		* @param flag Mapping flag (Ref. @ref mark_flags)
 		* @returns Figure with visualized confusion matrix
 		*/
-    DllExport Mat drawConfusionMatrix( const Mat& confusionMat, byte flag = 0 ) const;
+    Mat drawConfusionMatrix( const Mat& confusionMat, byte flag = 0 ) const;
 
   protected:
     vec_nColor_t m_vPalette;   ///< Pointer to the container with the palette
@@ -162,6 +162,6 @@ class CMarker {
 	* @param m The magnifier koefficients for scaling the dictionary values
 	* @returns Figure with visualized dictionary
 	*/
-DllExport Mat drawDictionary( const Mat& dictionary, double m = 1 );
+Mat drawDictionary( const Mat& dictionary, double m = 1 );
 }
 }

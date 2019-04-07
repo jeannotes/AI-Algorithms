@@ -84,8 +84,8 @@ class CTrainLinkNested : public CTrainLink {
     }
 
   protected:
-    DllExport virtual void saveFile( FILE* pFile ) const {}
-    DllExport virtual void loadFile( FILE* pFile ) {}
+    virtual void saveFile( FILE* pFile ) const {}
+    virtual void loadFile( FILE* pFile ) {}
     /**
 		* @brief Returns the data-dependent link (inter-layer edge) potentials
 		* @details This function returns edge potential matrix, which elements are obrained from the unary potential vector:

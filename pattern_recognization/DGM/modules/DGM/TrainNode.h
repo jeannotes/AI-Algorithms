@@ -51,11 +51,11 @@ class CTrainNode : public ITrain {
 		* @param nStates Number of states (classes)
 		* @param nFeatures Number of features
 		*/
-    DllExport CTrainNode( byte nStates, word nFeatures )
+    CTrainNode( byte nStates, word nFeatures )
         : CBaseRandomModel( nStates )
         , ITrain( nStates, nFeatures )
         , m_mask( nStates, 1, CV_8UC1 ) {}
-    DllExport virtual ~CTrainNode( void ) = default;
+    virtual ~CTrainNode( void ) = default;
 
     /**
 		* @brief Factory method returning node trainer object 
@@ -65,29 +65,29 @@ class CTrainNode : public ITrain {
 		* @param nFeatures Number of features
 		* @return Tne pointer to the concrete implementation of the node trainer class
 		*/
-    DllExport static std::shared_ptr< CTrainNode > create( byte nodeRandomModel, byte nStates, word nFeatures );
+    static std::shared_ptr< CTrainNode > create( byte nodeRandomModel, byte nStates, word nFeatures );
     /**
 		* @brief Adds a block of new feature vectors
 		* @details Used to add multiple \b featureVectors, corresponding to the ground-truth states (classes) \b gt for training
 		* @param featureVectors Multi-channel matrix, each element of which is a multi-dimensinal point: Mat(type: CV_8UC(nFeatures))
 		* @param gt Matrix, each element of which is a ground-truth state (class)
 		*/
-    DllExport void addFeatureVecs( const Mat& featureVectors, const Mat& gt );
+    void addFeatureVecs( const Mat& featureVectors, const Mat& gt );
     /**
 		* @brief Adds a block of new feature vectors
 		* @details Used to add multiple \b featureVectors, corresponding to the ground-truth states (classes) \b gt for training
 		* @param featureVectors Vector of size \a nFeatures, each element of which is a single feature - image: Mat(type: CV_8UC1)
 		* @param gt Matrix, each element of which is a ground-truth state (class)
 		*/
-    DllExport void addFeatureVecs( const vec_mat_t& featureVectors, const Mat& gt );
+    void addFeatureVecs( const vec_mat_t& featureVectors, const Mat& gt );
     /**
 		* @brief Adds new feature vector
 		* @details Used to add a \b featureVector, corresponding to the ground-truth state (class) \b gt for training
 		* @param featureVector Multi-dimensinal point: Mat(size: nFeatures x 1; type: CV_8UC1)
 		* @param gt Corresponding ground-truth state (class)
 		*/
-    DllExport virtual void addFeatureVec( const Mat& featureVector, byte gt ) = 0;
-    DllExport virtual void train( bool doClean = false ) {}
+    virtual void addFeatureVec( const Mat& featureVector, byte gt ) = 0;
+    virtual void train( bool doClean = false ) {}
     /**
 		* @brief Returns a block of node potentials, based on the block of feature vector
 		* @param featureVectors Multi-channel matrix, each element of which is a multi-dimensinal point: Mat(type: CV_8UC(nFeatures))
@@ -96,7 +96,7 @@ class CTrainNode : public ITrain {
 		* In order to convert potential to the probability, it is multiplied by \f$1/Z\f$.
 		* If \f$Z\leq0\f$, the resulting node potentials are normalized to 100, independently for each potential.
 		*/
-    DllExport Mat getNodePotentials( const Mat& featureVectors, const Mat& weights = Mat(), float Z = 0.0f ) const;
+    Mat getNodePotentials( const Mat& featureVectors, const Mat& weights = Mat(), float Z = 0.0f ) const;
     /**
 		* @brief Returns a block of node potentials, based on the block of feature vector
 		* @param featureVectors Vector of size \a nFeatures, each element of which is a single feature - image: Mat(type: CV_8UC1)
@@ -105,7 +105,7 @@ class CTrainNode : public ITrain {
 		* In order to convert potential to the probability, it is multiplied by \f$1/Z\f$.
 		* If \f$Z\leq0\f$, the resulting node potentials are normalized to 100, independently for each potential.
 		*/
-    DllExport Mat getNodePotentials( const vec_mat_t& featureVectors, const Mat& weights = Mat(), float Z = 0.0f ) const;
+    Mat getNodePotentials( const vec_mat_t& featureVectors, const Mat& weights = Mat(), float Z = 0.0f ) const;
     /**
 		* @brief Returns the node potential, based on the feature vector
 		* @details This function calls calculateNodePotentials() function, which should be implemented in derived classes. After that,
@@ -117,7 +117,7 @@ class CTrainNode : public ITrain {
 		* If \f$Z\leq0\f$, the resulting node potentials are normalized to 100, independently for every function call. 
 		* @return Normalized %node potentials on success: Mat(size: nStates x 1; type: CV_32FC1); 
 		*/
-    DllExport Mat getNodePotentials( const Mat& featureVector, float weight, float Z = 0.0f ) const;
+    Mat getNodePotentials( const Mat& featureVector, float weight, float Z = 0.0f ) const;
 
   protected:
     /**
@@ -129,7 +129,7 @@ class CTrainNode : public ITrain {
 		* @param[in,out]	potential %Node potentials: Mat(size: nStates x 1; type: CV_32FC1). This parameter should be preinitialized and set to value 0.
 		* @param[in,out]	mask Relevant %Node potentials: Mat(size: nStates x 1; type: CV_8UC1). This parameter should be preinitialized and set to value 1 (all potentials are relevant).
 		*/
-    DllExport virtual void calculateNodePotentials( const Mat& featureVector, Mat& potential, Mat& mask ) const = 0;
+    virtual void calculateNodePotentials( const Mat& featureVector, Mat& potential, Mat& mask ) const = 0;
 
   private:
     Mat m_mask;

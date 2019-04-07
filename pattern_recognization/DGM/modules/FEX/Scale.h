@@ -21,11 +21,11 @@ class CScale : public ILocalFeatureExtractor {
 		* @brief Constructor.
 		* @param img Input image of type \b CV_8UC1 or \b CV_8UC3.
 		*/
-    DllExport CScale( const Mat& img )
+    CScale( const Mat& img )
         : ILocalFeatureExtractor( img ) {}
-    DllExport virtual ~CScale( void ) {}
+    virtual ~CScale( void ) {}
 
-    DllExport virtual Mat get( void ) const { return get( m_img ); }
+    virtual Mat get( void ) const { return get( m_img ); }
 
     /**
 		* @brief Extracts the scale feature.
@@ -35,7 +35,7 @@ class CScale : public ILocalFeatureExtractor {
 		* @param nbhd Neighborhood around the pixel, where the mean is estimated. (Ref. @ref SqNeighbourhood).
 		* @return The scale feature image of the same type as input image.
 		*/
-    DllExport static Mat get( const Mat& img, SqNeighbourhood nbhd = sqNeighbourhood( 5 ) );
+    static Mat get( const Mat& img, SqNeighbourhood nbhd = sqNeighbourhood( 5 ) );
 };
 }
 }

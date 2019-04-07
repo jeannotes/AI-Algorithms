@@ -22,14 +22,14 @@ class CInferTRW : public CMessagePassing {
 		* @brief Constructor
 		* @param graph The graph
 		*/
-    DllExport CInferTRW( CGraphPairwise& graph )
+    CInferTRW( CGraphPairwise& graph )
         : CMessagePassing( graph ) {}
-    DllExport virtual ~CInferTRW( void ) {}
+    virtual ~CInferTRW( void ) {}
 
-    DllExport virtual void infer( unsigned int nIt = 1 );
+    virtual void infer( unsigned int nIt = 1 );
 
   protected:
-    DllExport virtual void calculateMessages( unsigned int nIt );
+    virtual void calculateMessages( unsigned int nIt );
     void calculateMessage( Edge& edge, float* temp, float* data );
 };
 }

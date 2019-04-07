@@ -20,11 +20,11 @@ class CVariance : public ILocalFeatureExtractor {
 		* @brief Constructor.
 		* @param img Input image of type \b CV_8UC1 or \b CV_8UC3.
 		*/
-    DllExport CVariance( const Mat& img )
+    CVariance( const Mat& img )
         : ILocalFeatureExtractor( img ) {}
-    DllExport virtual ~CVariance( void ) {}
+    virtual ~CVariance( void ) {}
 
-    DllExport virtual Mat get( void ) const { return get( m_img ); }
+    virtual Mat get( void ) const { return get( m_img ); }
 
     /**
 		* @brief Extracts the variance feature.
@@ -33,7 +33,7 @@ class CVariance : public ILocalFeatureExtractor {
 		* @param nbhd Neighborhood around the pixel, where the variance is estimated. (Ref. @ref SqNeighbourhood).
 		* @return The variance feature image of type \b CV_8UC1.
 		*/
-    DllExport static Mat get( const Mat& img, SqNeighbourhood nbhd = sqNeighbourhood( 5 ) );
+    static Mat get( const Mat& img, SqNeighbourhood nbhd = sqNeighbourhood( 5 ) );
 };
 }
 }

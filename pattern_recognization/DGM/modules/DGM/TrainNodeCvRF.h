@@ -66,7 +66,7 @@ class CTrainNodeCvRF : public CTrainNode {
 		* @param nFeatures Number of features
 		* @param params Random Forest parameters (Ref. @ref TrainNodeCvRFParams)
 		*/
-    DllExport CTrainNodeCvRF( byte nStates, word nFeatures, TrainNodeCvRFParams params = TRAIN_NODE_CV_RF_PARAMS_DEFAULT );
+    CTrainNodeCvRF( byte nStates, word nFeatures, TrainNodeCvRFParams params = TRAIN_NODE_CV_RF_PARAMS_DEFAULT );
     /**
 		* @brief Constructor
 		* @param nStates Number of states (classes)
@@ -75,15 +75,15 @@ class CTrainNodeCvRF : public CTrainNode {
 		* > Default value \b 0 means using all the samples.<br>
 		* > If another value is specified, the class for training will use \b maxSamples random samples from the whole amount of samples, added via addFeatureVec() function
 		*/
-    DllExport CTrainNodeCvRF( byte nStates, word nFeatures, size_t maxSamples );
-    DllExport ~CTrainNodeCvRF( void );
+    CTrainNodeCvRF( byte nStates, word nFeatures, size_t maxSamples );
+    ~CTrainNodeCvRF( void );
 
-    DllExport void reset( void );
-    DllExport void save( const std::string& path, const std::string& name = std::string(), short idx = -1 ) const;
-    DllExport void load( const std::string& path, const std::string& name = std::string(), short idx = -1 );
+    void reset( void );
+    void save( const std::string& path, const std::string& name = std::string(), short idx = -1 ) const;
+    void load( const std::string& path, const std::string& name = std::string(), short idx = -1 );
 
-    DllExport void addFeatureVec( const Mat& featureVector, byte gt );
-    DllExport void train( bool doClean = false );
+    void addFeatureVec( const Mat& featureVector, byte gt );
+    void train( bool doClean = false );
 
     /**
 		* @brief Returns the feature importance vector
@@ -91,12 +91,12 @@ class CTrainNodeCvRF : public CTrainNode {
 		* @retval NULL : Empty Mat() on error (TrainNodeCvRFParams::calc_var_importance flag is not set)
 		* @retval feature_importance : Mat(size: 1 x nFeatures; type: CV_32FC1)
 		*/
-    DllExport Mat getFeatureImportance( void ) const;
+    Mat getFeatureImportance( void ) const;
 
   protected:
-    DllExport void saveFile( FILE* pFile ) const {}
-    DllExport void loadFile( FILE* pFile ) {}
-    DllExport void calculateNodePotentials( const Mat& featureVector, Mat& potential, Mat& mask ) const;
+    void saveFile( FILE* pFile ) const {}
+    void loadFile( FILE* pFile ) {}
+    void calculateNodePotentials( const Mat& featureVector, Mat& potential, Mat& mask ) const;
 
   protected:
     Ptr< ml::RTrees > m_pRF;              ///< Random Forest

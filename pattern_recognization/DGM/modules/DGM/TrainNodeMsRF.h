@@ -71,7 +71,7 @@ class CTrainNodeMsRF : public CTrainNode {
 		* @param nFeatures Number of features
 		* @param params Random Forest parameters (Ref. @ref TrainNodeMsRFParams)
 		*/
-    DllExport CTrainNodeMsRF( byte nStates, word nFeatures, TrainNodeMsRFParams params = TRAIN_NODE_MS_RF_PARAMS_DEFAULT );
+    CTrainNodeMsRF( byte nStates, word nFeatures, TrainNodeMsRFParams params = TRAIN_NODE_MS_RF_PARAMS_DEFAULT );
     /**
 		* @brief Constructor
 		* @param nStates Number of states (classes)
@@ -81,8 +81,8 @@ class CTrainNodeMsRF : public CTrainNode {
 		* > If another value is specified, the class for training will use \b maxSamples random samples from the whole amount of samples, added via addFeatureVec() function		
 		* @note This implementation of the random forest is not weighted
 		*/
-    DllExport CTrainNodeMsRF( byte nStates, word nFeatures, size_t maxSamples );
-    DllExport virtual ~CTrainNodeMsRF( void );
+    CTrainNodeMsRF( byte nStates, word nFeatures, size_t maxSamples );
+    virtual ~CTrainNodeMsRF( void );
 
     /**
 		* @brief Resets class variables
@@ -90,17 +90,17 @@ class CTrainNodeMsRF : public CTrainNode {
 		* @note This function may be extremely slow
 		* @todo Check! It may be very slow here
 		*/
-    DllExport void reset( void );
-    DllExport void save( const std::string& path, const std::string& name = std::string(), short idx = -1 ) const;
-    DllExport void load( const std::string& path, const std::string& name = std::string(), short idx = -1 );
+    void reset( void );
+    void save( const std::string& path, const std::string& name = std::string(), short idx = -1 ) const;
+    void load( const std::string& path, const std::string& name = std::string(), short idx = -1 );
 
-    DllExport void addFeatureVec( const Mat& featureVector, byte gt );
-    DllExport void train( bool doClean = false );
+    void addFeatureVec( const Mat& featureVector, byte gt );
+    void train( bool doClean = false );
 
   protected:
-    DllExport void saveFile( FILE* pFile ) const {}
-    DllExport void loadFile( FILE* pFile ) {}
-    DllExport void calculateNodePotentials( const Mat& featureVector, Mat& potential, Mat& mask ) const;
+    void saveFile( FILE* pFile ) const {}
+    void loadFile( FILE* pFile ) {}
+    void calculateNodePotentials( const Mat& featureVector, Mat& potential, Mat& mask ) const;
 
   private:
     void init( TrainNodeMsRFParams params );   // This function is called by both constructors

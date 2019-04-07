@@ -20,16 +20,16 @@ class CDecodeExact : public CDecode {
 		* @brief Constructor
 		* @param graph The graph
 		*/
-    DllExport CDecodeExact( IGraphPairwise& graph )
+    CDecodeExact( IGraphPairwise& graph )
         : CDecode( graph ) {}
-    DllExport virtual ~CDecodeExact( void ) {}
+    virtual ~CDecodeExact( void ) {}
 
     /**
 		* @brief Exact decoding
 		* @param lossMatrix is not used
 		* @return The most probable configuration
 		*/
-    DllExport virtual vec_byte_t decode( Mat& lossMatrix = EmptyMat ) const;
+    virtual vec_byte_t decode( Mat& lossMatrix = EmptyMat ) const;
 
   protected:
     /**

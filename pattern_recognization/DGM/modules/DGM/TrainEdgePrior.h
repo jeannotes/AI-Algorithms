@@ -23,17 +23,17 @@ class CTrainEdgePrior : public CTrainEdgePottsCS, private CPriorEdge {
 		* @param penApproach Flag specifying the penalization approach for the edge potential matrix (Ref. @ref ePotPenalApproach)
 		* @param normApproach Flag specifying the co-occurance histogram matrix normalization approach (Ref. @ref ePotNormApproach)	
 		*/
-    DllExport CTrainEdgePrior( byte nStates, word nFeatures, ePotPenalApproach penApproach = eP_APP_PEN_EXP, ePotNormApproach normApproach = eP_APP_NORM_SYMMETRIC );
-    DllExport virtual ~CTrainEdgePrior( void );
+    CTrainEdgePrior( byte nStates, word nFeatures, ePotPenalApproach penApproach = eP_APP_PEN_EXP, ePotNormApproach normApproach = eP_APP_NORM_SYMMETRIC );
+    virtual ~CTrainEdgePrior( void );
 
-    DllExport virtual void reset( void );
+    virtual void reset( void );
 
-    DllExport virtual void addFeatureVecs( const Mat& featureVector1, byte gt1, const Mat& featureVector2, byte gt2 );
-    DllExport virtual void train( bool doClean = false );
+    virtual void addFeatureVecs( const Mat& featureVector1, byte gt1, const Mat& featureVector2, byte gt2 );
+    virtual void train( bool doClean = false );
 
   protected:
-    DllExport virtual void saveFile( FILE* pFile ) const;
-    DllExport virtual void loadFile( FILE* pFile );
+    virtual void saveFile( FILE* pFile ) const;
+    virtual void loadFile( FILE* pFile );
     /**
 		* @brief Calculates the edge potential, based on the feature vectors
 
@@ -54,7 +54,7 @@ class CTrainEdgePrior : public CTrainEdgePottsCS, private CPriorEdge {
 		* or from \a nStates parameters, specifying smoothness strength for each state (class) individually; \f$\lambda\f$ consists from \a one parameter.
 		* @return The edge potential matrix: Mat(size: nStates x nStates; type: CV_32FC1)
 		*/
-    DllExport virtual Mat calculateEdgePotentials( const Mat& featureVector1, const Mat& featureVector2, const vec_float_t& vParams ) const;
+    virtual Mat calculateEdgePotentials( const Mat& featureVector1, const Mat& featureVector2, const vec_float_t& vParams ) const;
 
   private:
     inline void loadPriorMatrix( void );

@@ -2059,7 +2059,7 @@ using ::std::tuple_size;
 #if GTEST_LINKED_AS_SHARED_LIBRARY
 #define GTEST_API_ __declspec( dllimport )
 #elif GTEST_CREATE_SHARED_LIBRARY
-#define GTEST_API_ __declspec( dllexport )
+#define GTEST_API_ __declspec()
 #endif
 
 #endif   // _MSC_VER

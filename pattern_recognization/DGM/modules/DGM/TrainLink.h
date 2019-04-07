@@ -22,12 +22,12 @@ class CTrainLink : public ITrain {
 		* @param nStatesOccl Number of states (classes) for the occlusion layer of the graphical model
 		* @param nFeatures Number of features
 		*/
-    DllExport CTrainLink( byte nStatesBase, byte nStatesOccl, word nFeatures )
+    CTrainLink( byte nStatesBase, byte nStatesOccl, word nFeatures )
         : CBaseRandomModel( nStatesBase * nStatesOccl )
         , ITrain( nStatesBase * nStatesOccl, nFeatures )
         , m_nStatesBase( nStatesBase )
         , m_nStatesOccl( nStatesOccl ) {}
-    DllExport virtual ~CTrainLink( void ) = default;
+    virtual ~CTrainLink( void ) = default;
 
     /**
 		* @brief Adds a block of new feature vectors
@@ -36,7 +36,7 @@ class CTrainLink : public ITrain {
 		* @param gtb Matrix, each element of which is a ground-truth state (class), corresponding to the base layer
 		* @param gto Matrix, each element of which is a ground-truth state (class), corresponding to the occlusion layer
 		*/
-    DllExport void addFeatureVec( const Mat& featureVectors, const Mat& gtb, const Mat& gto );
+    void addFeatureVec( const Mat& featureVectors, const Mat& gtb, const Mat& gto );
     /**
 		* @brief Adds a block of new feature vectors
 		* @details Used to add multiple \b featureVectors, corresponding to the ground-truth states (classes) \b gtb and \b gto for training
@@ -44,7 +44,7 @@ class CTrainLink : public ITrain {
 		* @param gtb Matrix, each element of which is a ground-truth state (class), corresponding to the base layer
 		* @param gto Matrix, each element of which is a ground-truth state (class), corresponding to the occlusion layer
 		*/
-    DllExport void addFeatureVec( const vec_mat_t& featureVectors, const Mat& gtb, const Mat& gto );
+    void addFeatureVec( const vec_mat_t& featureVectors, const Mat& gtb, const Mat& gto );
     /**
 		* @brief Adds a feature vector
 		* @details Used to add \b featureVector, corresponding to the ground-truth states (classes) \b gtb and \b gto for training.
@@ -53,8 +53,8 @@ class CTrainLink : public ITrain {
 		* @param gtb The ground-truth state (class) of the first node of the edge, corresponding to the base layer
 		* @param gto The ground-truth state (class) of the second node of the edge, corresponding to the occlusion layer
 		*/
-    DllExport virtual void addFeatureVec( const Mat& featureVector, byte gtb, byte gto ) = 0;
-    DllExport virtual void train( bool doClean = false ) {}
+    virtual void addFeatureVec( const Mat& featureVector, byte gtb, byte gto ) = 0;
+    virtual void train( bool doClean = false ) {}
     /**
 		* @brief Returns the link potential, based on the feature vector
 		* @details This function calls calculateLinkPotentials() function, which should be implemented in derived classes. After that,
@@ -63,7 +63,7 @@ class CTrainLink : public ITrain {
 		* @param weight The weighting parameter
 		* @return %Edge potentials on success: Mat(size: nStates x nStates; type: CV_32FC1)
 		*/
-    DllExport Mat getLinkPotentials( const Mat& featureVector, float weight = 1.0f ) const;
+    Mat getLinkPotentials( const Mat& featureVector, float weight = 1.0f ) const;
 
   protected:
     /**
@@ -76,7 +76,7 @@ class CTrainLink : public ITrain {
 		* @param featureVector Multi-dimensinal point \f$\textbf{f}\f$: Mat(size: nFeatures x 1; type: CV_{XX}C1), corresponding to both nodes of the link
 		* @returns The edge potential matrix: Mat(size: nStates x nStates; type: CV_32FC1)
 		*/
-    DllExport virtual Mat calculateLinkPotentials( const Mat& featureVector ) const = 0;
+    virtual Mat calculateLinkPotentials( const Mat& featureVector ) const = 0;
 
   protected:
     byte m_nStatesBase;   ///< Number of states (classes) at the base layer of ML-CRF

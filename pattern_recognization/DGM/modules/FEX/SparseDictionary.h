@@ -64,34 +64,34 @@ class CSparseDictionary {
 		* @param fileName Path and file name to store intermediate dictionaries \f$D\f$ (every 5 iterations).
 		* If specified the resulting file name will be the follows: \b fileName<it/5>.dic
 		*/
-    DllExport void train( const Mat& X, word nWords, dword batch = 2000, unsigned int nIt = 1000, float lRate = SC_LRATE_D, const std::string& fileName = std::string() );
+    void train( const Mat& X, word nWords, dword batch = 2000, unsigned int nIt = 1000, float lRate = SC_LRATE_D, const std::string& fileName = std::string() );
     /**
 		* @brief Saves dictionary \f$D\f$ into a binary file
 		* @param fileName Full file name
 		*/
-    DllExport void save( const std::string& fileName ) const;
+    void save( const std::string& fileName ) const;
     /**
 		* @brief Loads dictionary \f$D\f$ from the file
 		* @param fileName Full file name
 		*/
-    DllExport void load( const std::string& fileName );
+    void load( const std::string& fileName );
     /**
 		* @brief Checks whether the dictionary has been trained or loaded
 		* @retval true if the dictionary has been trained or loaded
 		* @retval false otherwise
 		*/
-    DllExport bool empty( void ) const { return m_D.empty(); }
+    bool empty( void ) const { return m_D.empty(); }
     /**
 		* @brief Returns dictionary \f$D\f$
 		* @returns Dictionary \f$D\f$: Mat(size: nWords x sampleLen; type: CV_32FC1)
 		*/
-    DllExport Mat getDictionary( void ) const { return m_D; }
+    Mat getDictionary( void ) const { return m_D; }
     /**
 		* @brief Returns dictionary \f$D\f$ from file
 		* @param fileName Full file name
 		* @returns Dictionary \f$D\f$: Mat(size: nWords x sampleLen; type: CV_32FC1)
 		*/
-    DllExport static Mat getDictionary( const std::string& fileName ) {
+    static Mat getDictionary( const std::string& fileName ) {
         CSparseDictionary me;
         me.load( fileName );
         return me.getDictionary();
@@ -100,15 +100,15 @@ class CSparseDictionary {
 		* @brief Returns size of the block, i.e. \f$\sqrt{sampleLen}\f$
 		* @returns \b blockSize
 		*/
-    DllExport int getBlockSize( void ) const { return empty() ? 0 : static_cast< int >( sqrt( m_D.cols ) ); }
+    int getBlockSize( void ) const { return empty() ? 0 : static_cast< int >( sqrt( m_D.cols ) ); }
     /**
 		* @brief Returns the number words in dictionary \f$D\f$
 		* @returns \b nWords
 		*/
-    DllExport word getNumWords( void ) const { return empty() ? 0 : static_cast< word >( m_D.rows ); }
+    word getNumWords( void ) const { return empty() ? 0 : static_cast< word >( m_D.rows ); }
 
 #ifdef DEBUG_MODE   // --- Debugging ---
-    /**
+                    /**
 		* @brief Decodes an image from the data \f$X\f$
 		* @details This is a debug function, which restores an image from the data \f$X\f$ with the current dictionary \f$D\f$.<br>
 		* Thus the code:
@@ -127,7 +127,7 @@ class CSparseDictionary {
 		* @param imgSize Size of the resulting image
 		* @returns Decoded image: Mat(size: \b imgSize; type: CV_8UC1)
 		*/
-    DllExport Mat TEST_decode( const Mat& X, cv::Size imgSize ) const;
+    Mat TEST_decode( const Mat& X, cv::Size imgSize ) const;
 #endif   // --- --------- ---
 
     /**
@@ -142,7 +142,7 @@ class CSparseDictionary {
 		* > If \b varianceThreshold = 0 all the samples are included, thus nSamples = nMaxSamples
 		* @returns Data \f$X\f$: Mat(size: nSamples x \b blockSize^2; type: CV_8UC1 or CV_16UC1)
 		*/
-    DllExport static Mat img2data( const Mat& img, int blockSize, float varianceThreshold = 0.0f );
+    static Mat img2data( const Mat& img, int blockSize, float varianceThreshold = 0.0f );
     /**
 		* @brief Converts data \f$X\f$ into an image
 		* @details This function performs reverse transformation of img2data() function, thus the code
@@ -155,7 +155,7 @@ class CSparseDictionary {
 		* @param imgSize The size of the image to return
 		* @returns Resulting image: Mat(size: \b imgSize; type: CV_8UC1 or CV_16UC1)
 		*/
-    DllExport static Mat data2img( const Mat& X, cv::Size imgSize );
+    static Mat data2img( const Mat& X, cv::Size imgSize );
 
   protected:
     /**
@@ -170,7 +170,7 @@ class CSparseDictionary {
 		* @param[in] nIt Number of iterations
 		* @param[in] lRate Learning rate parameter, which is charged with the speed of convergence
 		*/
-    DllExport static void calculate_W( const Mat& X, const Mat& D, Mat& W, float lambda, float epsilon, unsigned int nIt = 800, float lRate = SC_LRATE_W );
+    static void calculate_W( const Mat& X, const Mat& D, Mat& W, float lambda, float epsilon, unsigned int nIt = 800, float lRate = SC_LRATE_W );
     /**
 		* @brief Evaluates dictionary \f$D\f$
 		* @details Finds the \f$D\f$, that minimizes \f$J(D, W)\f$ for the given \f$W\f$:
@@ -182,7 +182,7 @@ class CSparseDictionary {
 		* @param[in] nIt Number of iterations
 		* @param[in] lRate Learning rate parameter, which is charged with the speed of convergence
 		*/
-    DllExport static void calculate_D( const Mat& X, Mat& D, const Mat& W, float gamma, unsigned int nIt = 800, float lRate = SC_LRATE_D );
+    static void calculate_D( const Mat& X, Mat& D, const Mat& W, float gamma, unsigned int nIt = 800, float lRate = SC_LRATE_D );
 
   private:
     Mat m_D;   ///< The dictionary \f$D\f$: Mat(size: nWords x sampleLen; type: CV_32FC1);

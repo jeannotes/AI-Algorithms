@@ -37,9 +37,9 @@ class CGraph3 : public CGraphPairwise {
 		@brief Constructor
 		@param nStates the number of States (classes)
 		*/
-    DllExport CGraph3( byte nStates )
+    CGraph3( byte nStates )
         : CGraphPairwise( nStates ) {}
-    DllExport virtual ~CGraph3( void ) {}
+    virtual ~CGraph3( void ) {}
 
     /**
 		@brief Adds an additional directed edge 
@@ -47,7 +47,7 @@ class CGraph3 : public CGraphPairwise {
 		@param[in] Node2 index of the second node
 		@param[in] Node3 index of the third node
 		*/
-    DllExport void addTriplet( dword Node1, dword Node2, dword Node3 );
+    void addTriplet( dword Node1, dword Node2, dword Node3 );
     /**
 		@brief Adds an additional directed edge with specified potentional
 		@param[in] Node1 index of the first node
@@ -55,7 +55,7 @@ class CGraph3 : public CGraphPairwise {
 		@param[in] Node3 index of the third node
 		@param[in] pot edge potential matrix: Mat(size: nStates x nStates; type: CV_32FC1)
 		*/
-    DllExport void addTriplet( dword Node1, dword Node2, dword Node3, const Mat& pot );
+    void addTriplet( dword Node1, dword Node2, dword Node3, const Mat& pot );
     /**
 		@brief Sets or changes the potentional of directed edge
 		@param[in] Node1 index of the first node
@@ -63,6 +63,6 @@ class CGraph3 : public CGraphPairwise {
 		@param[in] Node3 index of the third node
 		@param[in] pot edge potential matrix: Mat(size: nStates x nStates; type: CV_32FC1)
 		*/
-    DllExport void setTriplet( dword Node1, dword Node2, dword Node3, const Mat& pot );
+    void setTriplet( dword Node1, dword Node2, dword Node3, const Mat& pot );
 };
 }

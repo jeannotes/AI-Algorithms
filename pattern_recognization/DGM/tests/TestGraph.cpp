@@ -111,7 +111,7 @@ void testGraphPairwiseBuilding( IGraphPairwise& graph, byte nStates ) {
     ASSERT_EQ( 2, graph.getEdgeGroup( n + 1, n ) );
 
     // graph.setEdges( std::nullopt, Mat::zeros( nStates, nStates, CV_32FC1 ) );
-    graph.setEdges(std::experimental::fundamentals_v1::nullopt, Mat::zeros( nStates, nStates, CV_32FC1 ) );
+    graph.setEdges( std::experimental::fundamentals_v1::nullopt, Mat::zeros( nStates, nStates, CV_32FC1 ) );
     graph.setEdges( 1, Mat::ones( nStates, nStates, CV_32FC1 ) * 1 );
     graph.setEdges( 2, Mat::ones( nStates, nStates, CV_32FC1 ) * 2 );
 

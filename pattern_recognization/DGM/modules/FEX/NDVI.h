@@ -19,11 +19,11 @@ class CNDVI : public ILocalFeatureExtractor {
 		* @brief Constructor.
 		* @param img Input image of type \b CV_8UC3.
 		*/
-    DllExport CNDVI( const Mat& img )
+    CNDVI( const Mat& img )
         : ILocalFeatureExtractor( img ) {}
-    DllExport virtual ~CNDVI( void ) {}
+    virtual ~CNDVI( void ) {}
 
-    DllExport virtual Mat get( void ) const { return get( m_img ); }
+    virtual Mat get( void ) const { return get( m_img ); }
 
     /**
 		* @brief Extracts the NDVI feature.
@@ -42,7 +42,7 @@ class CNDVI : public ILocalFeatureExtractor {
 		* > - 255 - cut off the positive NDVI values.
 		* @return The NDVI feature image of type \b CV_8UC1.
 		*/
-    DllExport static Mat get( const Mat& img, byte midPoint = 127 );
+    static Mat get( const Mat& img, byte midPoint = 127 );
 };
 }
 }

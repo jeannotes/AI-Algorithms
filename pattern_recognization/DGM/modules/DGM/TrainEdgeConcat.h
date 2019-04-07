@@ -5,8 +5,8 @@
 #include "FeaturesConcatenator.h"
 #include "PriorNode.h"
 #include "TrainEdge.h"
-#include "macroses.h"
 #include "TrainNode.h"
+#include "macroses.h"
 
 namespace DirectGraphicalModels
 {
@@ -84,8 +84,8 @@ class CTrainEdgeConcat : public CTrainEdge {
     virtual void train( bool doClean = false ) { m_pTrainer->train( doClean ); }
 
   protected:
-    DllExport virtual void saveFile( FILE* pFile ) const {}
-    DllExport virtual void loadFile( FILE* pFile ) {}
+    virtual void saveFile( FILE* pFile ) const {}
+    virtual void loadFile( FILE* pFile ) {}
     /**
 		* @brief Returns the data-dependent edge potentials
 		* @details This function returns edge potential matrix, which elements are obrained from the unary potential vector: 
@@ -98,7 +98,7 @@ class CTrainEdgeConcat : public CTrainEdge {
 		* @param vParams Array of control parameters \f$\vec{\theta}\f$, which must consist from \a one parameter, specifying the largest value in the resulting edge potential.
 		* @return The edge potential matrix: Mat(size: nStates x nStates; type: CV_32FC1)
 		*/
-    DllExport virtual Mat calculateEdgePotentials( const Mat& featureVector1, const Mat& featureVector2, const vec_float_t& vParams ) const {
+    virtual Mat calculateEdgePotentials( const Mat& featureVector1, const Mat& featureVector2, const vec_float_t& vParams ) const {
         const float nodePotWeight = 1.0f;
         m_pConcatenator->concatenate( featureVector1, featureVector2, const_cast< Mat& >( m_featureVector ) );
         Mat pot   = m_pTrainer->getNodePotentials( m_featureVector, nodePotWeight );

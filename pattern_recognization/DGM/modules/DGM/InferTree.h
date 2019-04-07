@@ -19,9 +19,9 @@ class CInferTree : public CMessagePassing {
 		* @brief Constructor
 		* @param graph The graph
 		*/
-    DllExport CInferTree( CGraphPairwise& graph )
+    CInferTree( CGraphPairwise& graph )
         : CMessagePassing( graph ) {}
-    DllExport virtual ~CInferTree( void ) {}
+    virtual ~CInferTree( void ) {}
 
   protected:
     /**
@@ -29,6 +29,6 @@ class CInferTree : public CMessagePassing {
 		* @details This function estimates the marginal potentials for each graph node and stores them as node potentials.
 		* @param nIt is not used
 		*/
-    DllExport virtual void calculateMessages( unsigned int nIt );
+    virtual void calculateMessages( unsigned int nIt );
 };
 }

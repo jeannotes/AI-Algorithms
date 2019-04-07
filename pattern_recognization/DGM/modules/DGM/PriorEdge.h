@@ -42,11 +42,11 @@ class CPriorEdge : public CPrior {
 		@param nStates Number of states (classes)
 		@param normApp Flag specifying the co-occurance histogram matrix normalization approach (Ref. @ref ePotNormApproach)
 		*/
-    DllExport CPriorEdge( byte nStates, ePotNormApproach normApp = eP_APP_NORM_SYMMETRIC )
+    CPriorEdge( byte nStates, ePotNormApproach normApp = eP_APP_NORM_SYMMETRIC )
         : CBaseRandomModel( nStates )
         , CPrior( nStates, RM_PAIRWISE )
         , m_normApp( normApp ) {}
-    DllExport ~CPriorEdge( void ) {}
+    ~CPriorEdge( void ) {}
 
     /**
 		@brief Adds the groud-truth value to the co-occurance histogram matrix
@@ -54,7 +54,7 @@ class CPriorEdge : public CPrior {
 		@param gt1 The ground-truth state (value) of the first node in edge. 
 		@param gt2 The ground-truth state (class) of the second node in edge. 
 		*/
-    DllExport void addEdgeGroundTruth( byte gt1, byte gt2 );
+    void addEdgeGroundTruth( byte gt1, byte gt2 );
 
   protected:
     /**
@@ -63,7 +63,7 @@ class CPriorEdge : public CPrior {
 		If the histogram was not built, this functions returns a uniform distribution "all ones".
 		@return Prior edge probability matrix: Mat(size: nStates x nStates; type: CV_32FC1)
 		*/
-    DllExport Mat calculatePrior( void ) const;
+    Mat calculatePrior( void ) const;
 
   private:
     ePotNormApproach m_normApp;   ///< Flag specifying the co-occurance histogram matrix normalization approach (Ref. @ref ePotNormApproach)

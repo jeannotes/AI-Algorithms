@@ -19,11 +19,11 @@ class CIntensity : public ILocalFeatureExtractor {
 		* @brief Constructor.
 		* @param img Input image of type \b CV_8UC3.
 		*/
-    DllExport CIntensity( const Mat& img )
+    CIntensity( const Mat& img )
         : ILocalFeatureExtractor( img ) {}
-    DllExport virtual ~CIntensity( void ) {}
+    virtual ~CIntensity( void ) {}
 
-    DllExport virtual Mat get( void ) const { return get( m_img ); }
+    virtual Mat get( void ) const { return get( m_img ); }
 
     /**
 		* @brief Extracts the intesity feature.
@@ -32,7 +32,7 @@ class CIntensity : public ILocalFeatureExtractor {
 		* @param weight The weight coefficients, which determine the contribution of each color channel to the resulting intensity.
 		* @return The intesity feature image of type \b CV_8UC1.
 		*/
-    DllExport static Mat get( const Mat& img, cv::Scalar weight = CV_RGB( 0.333, 0.333, 0.333 ) );
+    static Mat get( const Mat& img, cv::Scalar weight = CV_RGB( 0.333, 0.333, 0.333 ) );
 };
 }
 }

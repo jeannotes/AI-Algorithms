@@ -37,7 +37,7 @@ class CGraphPairwiseKit : public CGraphKit {
 		* @param nStates the number of States (classes)
 		* @param infer
 		*/
-    DllExport CGraphPairwiseKit( byte nStates, INFER infer = INFER::LBP )
+    CGraphPairwiseKit( byte nStates, INFER infer = INFER::LBP )
         : CGraphKit()
         , m_graph( nStates )
         , m_graphExtension( m_graph ) {
@@ -48,11 +48,11 @@ class CGraphPairwiseKit : public CGraphKit {
             default: DGM_ASSERT_MSG( false, "Unknown inference method" );
         }
     }
-    DllExport virtual ~CGraphPairwiseKit() = default;
+    virtual ~CGraphPairwiseKit() = default;
 
-    DllExport CGraph& getGraph() override { return m_graph; }
-    DllExport CInfer& getInfer() override { return *m_pInfer; }
-    DllExport CGraphExt& getGraphExt() override { return m_graphExtension; }
+    CGraph& getGraph() override { return m_graph; }
+    CInfer& getInfer() override { return *m_pInfer; }
+    CGraphExt& getGraphExt() override { return m_graphExtension; }
 
   private:
     CGraphPairwise m_graph;                        ///< Pairwise graph

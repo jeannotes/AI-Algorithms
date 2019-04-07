@@ -20,11 +20,11 @@ class CDistance : public ILocalFeatureExtractor {
 		* @brief Constructor.
 		* @param img Input image of type \b CV_8UC1 or \b CV_8UC3.
 		*/
-    DllExport CDistance( const Mat& img )
+    CDistance( const Mat& img )
         : ILocalFeatureExtractor( img ) {}
-    DllExport virtual ~CDistance( void ) {}
+    virtual ~CDistance( void ) {}
 
-    DllExport virtual Mat get( void ) const { return get( m_img ); }
+    virtual Mat get( void ) const { return get( m_img ); }
 
     /**
 		* @brief Extracts the distance feature.
@@ -35,7 +35,7 @@ class CDistance : public ILocalFeatureExtractor {
 		* @param multiplier Amplification coefficient for the resulting feature image.
 		* @return The distance feature image of type \b CV_8UC1.
 		*/
-    DllExport static Mat get( const Mat& img, byte threshold = 16, double multiplier = 4.0 );
+    static Mat get( const Mat& img, byte threshold = 16, double multiplier = 4.0 );
 };
 }
 }

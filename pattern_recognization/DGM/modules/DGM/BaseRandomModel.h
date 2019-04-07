@@ -35,7 +35,7 @@ class CBaseRandomModel {
 		* @brief Resets class variables.
 		* @details Allows to re-use the class.
 		*/
-    DllExport virtual void reset( void ) = 0;
+    virtual void reset( void ) = 0;
     /**
 		* @brief Saves the training data.
 		* @details Allows to re-use the class. Stores data to the file: \b "<path><name>_<idx>.dat". 
@@ -43,7 +43,7 @@ class CBaseRandomModel {
 		* @param name Name of data file. If empty, will be generated automatically from the class name.
 		* @param idx Index of the destination file. Negative value means no index.
 		*/
-    DllExport virtual void save( const std::string& path, const std::string& name = std::string(), short idx = -1 ) const;
+    virtual void save( const std::string& path, const std::string& name = std::string(), short idx = -1 ) const;
     /**
 		* @brief Loads the training data.
 		* @details Allows to re-use the class. Loads data to the file: \b "<path><name>_<idx>.dat". 
@@ -51,12 +51,12 @@ class CBaseRandomModel {
 		* @param name Name of data file. If empty, will be generated automatically from the class name.
 		* @param idx Index of the data file. Negative value means no index.
 		*/
-    DllExport virtual void load( const std::string& path, const std::string& name = std::string(), short idx = -1 );
+    virtual void load( const std::string& path, const std::string& name = std::string(), short idx = -1 );
     /**
 		* @brief Returns number of states (classes)
 		* @return Number of states (features) 
 		*/
-    DllExport byte getNumStates( void ) const { return m_nStates; }
+    byte getNumStates( void ) const { return m_nStates; }
 
   protected:
     /**
@@ -64,13 +64,13 @@ class CBaseRandomModel {
 		* @details Allows to re-use the class. 
 		* @param pFile Pointer to the file, opened for writing.
 		*/
-    DllExport virtual void saveFile( FILE* pFile ) const = 0;
+    virtual void saveFile( FILE* pFile ) const = 0;
     /**
 		* @brief Loads the random model from the file.
 		* @details Allows to re-use the class.
 		* @param pFile Pointer to the file, opened for reading.
 		*/
-    DllExport virtual void loadFile( FILE* pFile ) = 0;
+    virtual void loadFile( FILE* pFile ) = 0;
     /**
 		* @brief Generates name of the data file for storing random model parameters.
 		* @details This function generated the file name as follows: \b fileName="<path><name>_<idx>.dat", where \b idx always has 5 symbols. 

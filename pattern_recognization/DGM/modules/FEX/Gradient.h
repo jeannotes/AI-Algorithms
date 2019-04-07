@@ -22,11 +22,11 @@ class CGradient : public ILocalFeatureExtractor {
 		* @brief Constructor.
 		* @param img Input image of type \b CV_8UC1 or \b CV_8UC3.
 		*/
-    DllExport CGradient( const Mat& img )
+    CGradient( const Mat& img )
         : ILocalFeatureExtractor( img ) {}
-    DllExport virtual ~CGradient( void ) {}
+    virtual ~CGradient( void ) {}
 
-    DllExport virtual Mat get( void ) const { return get( m_img ); }
+    virtual Mat get( void ) const { return get( m_img ); }
 
     /**
 		* @brief Extracts the gradient feature.
@@ -39,7 +39,7 @@ class CGradient : public ILocalFeatureExtractor {
 		* @param mid Parameter for the two-linear mapping of the feature: \f$mid\in(0;255\sqrt{2}]\f$. (Ref. @ref two_linear_mapper()). 
 		* @return The gradient feature image of type \b CV_8UC1.
 		*/
-    DllExport static Mat get( const Mat& img, float mid = GRADIENT_MAX_VALUE );
+    static Mat get( const Mat& img, float mid = GRADIENT_MAX_VALUE );
 
   protected:
     static Mat getDerivativeX( const Mat& img );

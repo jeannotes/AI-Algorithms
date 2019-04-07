@@ -50,24 +50,24 @@ class CTrainNodeGMM : public CTrainNode {
 		* @param nFeatures Number of features
 		* @param params Gaussian Mixture Model parameters (Ref. @ref TrainNodeGMMParams)
 		*/
-    DllExport CTrainNodeGMM( byte nStates, word nFeatures, TrainNodeGMMParams params = TRAIN_NODE_GMM_PARAMS_DEFAULT );
+    CTrainNodeGMM( byte nStates, word nFeatures, TrainNodeGMMParams params = TRAIN_NODE_GMM_PARAMS_DEFAULT );
     /**
 		* @brief Constructor
 		* @param nStates Number of states (classes)
 		* @param nFeatures Number of features
 		* @param maxGausses The maximal number of mixture components in the Gaussian Mixture Model per state (class)
 		*/
-    DllExport CTrainNodeGMM( byte nStates, word nFeatures, byte maxGausses );
-    DllExport virtual ~CTrainNodeGMM( void );
+    CTrainNodeGMM( byte nStates, word nFeatures, byte maxGausses );
+    virtual ~CTrainNodeGMM( void );
 
-    DllExport void reset( void );
+    void reset( void );
 
-    DllExport void addFeatureVec( const Mat& featureVector, byte gt );
-    DllExport void train( bool doClean = false );
+    void addFeatureVec( const Mat& featureVector, byte gt );
+    void train( bool doClean = false );
 
   protected:
-    DllExport void saveFile( FILE* pFile ) const;
-    DllExport void loadFile( FILE* pFile );
+    void saveFile( FILE* pFile ) const;
+    void loadFile( FILE* pFile );
     /**
 		* @brief Calculates the node potential, based on the feature vector
 		* @details This function calculates the potentials of the node, described with the sample \a featureVector (\f$ \textbf{f} \f$):
@@ -77,7 +77,7 @@ class CTrainNodeGMM : public CTrainNode {
 		* @param[in,out]	potential %Node potentials: Mat(size: nStates x 1; type: CV_32FC1). This parameter should be preinitialized and set to value 0.
 		* @param[in,out]	mask Relevant %Node potentials: Mat(size: nStates x 1; type: CV_8UC1). This parameter should be preinitialized and set to value 1 (all potentials are relevant).
 		*/
-    DllExport void calculateNodePotentials( const Mat& featureVector, Mat& potential, Mat& mask ) const;
+    void calculateNodePotentials( const Mat& featureVector, Mat& potential, Mat& mask ) const;
 
   private:
     static const size_t MIN_SAMPLES;

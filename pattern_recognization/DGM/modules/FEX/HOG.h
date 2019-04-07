@@ -20,11 +20,11 @@ class CHOG : public ILocalFeatureExtractor {
 		* @brief Constructor.
 		* @param img Input image of type \b CV_8UC1 or \b CV_8UC3.
 		*/
-    DllExport CHOG( const Mat& img )
+    CHOG( const Mat& img )
         : ILocalFeatureExtractor( img ) {}
-    DllExport virtual ~CHOG( void ) {}
+    virtual ~CHOG( void ) {}
 
-    DllExport virtual Mat get( void ) const { return get( m_img ); }
+    virtual Mat get( void ) const { return get( m_img ); }
 
     /**
 		* @brief Extracts the HOG feature.
@@ -35,7 +35,7 @@ class CHOG : public ILocalFeatureExtractor {
 		* @param nbhd Neighborhood around the pixel, where its histogram is estimated. (Ref. @ref SqNeighbourhood).
 		* @return The HOG feature image of type \b CV_8UC{n}, where \f$n=nBins\f$.
 		*/
-    DllExport static Mat get( const Mat& img, int nBins = 9, SqNeighbourhood nbhd = sqNeighbourhood( 5 ) );
+    static Mat get( const Mat& img, int nBins = 9, SqNeighbourhood nbhd = sqNeighbourhood( 5 ) );
 };
 }
 }

@@ -20,11 +20,11 @@ class CDecode {
 		* @brief Constructor
 		* @param graph The graph
 		*/
-    DllExport CDecode( CGraph& graph )
+    CDecode( CGraph& graph )
         : m_graph( graph ){};
 
   public:
-    DllExport virtual ~CDecode( void ){};
+    virtual ~CDecode( void ){};
     /**
 		* @brief Approximate decoding
 		* @details This function estimates the most probable configuration of states (classes) in the graph,
@@ -34,7 +34,7 @@ class CDecode {
 		* The elemets \f$L_{i,j}\f$ represent a loss if state \f$j\f$ is classified as a state \f$i\f$.
 		* @return The most probable configuration
 		*/
-    DllExport virtual vec_byte_t decode( Mat& lossMatrix = EmptyMat ) const { return decode( m_graph, lossMatrix ); }
+    virtual vec_byte_t decode( Mat& lossMatrix = EmptyMat ) const { return decode( m_graph, lossMatrix ); }
     /**
 		* @brief Approximate decoding
 		* @details This function estimates the most probable configuration of states (classes) in the graph,
@@ -45,7 +45,7 @@ class CDecode {
 		* The elemets \f$L_{i,j}\f$ represent a loss if state \f$j\f$ is classified as a state \f$i\f$.
 		* @return The most probable configuration
 		*/
-    DllExport static vec_byte_t decode( const CGraph& graph, Mat& lossMatrix = EmptyMat );
+    static vec_byte_t decode( const CGraph& graph, Mat& lossMatrix = EmptyMat );
     /**
 		* @brief Returns a default loss matrix \f$L\f$
 		* @param nStates The number of States (classes)
@@ -54,7 +54,7 @@ class CDecode {
 		* @note Resulting loss matrix will cause no effect when using inside the decode() function. 
 		* This function provides only a default matrix for further user modification before using in the decode() function.
 		*/
-    DllExport static Mat getDefaultLossMatrix( byte nStates );
+    static Mat getDefaultLossMatrix( byte nStates );
 
   protected:
     /**

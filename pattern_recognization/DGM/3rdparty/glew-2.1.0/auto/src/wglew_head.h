@@ -24,7 +24,7 @@
 #  define GLEWAPI extern
 #else
 #  ifdef GLEW_BUILD
-#    define GLEWAPI extern __declspec(dllexport)
+#    define GLEWAPI extern __declspec(  )
 #  else
 #    define GLEWAPI extern __declspec(dllimport)
 #  endif

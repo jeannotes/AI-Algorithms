@@ -24,13 +24,13 @@ class CTrainNodeBayes : public CTrainNode, private CPriorNode {
 		* @param nStates Number of states (classes)
 		* @param nFeatures Number of features
 		*/
-    DllExport CTrainNodeBayes( byte nStates, word nFeatures );
-    DllExport virtual ~CTrainNodeBayes( void );
+    CTrainNodeBayes( byte nStates, word nFeatures );
+    virtual ~CTrainNodeBayes( void );
 
-    DllExport virtual void reset( void );
+    virtual void reset( void );
 
-    DllExport virtual void addFeatureVec( const Mat& featureVector, byte gt );
-    DllExport virtual void train( bool doClean = false );
+    virtual void addFeatureVec( const Mat& featureVector, byte gt );
+    virtual void train( bool doClean = false );
 
     /**
 		* @brief Returns the normalized probability density function (PDF) for specific state (class) and feature 
@@ -38,23 +38,23 @@ class CTrainNodeBayes : public CTrainNode, private CPriorNode {
 		* @param feature The feature
 		* @return The probability density function 
 		*/
-    DllExport IPDF* getPDF( byte state, word feature ) const { return m_pPDF[state][feature]; }
+    IPDF* getPDF( byte state, word feature ) const { return m_pPDF[state][feature]; }
     /**
 		* @brief Returns the 2D normalized probability density function (PDF) for specific state (class) 
 		* @note Used for test purposes. Use this function when only 2 features are in use. 
 		* @param state The state (class)
 		* @return The probability density function for 2 features
 		*/
-    DllExport IPDF* getPDF2D( byte state ) const { return m_pPDF2D[state]; }
+    IPDF* getPDF2D( byte state ) const { return m_pPDF2D[state]; }
     /**
 		* @brief Smothes the underlying Probability Density Functions (PDFs)
 		* @param nIt Number of smooth iterations
 		*/
-    DllExport void smooth( int nIt = 1 );
+    void smooth( int nIt = 1 );
 
   protected:
-    DllExport virtual void saveFile( FILE* pFile ) const;
-    DllExport virtual void loadFile( FILE* pFile );
+    virtual void saveFile( FILE* pFile ) const;
+    virtual void loadFile( FILE* pFile );
     /**
 		* @brief Calculates the node potential, based on the feature vector.
 		* @details This function calculates the potentials of the node, described with the sample \b featureVector (\f$ \textbf{f} \f$):
@@ -67,7 +67,7 @@ class CTrainNodeBayes : public CTrainNode, private CPriorNode {
 		* @param[in,out]	potential %Node potentials: Mat(size: nStates x 1; type: CV_32FC1). This parameter should be preinitialized and set to value 0.
 		* @param[in,out]	mask Relevant %Node potentials: Mat(size: nStates x 1; type: CV_8UC1). This parameter should be preinitialized and set to value 1 (all potentials are relevant).
 		*/
-    DllExport void calculateNodePotentials( const Mat& featureVector, Mat& potential, Mat& mask ) const;
+    void calculateNodePotentials( const Mat& featureVector, Mat& potential, Mat& mask ) const;
 
   private:
     IPDF*** m_pPDF;    ///< The 1D PDF for node potentials	 [state][feature]

@@ -19,11 +19,11 @@ class CHSV : public ILocalFeatureExtractor {
 		* @brief Constructor.
 		* @param img Input image of type \b CV_8UC3.
 		*/
-    DllExport CHSV( Mat& img )
+    CHSV( Mat& img )
         : ILocalFeatureExtractor( img ) {}
-    DllExport virtual ~CHSV( void ) {}
+    virtual ~CHSV( void ) {}
 
-    DllExport virtual Mat get( void ) const { return get( m_img ); }
+    virtual Mat get( void ) const { return get( m_img ); }
 
     /**
 		* @brief Extracts the HSV feature.
@@ -31,7 +31,7 @@ class CHSV : public ILocalFeatureExtractor {
 		* @param img Input image of type \b CV_8UC3.
 		* @return The (hue-saturation-value) feature image of type \b CV_8UC3.
 		*/
-    DllExport static Mat get( const Mat& img );
+    static Mat get( const Mat& img );
 };
 }
 }

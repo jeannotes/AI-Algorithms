@@ -17,10 +17,10 @@ class CPriorTriplet : public CPrior {
 		@brief Constructor
 		@param nStates Number of states (classes).
 		*/
-    DllExport CPriorTriplet( byte nStates )
+    CPriorTriplet( byte nStates )
         : CBaseRandomModel( nStates )
         , CPrior( nStates, RM_TRIPLET ) {}
-    DllExport ~CPriorTriplet( void ) {}
+    ~CPriorTriplet( void ) {}
 
     /**
 		@brief Adds the groud-truth value to the co-occurance histogram matrix
@@ -29,7 +29,7 @@ class CPriorTriplet : public CPrior {
 		@param gt2 The ground-truth state (value) of the second node in triplet. 
 		@param gt3 The ground-truth state (value) of the third node in triplet. 
 		*/
-    DllExport void addTripletGroundTruth( byte gt1, byte gt2, byte gt3 );
+    void addTripletGroundTruth( byte gt1, byte gt2, byte gt3 );
 
   protected:
     /**
@@ -37,6 +37,6 @@ class CPriorTriplet : public CPrior {
 		* @details This function returns the normalized class co-occurance histogram, which ought to be build during the training phase with help of the addTripletGroundTruth() function.
 		* @return Prior edge probability voxel: Mat(size: nStates x nStates x nStates; type: CV_32FC1)
 		*/
-    DllExport Mat calculatePrior( void ) const;
+    Mat calculatePrior( void ) const;
 };
 }

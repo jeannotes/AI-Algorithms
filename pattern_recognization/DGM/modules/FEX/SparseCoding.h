@@ -21,11 +21,11 @@ class CSparseCoding : public ILocalFeatureExtractor, public CSparseDictionary {
 			* @brief Constructor.
 			* @param img Input image of type \b CV_8UC1.
 			*/
-    DllExport CSparseCoding( const Mat& img )
+    CSparseCoding( const Mat& img )
         : ILocalFeatureExtractor( img ) {}
-    DllExport virtual ~CSparseCoding( void ) {}
+    virtual ~CSparseCoding( void ) {}
 
-    DllExport virtual Mat get( void ) const { return get( m_img, getDictionary() ); }
+    virtual Mat get( void ) const { return get( m_img, getDictionary() ); }
 
     /**
 			* @brief Extracts the sparse coding feature.
@@ -37,7 +37,7 @@ class CSparseCoding : public ILocalFeatureExtractor, public CSparseDictionary {
 			* @param nbhd Neighborhood around the pixel, where the samples are estimated. (Ref. @ref SqNeighbourhood). It shoul be a square with a side equal to blockSize.
 			* @return The sparse coding feature image of type \b CV_8UC{nWords}.
 			*/
-    DllExport static Mat get( const Mat& img, const Mat& D, SqNeighbourhood nbhd = sqNeighbourhood( 3 ) );
+    static Mat get( const Mat& img, const Mat& D, SqNeighbourhood nbhd = sqNeighbourhood( 3 ) );
     /**
 			* @brief Extracts the sparse coding feature.
 			* @details This function is an alternative to get(), which can handle large amount of features (more then 512)
@@ -48,7 +48,7 @@ class CSparseCoding : public ILocalFeatureExtractor, public CSparseDictionary {
 			* @param nbhd Neighborhood around the pixel, where the samples are estimated. (Ref. @ref SqNeighbourhood). It shoul be a square with a side equal to blockSize.
 			* @return The vector with \a nWords sparse coding feature images of type \b CV_8UC1 each.
 			*/
-    DllExport static vec_mat_t get_v( const Mat& img, const Mat& D, SqNeighbourhood nbhd = sqNeighbourhood( 3 ) );
+    static vec_mat_t get_v( const Mat& img, const Mat& D, SqNeighbourhood nbhd = sqNeighbourhood( 3 ) );
 };
 }
 }

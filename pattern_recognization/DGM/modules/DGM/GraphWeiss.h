@@ -86,26 +86,26 @@ class CGraphWeiss : public IGraphPairwise {
 		* @brief Constructor
 		* @param nStates the number of States (classes)
 		*/
-    DllExport CGraphWeiss( byte nStates );
-    DllExport virtual ~CGraphWeiss( void );
+    CGraphWeiss( byte nStates );
+    virtual ~CGraphWeiss( void );
 
-    DllExport void reset( void ) override;
-    DllExport size_t addNode( const Mat& pot = EmptyMat ) override;
-    DllExport void setNode( size_t node, const Mat& pot ) override;
-    DllExport void getNode( size_t node, Mat& pot ) const override;
-    DllExport void getChildNodes( size_t node, vec_size_t& vNodes ) const override;
-    DllExport void getParentNodes( size_t node, vec_size_t& vNodes ) const override;
-    DllExport size_t getNumNodes( void ) const override { return m_vpNodes.size(); }
-    DllExport size_t getNumEdges( void ) const override;
+    void reset( void ) override;
+    size_t addNode( const Mat& pot = EmptyMat ) override;
+    void setNode( size_t node, const Mat& pot ) override;
+    void getNode( size_t node, Mat& pot ) const override;
+    void getChildNodes( size_t node, vec_size_t& vNodes ) const override;
+    void getParentNodes( size_t node, vec_size_t& vNodes ) const override;
+    size_t getNumNodes( void ) const override { return m_vpNodes.size(); }
+    size_t getNumEdges( void ) const override;
 
-    DllExport void addEdge( size_t srcNode, size_t dstNode, byte group, const Mat& pot ) override;
-    DllExport void setEdge( size_t srcNode, size_t dstNode, const Mat& pot ) override;
-    DllExport void setEdges( std::experimental::optional< byte > group, const Mat& pot ) override;
-    DllExport void getEdge( size_t srcNode, size_t dstNode, Mat& pot ) const override;
-    DllExport void setEdgeGroup( size_t srcNode, size_t dstNode, byte group ) override;
-    DllExport byte getEdgeGroup( size_t srcNode, size_t dstNode ) const override;
-    DllExport void removeEdge( size_t srcNode, size_t dstNode ) override;
-    DllExport bool isEdgeExists( size_t srcNode, size_t dstNode ) const override;
+    void addEdge( size_t srcNode, size_t dstNode, byte group, const Mat& pot ) override;
+    void setEdge( size_t srcNode, size_t dstNode, const Mat& pot ) override;
+    void setEdges( std::experimental::optional< byte > group, const Mat& pot ) override;
+    void getEdge( size_t srcNode, size_t dstNode, Mat& pot ) const override;
+    void setEdgeGroup( size_t srcNode, size_t dstNode, byte group ) override;
+    byte getEdgeGroup( size_t srcNode, size_t dstNode ) const override;
+    void removeEdge( size_t srcNode, size_t dstNode ) override;
+    bool isEdgeExists( size_t srcNode, size_t dstNode ) const override;
 
   protected:
     /**
@@ -114,7 +114,7 @@ class CGraphWeiss : public IGraphPairwise {
 		* @param dstNode index of the destination node
 		* @return Pointer to the %Edge if found, NULL otherwise
 		*/
-    DllExport Edge* findEdge( size_t srcNode, size_t dstNode ) const;
+    Edge* findEdge( size_t srcNode, size_t dstNode ) const;
 
   private:
     size_t m_IDx;            // = 0;	Primary Key

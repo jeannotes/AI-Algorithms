@@ -25,7 +25,6 @@ nEdges = size(edgePot,3);
 edgeEnds = edgeStruct.edgeEnds;
 nStates = edgeStruct.nStates;
 
-
 % Initialize
 nodeBel = zeros(size(nodePot));
 edgeBel = zeros(size(edgePot));

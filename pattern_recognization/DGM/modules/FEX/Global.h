@@ -24,7 +24,7 @@ namespace global
 		* @param threshold2 The accumulator threshold parameter. Only those lines are detected that get enough votes ( > \b threshold2).
 		* @return The number of staight lines in the source image
 		*/
-DllExport size_t getNumLines( const Mat& img, int threshold1 = 100, int threshold2 = 50 );
+size_t getNumLines( const Mat& img, int threshold1 = 100, int threshold2 = 50 );
 /**
 		* @brief Returns the number of circles in the source image.
 		* @param img The source image of type \b CV_8UC1 or \b CV_8UC3.
@@ -33,7 +33,7 @@ DllExport size_t getNumLines( const Mat& img, int threshold1 = 100, int threshol
 		* Circles, corresponding to the larger accumulator values, will be returned first.
 		* @return The number of circles in the source image
 		*/
-DllExport size_t getNumCircles( const Mat& img, int threshold1 = 100, int threshold2 = 30 );
+size_t getNumCircles( const Mat& img, int threshold1 = 100, int threshold2 = 30 );
 /**
 		* @brief Returns the weighted-mean transparancy of the source image
 		* @details The weighted-mean transparancy is evaluated as follows:
@@ -42,33 +42,33 @@ DllExport size_t getNumCircles( const Mat& img, int threshold1 = 100, int thresh
 		* @param img The source image of type \b CV_8UC1 or \b CV_8UC3.
 		* @return The weighted-mean transparancy of the source image.
 		*/
-DllExport float getOpacity( const Mat& img );
+float getOpacity( const Mat& img );
 /**
 		* @brief Retunrs the variance of the source image.
 		* @param img The source image of type \b CV_8UC1 or \b CV_8UC3.
 		* @return The variance of the source image.
 		*/
-DllExport float getVariance( const Mat& img );
+float getVariance( const Mat& img );
 /**
 		* @brief Returns the number of non-zero pixels in the source image.
 		* @param img The source image of type \b CV_8UC1 or \b CV_8UC3.
 		* @return The number of non-zero pixels in the source image.
 		*/
-DllExport int getArea( const Mat& img );
+int getArea( const Mat& img );
 /**
 		* @brief Returns the perimeter of an object in the source image.
 		* @details This function retunrs the number of edge pixels, assuming a pixel to belong to an edge if any of its neighboring pixels have different value.
 		* @param img The source image of type \b CV_8UC1 or \b CV_8UC3.
 		* @return The number of edge pixels in the source image.
 		*/
-DllExport int getPerimeter( const Mat& img );
+int getPerimeter( const Mat& img );
 /**
 		* @brief Returns the compactness of the object in the source image.
 		* @details The compactness is calculates as follows: \f$\frac{P^2}{4\Pi S}\f$, where \a P and \a S are perimeter and area of the object, respectively.
 		* @param img The source image of type \b CV_8UC1 or \b CV_8UC3.
 		* @return The compactness of the object in the source image.
 		*/
-DllExport float getCompactness( const Mat& img );
+float getCompactness( const Mat& img );
 }
 }
 }

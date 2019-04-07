@@ -28,10 +28,10 @@ class CTrainEdge : public ITrain {
 		* @param nStates Number of states (classes)
 		* @param nFeatures Number of features
 		*/
-    DllExport CTrainEdge( byte nStates, word nFeatures )
+    CTrainEdge( byte nStates, word nFeatures )
         : CBaseRandomModel( nStates )
         , ITrain( nStates, nFeatures ) {}
-    DllExport virtual ~CTrainEdge( void ) = default;
+    virtual ~CTrainEdge( void ) = default;
 
     /**
 		* @brief Factory method returning edge trainer object 
@@ -41,7 +41,7 @@ class CTrainEdge : public ITrain {
 		* @param nFeatures Number of features
 		* @return Tne pointer to the concrete implementation of the edge trainer class
 		*/
-    DllExport static std::shared_ptr< CTrainEdge > create( byte edgeRandomModel, byte nStates, word nFeatures );
+    static std::shared_ptr< CTrainEdge > create( byte edgeRandomModel, byte nStates, word nFeatures );
     /**
 		* @brief Adds a pair of feature vectors
 		* @details Used to add \b featureVector1 and \b featureVector2, corresponding to the ground-truth states (classes) \b gt1 and \b gt2 for training.
@@ -51,8 +51,8 @@ class CTrainEdge : public ITrain {
 		* @param featureVector2 Multi-dimensinal point: Mat(size: nFeatures x 1; type: CV_8UC1), corresponding to the second node of the edge.
 		* @param gt2 The ground-truth state (class) of the second node of the edge, given by \b featureVector2 
 		*/
-    DllExport virtual void addFeatureVecs( const Mat& featureVector1, byte gt1, const Mat& featureVector2, byte gt2 ) = 0;
-    DllExport virtual void train( bool doClean = false ) {}
+    virtual void addFeatureVecs( const Mat& featureVector1, byte gt1, const Mat& featureVector2, byte gt2 ) = 0;
+    virtual void train( bool doClean = false ) {}
     /**
 		* @brief Returns the edge potential, based on the feature vectors
 		* @details This function calls calculateEdgePotentials() function, which should be implemented in derived classes. After that,
@@ -63,7 +63,7 @@ class CTrainEdge : public ITrain {
 		* @param weight The weighting parameter
 		* @return %Edge potentials on success: Mat(size: nStates x nStates; type: CV_32FC1)
 		*/
-    DllExport Mat getEdgePotentials( const Mat& featureVector1, const Mat& featureVector2, const vec_float_t& vParams, float weight = 1.0f ) const;
+    Mat getEdgePotentials( const Mat& featureVector1, const Mat& featureVector2, const vec_float_t& vParams, float weight = 1.0f ) const;
     /**
          * @brief Returns the data-independent edge potentials
          * @details This function returns matrix with diagonal elements equal to the argument \b val, all the other elements are 1's, what imitates the Potts model.
@@ -72,7 +72,7 @@ class CTrainEdge : public ITrain {
          * @param nStates Number of states (classes)
          * @return The edge potential matrix: Mat(size: nStates x nStates; type: CV_32FC1)
          */
-    DllExport static Mat getDefaultEdgePotentials( float val, byte nStates ) { return getDefaultEdgePotentials( vec_float_t( nStates, val ) ); }
+    static Mat getDefaultEdgePotentials( float val, byte nStates ) { return getDefaultEdgePotentials( vec_float_t( nStates, val ) ); }
     /**
          * @brief Returns the data-independent edge potentials
          * @details This function returns matrix with diagonal elements specified by argument array \b values, all the other elements are 1's, what imitates the Potts model.
@@ -80,7 +80,7 @@ class CTrainEdge : public ITrain {
          * @param values The array of diagonal elements of the matrix. In must include \a nStates values, specifying smoothness strength for each state (class) individually.
          * @return The edge potential matrix: Mat(size: nStates x nStates; type: CV_32FC1)
          */
-    DllExport static Mat getDefaultEdgePotentials( const vec_float_t& values );
+    static Mat getDefaultEdgePotentials( const vec_float_t& values );
 
   protected:
     /**
@@ -94,6 +94,6 @@ class CTrainEdge : public ITrain {
 		* @param vParams Array of control parameters. Please refere to the concrete model implementation of the calculateEdgePotentials() function for more details
 		* @returns The edge potential matrix: Mat(size: nStates x nStates; type: CV_32FC1)
 		*/
-    DllExport virtual Mat calculateEdgePotentials( const Mat& featureVector1, const Mat& featureVector2, const vec_float_t& vParams ) const = 0;
+    virtual Mat calculateEdgePotentials( const Mat& featureVector1, const Mat& featureVector2, const vec_float_t& vParams ) const = 0;
 };
 }

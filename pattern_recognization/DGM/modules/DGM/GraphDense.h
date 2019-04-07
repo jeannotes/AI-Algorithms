@@ -18,31 +18,31 @@ class CGraphDense : public CGraph {
 		* @brief Constructor
 		* @param nStates the number of States (classes)
 		*/
-    DllExport CGraphDense( byte nStates )
+    CGraphDense( byte nStates )
         : CGraph( nStates )
         , m_nodePotentials( EmptyMat ) {}
-    DllExport virtual ~CGraphDense( void ) = default;
+    virtual ~CGraphDense( void ) = default;
 
     // CGraph
-    DllExport void reset( void ) override {
+    void reset( void ) override {
         m_nodePotentials.release();
         m_vpEdgeModels.clear();
     }
 
-    DllExport size_t addNode( const Mat& pot = EmptyMat ) override;
-    DllExport void addNodes( const Mat& pots ) override { m_nodePotentials.push_back( pots ); }
+    size_t addNode( const Mat& pot = EmptyMat ) override;
+    void addNodes( const Mat& pots ) override { m_nodePotentials.push_back( pots ); }
 
-    DllExport void setNode( size_t node, const Mat& pot ) override;
-    DllExport void setNodes( size_t start_node, const Mat& pots ) override;
+    void setNode( size_t node, const Mat& pot ) override;
+    void setNodes( size_t start_node, const Mat& pots ) override;
 
-    DllExport void getNode( size_t node, Mat& pot ) const override;
-    DllExport void getNodes( size_t start_node, size_t num_nodes, Mat& pots ) const override;
+    void getNode( size_t node, Mat& pot ) const override;
+    void getNodes( size_t start_node, size_t num_nodes, Mat& pots ) const override;
 
-    DllExport void getChildNodes( size_t node, vec_size_t& vNodes ) const override;
-    DllExport void getParentNodes( size_t node, vec_size_t& vNodes ) const override { getChildNodes( node, vNodes ); }
+    void getChildNodes( size_t node, vec_size_t& vNodes ) const override;
+    void getParentNodes( size_t node, vec_size_t& vNodes ) const override { getChildNodes( node, vNodes ); }
 
-    DllExport size_t getNumNodes( void ) const override { return static_cast< size_t >( m_nodePotentials.rows ); }
-    DllExport size_t getNumEdges( void ) const override { return getNumNodes() * ( getNumNodes() - 1 ) / 2; }
+    size_t getNumNodes( void ) const override { return static_cast< size_t >( m_nodePotentials.rows ); }
+    size_t getNumEdges( void ) const override { return getNumNodes() * ( getNumNodes() - 1 ) / 2; }
 
     // Own
     /**
@@ -50,7 +50,7 @@ class CGraphDense : public CGraph {
 		* @details Dense CRF may have multiple edge models. All edge models will be subsequently applied during the iterations of the inference process. 
 		* @param pEdgeModel Poiter to an dense edge model (ref. @ref IEdgeModel)
 		*/
-    DllExport void addEdgeModel( const ptr_edgeModel_t& pEdgeModel ) { m_vpEdgeModels.push_back( pEdgeModel ); }
+    void addEdgeModel( const ptr_edgeModel_t& pEdgeModel ) { m_vpEdgeModels.push_back( pEdgeModel ); }
     /**
 		* @brief Returns the container with node potentials
 		* @return The container with node potentials: Mat(nNodes, nStates, CV_32FC1)

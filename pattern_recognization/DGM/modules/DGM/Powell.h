@@ -42,48 +42,48 @@ class CPowell {
 		* @brief Constructor
 		* @param nParams Number of parameters (arguments) of the objective function
 		*/
-    DllExport CPowell( word nParams );
-    DllExport ~CPowell( void );
+    CPowell( word nParams );
+    ~CPowell( void );
 
     /**
 		* @brief Resets class variables
 		*/
-    DllExport void reset( void );
+    void reset( void );
     /**
 		* @brief Sets the initial parameters (arguments) for the search algorithm
 		* @details 
 		* > Default values are \b 0 for all parameters (arguments)
 		* @param pParam Pointer to an array with the initial values for the search algorithm
 		*/
-    DllExport void setInitParams( float* pParam );
+    void setInitParams( float* pParam );
     /**
 		* @brief Sets the searching steps along the parameters (arguments)
 		* @details 
 		* > Default values are \b 0.1 for all parameters (arguments)
 		* @param pDelta Pointer to an array with the offset values for each parameter (argument)
 		*/
-    DllExport void setDeltas( float* pDelta );
+    void setDeltas( float* pDelta );
     /**
 		* @brief Sets the lower boundary for parameters (arguments) search
 		* @details
 		* > Default values are \f$-\infty\f$ for all parameters (arguments)
 		* @param pMinParam Pointer to an array with the minimal parameter (argument) values
 		*/
-    DllExport void setMinParams( float* pMinParam );
+    void setMinParams( float* pMinParam );
     /**
 		* @brief Sets the upper boundary for parameters (arguments) search
 		* @details
 		* > Default values are \f$+\infty\f$ for all parameters (arguments)
 		* @param pMaxParam Pointer to an array with the maximal parameter (argument) values
 		*/
-    DllExport void setMaxParams( float* pMaxParam );
+    void setMaxParams( float* pMaxParam );
     /**
 		* @brief Sets the acceleration coefficient
 		* @details Incrasing this parameter may speed-up the convergence of the method, however too large values may affect the calculation stability
 		* > Default value is \b 0.1
 		* @param acceleration The acceleration coefficient
 		*/
-    DllExport void setAcceleration( float acceleration );
+    void setAcceleration( float acceleration );
     /**
 		* @brief Gets the updated parameters (arguments)
 		* @details This function updates the parameters (arguments) of the objective function based on its outcome value \b val and retunrs them 
@@ -91,13 +91,13 @@ class CPowell {
 		* @param val The current value of the objective function
 		* @return The pointer to array with the updated parameters
 		*/
-    DllExport float* getParams( float val );
+    float* getParams( float val );
     /**
 		* @brief Indicates weather the method has converged
 		* @retval true if the method has converged
 		* @retval false otherwise
 		*/
-    DllExport bool isConverged( void ) const;
+    bool isConverged( void ) const;
 
   private:
     word m_nParams;         // number of parameters (arguments of the objective function)

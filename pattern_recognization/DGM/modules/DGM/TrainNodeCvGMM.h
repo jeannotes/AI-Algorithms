@@ -50,7 +50,7 @@ class CTrainNodeCvGMM : public CTrainNode {
 		* @param nFeatures Number of features
 		* @param params Expectation Maximization parameters (Ref. @ref TrainNodeCvGMMParams)
 		*/
-    DllExport CTrainNodeCvGMM( byte nStates, word nFeatures, TrainNodeCvGMMParams params = TRAIN_NODE_CV_GMM_PARAMS_DEFAULT );
+    CTrainNodeCvGMM( byte nStates, word nFeatures, TrainNodeCvGMMParams params = TRAIN_NODE_CV_GMM_PARAMS_DEFAULT );
     /**
 		* @brief Constructor
 		* @param nStates Number of states (classes)
@@ -60,21 +60,21 @@ class CTrainNodeCvGMM : public CTrainNode {
 		* > If another value is specified, the class for training will use \b maxSamples random samples from the whole amount of samples, added via addFeatureVec() function
 		* @param nGausses The number of mixture components in the Gaussian Mixture Model per state (class)
 		*/
-    DllExport CTrainNodeCvGMM( byte nStates, word nFeatures, size_t maxSamples, byte nGausses = TRAIN_NODE_CV_GMM_PARAMS_DEFAULT.numGausses );
-    DllExport virtual ~CTrainNodeCvGMM( void );
+    CTrainNodeCvGMM( byte nStates, word nFeatures, size_t maxSamples, byte nGausses = TRAIN_NODE_CV_GMM_PARAMS_DEFAULT.numGausses );
+    virtual ~CTrainNodeCvGMM( void );
 
-    DllExport void reset( void );
-    DllExport void save( const std::string& path, const std::string& name = std::string(), short idx = -1 ) const;
-    DllExport void load( const std::string& path, const std::string& name = std::string(), short idx = -1 );
+    void reset( void );
+    void save( const std::string& path, const std::string& name = std::string(), short idx = -1 ) const;
+    void load( const std::string& path, const std::string& name = std::string(), short idx = -1 );
 
-    DllExport void addFeatureVec( const Mat& featureVector, byte gt );
+    void addFeatureVec( const Mat& featureVector, byte gt );
 
-    DllExport void train( bool doClean = false );
+    void train( bool doClean = false );
 
   protected:
-    DllExport void saveFile( FILE* pFile ) const {}
-    DllExport void loadFile( FILE* pFile ) {}
-    DllExport void calculateNodePotentials( const Mat& featureVector, Mat& potential, Mat& mask ) const;
+    void saveFile( FILE* pFile ) const {}
+    void loadFile( FILE* pFile ) {}
+    void calculateNodePotentials( const Mat& featureVector, Mat& potential, Mat& mask ) const;
 
   private:
     void init( TrainNodeCvGMMParams params );   // This function is called by both constructors

@@ -22,10 +22,10 @@ class CTrainNodeGM : public CTrainNodeGMM {
 		* @param nStates Number of states (classes)
 		* @param nFeatures Number of features
 		*/
-    DllExport CTrainNodeGM( byte nStates, word nFeatures )
+    CTrainNodeGM( byte nStates, word nFeatures )
         : CBaseRandomModel( nStates )
         , CTrainNodeGMM( nStates, nFeatures, 1 ) {}
-    DllExport ~CTrainNodeGM( void ) {}
+    ~CTrainNodeGM( void ) {}
 
     /**
 		* @brief Returns the node potential, based on the feature vector
@@ -36,6 +36,6 @@ class CTrainNodeGM : public CTrainNodeGMM {
 		* @param weight The weighting parameter
 		* @return %Node potentials on success: Mat(size: nStates x 1; type: CV_32FC1); empty Mat() otherwise
 		*/
-    DllExport Mat getNodePotentials( const Mat& featureVector, float weight = 1.0f ) { return CTrainNodeGMM::getNodePotentials( featureVector, weight ); }   // This is done for doxygen comment
+    Mat getNodePotentials( const Mat& featureVector, float weight = 1.0f ) { return CTrainNodeGMM::getNodePotentials( featureVector, weight ); }   // This is done for doxygen comment
 };
 }

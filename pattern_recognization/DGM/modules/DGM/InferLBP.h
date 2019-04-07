@@ -19,13 +19,13 @@ class CInferLBP : public CMessagePassing {
 		* @brief Constructor
 		* @param graph The graph
 		*/
-    DllExport CInferLBP( CGraphPairwise& graph )
+    CInferLBP( CGraphPairwise& graph )
         : CMessagePassing( graph )
         , m_maxSum( false ) {}
-    DllExport virtual ~CInferLBP( void ) {}
+    virtual ~CInferLBP( void ) {}
 
   protected:
-    DllExport virtual void calculateMessages( unsigned int nIt );
+    virtual void calculateMessages( unsigned int nIt );
     void setMaxSum( bool maxSum ) { m_maxSum = maxSum; }
     bool isMaxSum( void ) const { return m_maxSum; }
 

@@ -23,15 +23,15 @@ class CGraphPairwiseExt : public CGraphExt {
 		* @param graph The graph
 		* @param gType The graph type. (Ref. @ref graphEdgesType)
 		*/
-    DllExport CGraphPairwiseExt( IGraphPairwise& graph, byte gType = GRAPH_EDGES_GRID )
+    CGraphPairwiseExt( IGraphPairwise& graph, byte gType = GRAPH_EDGES_GRID )
         : m_pGraphLayeredExt( std::make_unique< CGraphLayeredExt >( graph, 1, gType ) ) {}
-    DllExport virtual ~CGraphPairwiseExt( void ) = default;
+    virtual ~CGraphPairwiseExt( void ) = default;
 
     // From CGraphExt
-    DllExport void buildGraph( Size graphSize ) override {
+    void buildGraph( Size graphSize ) override {
         m_pGraphLayeredExt->buildGraph( graphSize );
     }
-    DllExport void setGraph( const Mat& pots ) override {
+    void setGraph( const Mat& pots ) override {
         m_pGraphLayeredExt->setGraph( pots, Mat() );
     }
     /**
@@ -39,22 +39,22 @@ class CGraphPairwiseExt : public CGraphExt {
 		* @param val Value, specifying the smoothness strength 
         * @param weight The weighting parameter
 		*/
-    DllExport void addDefaultEdgesModel( float val, float weight = 1.0f ) override;
+    void addDefaultEdgesModel( float val, float weight = 1.0f ) override;
     /**
 		* @brief Adds default contrast-sensitive edge model
 		* @param featureVectors Multi-channel matrix, each element of which is a multi-dimensinal point: Mat(type: CV_8UC<nFeatures>)
         * @param val Value, specifying the smoothness strength
         * @param weight The weighting parameter
 		*/
-    DllExport void addDefaultEdgesModel( const Mat& featureVectors, float val, float weight = 1.0f ) override;
+    void addDefaultEdgesModel( const Mat& featureVectors, float val, float weight = 1.0f ) override;
     /**
         * @brief Adds default contrast-sensitive edge model
         * @param featureVectors Vector of size \a nFeatures, each element of which is a single feature - image: Mat(type: CV_8UC1)
         * @param val Value, specifying the smoothness strength
         * @param weight The weighting parameter
         */
-    DllExport void addDefaultEdgesModel( const vec_mat_t& featureVectors, float val, float weight = 1.0f ) override;
-    DllExport Size getSize() const override {
+    void addDefaultEdgesModel( const vec_mat_t& featureVectors, float val, float weight = 1.0f ) override;
+    Size getSize() const override {
         return m_pGraphLayeredExt->getSize();
     }
 
@@ -67,7 +67,7 @@ class CGraphPairwiseExt : public CGraphExt {
 		* @param featureVectors Multi-channel matrix, each element of which is a multi-dimensinal point: Mat(type: CV_8UC<nFeatures>)
 		* @param gt Matrix, each element of which is a ground-truth state (class)
 		*/
-    DllExport void addFeatureVecs( CTrainEdge& edgeTrainer, const Mat& featureVectors, const Mat& gt ) {
+    void addFeatureVecs( CTrainEdge& edgeTrainer, const Mat& featureVectors, const Mat& gt ) {
         m_pGraphLayeredExt->addFeatureVecs( edgeTrainer, featureVectors, gt );
     }
     /**
@@ -79,7 +79,7 @@ class CGraphPairwiseExt : public CGraphExt {
 		* @param featureVectors Vector of size \a nFeatures, each element of which is a single feature - image: Mat(type: CV_8UC1)
 		* @param gt Matrix, each element of which is a ground-truth state (class)
 		*/
-    DllExport void addFeatureVecs( CTrainEdge& edgeTrainer, const vec_mat_t& featureVectors, const Mat& gt ) {
+    void addFeatureVecs( CTrainEdge& edgeTrainer, const vec_mat_t& featureVectors, const Mat& gt ) {
         m_pGraphLayeredExt->addFeatureVecs( edgeTrainer, featureVectors, gt );
     }
     /**
@@ -92,7 +92,7 @@ class CGraphPairwiseExt : public CGraphExt {
 		* @param vParams Array of control parameters. Please refer to the concrete model implementation of the CTrainEdge::calculateEdgePotentials() function for more details
 		* @param weight The weighting parameter
 		*/
-    DllExport void fillEdges( const CTrainEdge& edgeTrainer, const Mat& featureVectors, const vec_float_t& vParams, float weight = 1.0f ) {
+    void fillEdges( const CTrainEdge& edgeTrainer, const Mat& featureVectors, const vec_float_t& vParams, float weight = 1.0f ) {
         m_pGraphLayeredExt->fillEdges( edgeTrainer, NULL, featureVectors, vParams, weight );
     }
     /**
@@ -105,7 +105,7 @@ class CGraphPairwiseExt : public CGraphExt {
 		* @param vParams Array of control parameters. Please refer to the concrete model implementation of the CTrainEdge::calculateEdgePotentials() function for more details
 		* @param weight The weighting parameter
 		*/
-    DllExport void fillEdges( const CTrainEdge& edgeTrainer, const vec_mat_t& featureVectors, const vec_float_t& vParams, float weight = 1.0f ) {
+    void fillEdges( const CTrainEdge& edgeTrainer, const vec_mat_t& featureVectors, const vec_float_t& vParams, float weight = 1.0f ) {
         m_pGraphLayeredExt->fillEdges( edgeTrainer, NULL, featureVectors, vParams, weight );
     }
     /**
@@ -116,7 +116,7 @@ class CGraphPairwiseExt : public CGraphExt {
 		* @param C Constant line parameter
 		* @param group New group ID
 		*/
-    DllExport void defineEdgeGroup( float A, float B, float C, byte group ) {
+    void defineEdgeGroup( float A, float B, float C, byte group ) {
         m_pGraphLayeredExt->defineEdgeGroup( A, B, C, group );
     }
     /**
@@ -124,14 +124,14 @@ class CGraphPairwiseExt : public CGraphExt {
 		* @param pot %Edge potential matrix: Mat(size: nStates x nStates; type: CV_32FC1)
 		* @param group The edge group ID
 		*/
-    DllExport void setEdges( std::experimental::optional< byte > group, const Mat& pot ) {
+    void setEdges( std::experimental::optional< byte > group, const Mat& pot ) {
         m_pGraphLayeredExt->setEdges( group, pot );
     }
     /**
 		* @brief Returns the type of the graph
 		* @returns The type of the graph (Ref. @ref graphEdgesType)
 		*/
-    DllExport byte getType( void ) const {
+    byte getType( void ) const {
         return m_pGraphLayeredExt->getType();
     }
 

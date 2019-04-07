@@ -22,9 +22,9 @@ class CTrainNodeCvGM : public CTrainNodeCvGMM {
 		* @param nStates Number of states (classes)
 		* @param nFeatures Number of features
 		*/
-    DllExport CTrainNodeCvGM( byte nStates, word nFeatures )
+    CTrainNodeCvGM( byte nStates, word nFeatures )
         : CBaseRandomModel( nStates )
         , CTrainNodeCvGMM( nStates, nFeatures, 0, 1 ) {}
-    DllExport ~CTrainNodeCvGM( void ) {}
+    ~CTrainNodeCvGM( void ) {}
 };
 }

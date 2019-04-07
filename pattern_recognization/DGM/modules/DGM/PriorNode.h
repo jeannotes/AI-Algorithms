@@ -17,21 +17,21 @@ class CPriorNode : public CPrior {
 		* @brief Constructor
 		* @param nStates Number of states (classes)
 		*/
-    DllExport CPriorNode( byte nStates )
+    CPriorNode( byte nStates )
         : CBaseRandomModel( nStates )
         , CPrior( nStates, RM_UNARY ) {}
-    DllExport ~CPriorNode( void ) {}
+    ~CPriorNode( void ) {}
 
     /**
 		* @brief Adds ground truth values to the co-occurance histogram vector
 		* @param gt Matrix, each element of which is a ground-truth state (class)
 		*/
-    DllExport void addNodeGroundTruth( const Mat& gt );
+    void addNodeGroundTruth( const Mat& gt );
     /**
 		* @brief Adds a ground truth value to the co-occurance histogram vector
 		* @param gt The ground-truth state (class)
 		*/
-    DllExport void addNodeGroundTruth( byte gt );
+    void addNodeGroundTruth( byte gt );
 
   protected:
     /**
@@ -39,6 +39,6 @@ class CPriorNode : public CPrior {
 		* @details This function returns the normalized class co-occurance histogram, which ought to be build during the training phase with help of the addNodeGroundTruth() function.
 		* @return Prior node probability vector: Mat(size: nStates x 1; type: CV_32FC1)
 		*/
-    DllExport Mat calculatePrior( void ) const;
+    Mat calculatePrior( void ) const;
 };
 }

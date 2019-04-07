@@ -19,22 +19,22 @@ class CFeaturesConcatenator {
 		* @brief Constructor
 		* @param nFeatures Number of features
 		*/
-    DllExport CFeaturesConcatenator( word nFeatures )
+    CFeaturesConcatenator( word nFeatures )
         : m_nFeatures( nFeatures ) {}
-    DllExport virtual ~CFeaturesConcatenator( void ) {}
+    virtual ~CFeaturesConcatenator( void ) {}
 
     /**
 		* @brief Returns the length of the concatenated feature vector
 		* @returns Number of features in the concatenated feature vector
 		*/
-    DllExport virtual word getNumFeatures( void ) const = 0;
+    virtual word getNumFeatures( void ) const = 0;
     /**
 		* @brief Concatenated two feature vectors 
 		* @param[in] featureVector1 The first feature vector: Mat(size: nFeatures x 1; type: CV_8UC1) 
 		* @param[in] featureVector2 The second feature vector: Mat(size: nFeatures x 1; type: CV_8UC1) 
 		* @param[out] dst The resulting feture vector: Mat(size: this->nFeaturs() x 1; type: CV_8UC1) 
 		*/
-    DllExport virtual void concatenate( const Mat& featureVector1, const Mat& featureVector2, Mat& dst ) const = 0;
+    virtual void concatenate( const Mat& featureVector1, const Mat& featureVector2, Mat& dst ) const = 0;
 
   protected:
     word m_nFeatures;   ///< Number of features in the concatenated feature vector
@@ -53,11 +53,11 @@ class CSimpleFeaturesConcatenator : public CFeaturesConcatenator {
 		* @brief Constructor
 		* @param nFeatures Number of features
 		*/
-    DllExport CSimpleFeaturesConcatenator( word nFeatures )
+    CSimpleFeaturesConcatenator( word nFeatures )
         : CFeaturesConcatenator( nFeatures ) {}
-    DllExport virtual ~CSimpleFeaturesConcatenator( void ) {}
-    DllExport virtual word getNumFeatures( void ) const { return 2 * m_nFeatures; }
-    DllExport virtual void concatenate( const Mat& featureVector1, const Mat& featureVector2, Mat& dst ) const {
+    virtual ~CSimpleFeaturesConcatenator( void ) {}
+    virtual word getNumFeatures( void ) const { return 2 * m_nFeatures; }
+    virtual void concatenate( const Mat& featureVector1, const Mat& featureVector2, Mat& dst ) const {
         // Assertions
         DGM_ASSERT( featureVector1.size() == featureVector2.size() );
         DGM_ASSERT( featureVector1.type() == featureVector2.type() );
@@ -83,11 +83,11 @@ class CDiffFeaturesConcatenator : public CFeaturesConcatenator {
 		* @brief Constructor
 		* @param nFeatures Number of features
 		*/
-    DllExport CDiffFeaturesConcatenator( word nFeatures )
+    CDiffFeaturesConcatenator( word nFeatures )
         : CFeaturesConcatenator( nFeatures ) {}
-    DllExport virtual ~CDiffFeaturesConcatenator( void ) {}
-    DllExport virtual word getNumFeatures( void ) const { return 1 * m_nFeatures; }
-    DllExport virtual void concatenate( const Mat& featureVector1, const Mat& featureVector2, Mat& dst ) const {
+    virtual ~CDiffFeaturesConcatenator( void ) {}
+    virtual word getNumFeatures( void ) const { return 1 * m_nFeatures; }
+    virtual void concatenate( const Mat& featureVector1, const Mat& featureVector2, Mat& dst ) const {
         // Assertions
         DGM_ASSERT( featureVector1.size() == featureVector2.size() );
         DGM_ASSERT( featureVector1.type() == featureVector2.type() );

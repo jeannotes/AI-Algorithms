@@ -20,16 +20,16 @@ class CGraphDenseKit : public CGraphKit {
 		* @brief Constructor
 		* @param nStates the number of States (classes)
 		*/
-    DllExport CGraphDenseKit( byte nStates )
+    CGraphDenseKit( byte nStates )
         : CGraphKit()
         , m_graph( nStates )
         , m_infer( m_graph )
         , m_graphExtension( m_graph ) {}
-    DllExport virtual ~CGraphDenseKit() = default;
+    virtual ~CGraphDenseKit() = default;
 
-    DllExport CGraph& getGraph() override { return m_graph; }
-    DllExport CInfer& getInfer() override { return m_infer; }
-    DllExport CGraphExt& getGraphExt() override { return m_graphExtension; }
+    CGraph& getGraph() override { return m_graph; }
+    CInfer& getInfer() override { return m_infer; }
+    CGraphExt& getGraphExt() override { return m_graphExtension; }
 
   private:
     CGraphDense m_graph;               ///< Dense (complete) graph

@@ -19,59 +19,59 @@ class CKDTree {
     /**
 		* @brief Default constructor
 		*/
-    DllExport CKDTree( void )
+    CKDTree( void )
         : m_root( nullptr ) {}
     /**
 		* @brief Constructor
 		* @param keys The tree keys: k-d points: Mat(size: nKeys x k; type: CV_8UC1)
 		* @param values The values for every key: Mat(size: nKeys x 1; type: CV_8UC1)
 		*/
-    DllExport CKDTree( Mat& keys, Mat& values )
+    CKDTree( Mat& keys, Mat& values )
         : m_root( nullptr ) { build( keys, values ); }
-    DllExport CKDTree( const CKDTree& ) = delete;
-    DllExport ~CKDTree( void ) {}
+    CKDTree( const CKDTree& ) = delete;
+    ~CKDTree( void ) {}
 
-    DllExport bool operator=( const CKDTree ) = delete;
+    bool operator=( const CKDTree ) = delete;
 
     /**
 		* @brief Resets the tree
 		*/
-    DllExport void reset( void ) { m_root.reset(); }
+    void reset( void ) { m_root.reset(); }
     /**
 		* @brief Saves the tree into a file
 		* @param fileName The output file name
 		*/
-    DllExport void save( const std::string& fileName ) const;
+    void save( const std::string& fileName ) const;
     /**
 		* @brief Loads a tree from the file
 		* @param fileName The output file name
 		*/
-    DllExport void load( const std::string& fileName );
+    void load( const std::string& fileName );
     /**
 		* @brief Builds a k-d tree on \b keys with corresponding \b values
 		* @param keys The tree keys: k-d points: Mat(size: nKeys x k; type: CV_8UC1)
 		* > The \b keys matrix is modified by this function
 		* @param values The values for every key: Mat(size: nKeys x 1; type: CV_8UC1)
 		*/
-    DllExport void build( Mat& keys, Mat& values );
+    void build( Mat& keys, Mat& values );
     /**
 		* @brief Finds the nearest neighbor to the \b key
 		* @param key The search key: k-d point: Mat(size: 1 x k; type: CV_8UC1)
 		* @returns The %Node (tree leaf) with the key, which is the most close to the argument \b key
 		*/
-    DllExport std::shared_ptr< const CKDNode > findNearestNeighbor( const Mat& key ) const { return findNearestNeighbors( key, 1 ).front(); }
+    std::shared_ptr< const CKDNode > findNearestNeighbor( const Mat& key ) const { return findNearestNeighbors( key, 1 ).front(); }
     /**
 		* @brief Finds up to \b maxNeighbors nearest neighbors to the \b key
 		* @param key The search key: k-d point: Mat(size: 1 x k; type: CV_8UC1)
 		* @param maxNeighbors maximum number of neighbor nodes to find
 		* @returns The array of %Nodes (tree leaves) with the keys, which are the most close to the argument \b key
 		*/
-    DllExport std::vector< std::shared_ptr< const CKDNode > > findNearestNeighbors( const Mat& key, size_t maxNeighbors ) const;
+    std::vector< std::shared_ptr< const CKDNode > > findNearestNeighbors( const Mat& key, size_t maxNeighbors ) const;
     /**
 		* @brief Returns pointer to the root of the tree
 		* @returns The pointer to the root of the tree
 		*/
-    DllExport std::shared_ptr< const CKDNode > getRoot( void ) const { return m_root; }
+    std::shared_ptr< const CKDNode > getRoot( void ) const { return m_root; }
 
   private:
     std::shared_ptr< CKDNode > loadTree( FILE* pFile, int k );

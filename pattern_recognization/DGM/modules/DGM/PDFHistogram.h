@@ -15,26 +15,26 @@ namespace DirectGraphicalModels
 	*/
 class CPDFHistogram : public IPDF {
   public:
-    DllExport CPDFHistogram( void );
-    DllExport virtual ~CPDFHistogram( void );
+    CPDFHistogram( void );
+    virtual ~CPDFHistogram( void );
 
-    DllExport virtual void reset( void );
+    virtual void reset( void );
 
-    DllExport virtual void addPoint( Scalar point );
-    DllExport virtual double getDensity( Scalar point );
-    DllExport virtual Scalar min( void ) const { return Scalar( 0 ); }
-    DllExport virtual Scalar max( void ) const { return Scalar( 255 ); }
+    virtual void addPoint( Scalar point );
+    virtual double getDensity( Scalar point );
+    virtual Scalar min( void ) const { return Scalar( 0 ); }
+    virtual Scalar max( void ) const { return Scalar( 255 ); }
 
     /**
 		* @brief Performs the gaussian smoothing on the histogram
 		* @details Performs \b nIt iterations of gaussian smothing of the histograms in order to overcome the "over-fitting" problem
 		* @param nIt Number of iterations
 		*/
-    DllExport void smooth( int nIt = 1 );
+    void smooth( int nIt = 1 );
 
   protected:
-    DllExport virtual void saveFile( FILE* pFile ) const;
-    DllExport virtual void loadFile( FILE* pFile );
+    virtual void saveFile( FILE* pFile ) const;
+    virtual void loadFile( FILE* pFile );
 
   private:
     long m_data[256];

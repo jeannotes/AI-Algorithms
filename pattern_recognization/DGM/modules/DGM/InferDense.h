@@ -21,11 +21,11 @@ class CInferDense : public CInfer {
 		* @brief Constructor
 		* @param graph The graph
 		*/
-    DllExport CInferDense( CGraphDense& graph )
+    CInferDense( CGraphDense& graph )
         : CInfer( graph ) {}
-    DllExport virtual ~CInferDense( void ) = default;
+    virtual ~CInferDense( void ) = default;
 
-    DllExport virtual void infer( unsigned int nIt = 1 );
+    virtual void infer( unsigned int nIt = 1 );
 
   protected:
     /**

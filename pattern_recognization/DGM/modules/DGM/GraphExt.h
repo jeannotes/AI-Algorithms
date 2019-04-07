@@ -15,17 +15,17 @@ namespace DirectGraphicalModels
     */
 class CGraphExt {
   public:
-    DllExport CGraphExt( void )             = default;
-    DllExport CGraphExt( const CGraphExt& ) = delete;
-    DllExport virtual ~CGraphExt( void )    = default;
-    DllExport const CGraphExt& operator=( const CGraphExt& ) = delete;
+    CGraphExt( void )             = default;
+    CGraphExt( const CGraphExt& ) = delete;
+    virtual ~CGraphExt( void )    = default;
+    const CGraphExt& operator=( const CGraphExt& ) = delete;
 
     /**
         * @brief Builds a 2D graph of size corresponding to the image resolution
 		* @details When called multiple times, previouse graph structure is always replaced
         * @param graphSize The size of the graph (image resolution)
         */
-    DllExport virtual void buildGraph( Size graphSize ) = 0;
+    virtual void buildGraph( Size graphSize ) = 0;
     /**
         * @brief Fills an existing 2D graph with potentials or builds a new 2D graph of size corresponding to \b pots.size() with potentials
         * @details
@@ -38,14 +38,14 @@ class CGraphExt {
         * CTrainNode::getNodePotentials()
         * @endcode
         */
-    DllExport virtual void setGraph( const Mat& pots ) = 0;
+    virtual void setGraph( const Mat& pots ) = 0;
     /**
 		* @brief Adds default data-independet edge model
 		* @param val Value, specifying the smoothness strength 
 		* > See concrete class implementation for more details
         * @param weight The weighting parameter
 		*/
-    DllExport virtual void addDefaultEdgesModel( float val, float weight = 1.0f ) = 0;
+    virtual void addDefaultEdgesModel( float val, float weight = 1.0f ) = 0;
     /**
 		* @brief Adds default contrast-sensitive edge model
 		* @param featureVectors Multi-channel matrix, each element of which is a multi-dimensinal point: Mat(type: CV_8UC<nFeatures>)
@@ -53,7 +53,7 @@ class CGraphExt {
 		* > See concrete class implementation for more details
         * @param weight The weighting parameter
 		*/
-    DllExport virtual void addDefaultEdgesModel( const Mat& featureVectors, float val, float weight = 1.0f ) = 0;
+    virtual void addDefaultEdgesModel( const Mat& featureVectors, float val, float weight = 1.0f ) = 0;
     /**
         * @brief Adds default contrast-sensitive edge model
         * @param featureVectors Vector of size \a nFeatures, each element of which is a single feature - image: Mat(type: CV_8UC1)
@@ -61,11 +61,11 @@ class CGraphExt {
 		* > See concrete class implementation for more details
         * @param weight The weighting parameter
         */
-    DllExport virtual void addDefaultEdgesModel( const vec_mat_t& featureVectors, float val, float weight = 1.0f ) = 0;
+    virtual void addDefaultEdgesModel( const vec_mat_t& featureVectors, float val, float weight = 1.0f ) = 0;
     /**
         * @brief Returns the size of the graph
         * @return The size of the Graph
         */
-    DllExport virtual Size getSize() const = 0;
+    virtual Size getSize() const = 0;
 };
 }

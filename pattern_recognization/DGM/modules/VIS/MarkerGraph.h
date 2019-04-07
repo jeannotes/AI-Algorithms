@@ -29,11 +29,11 @@ namespace vis
 	* @param groupsColor The list of colors for graph edge groups.
 	* @return Image \b size x \b size pixels with visualized graph.
 	*/
-DllExport Mat drawGraph( int size,
-                         IGraphPairwise& graph,
-                         std::function< Point2f( size_t ) > posFunc,
-                         std::function< cv::Scalar( size_t ) > colorFunc = nullptr,
-                         const vec_scalar_t& groupsColor                 = vec_scalar_t() );
+Mat drawGraph( int size,
+               IGraphPairwise& graph,
+               std::function< Point2f( size_t ) > posFunc,
+               std::function< cv::Scalar( size_t ) > colorFunc = nullptr,
+               const vec_scalar_t& groupsColor                 = vec_scalar_t() );
 
 #ifdef USE_OPENGL
 /**
@@ -59,11 +59,11 @@ DllExport Mat drawGraph( int size,
 	* @param colorFunc The color function: a mapper, that defines color (\b CV_RGB(r, g, b)) for every graph node.
 	* @param groupsColor The list of colors for graph edge groups.                                 
 	*/
-DllExport void showGraph3D( int size,
-                            IGraphPairwise& graph,
-                            std::function< Point3f( size_t ) > posFunc,
-                            std::function< cv::Scalar( size_t ) > colorFunc = nullptr,
-                            const vec_scalar_t& groupsColor                 = vec_scalar_t() );
+void showGraph3D( int size,
+                  IGraphPairwise& graph,
+                  std::function< Point3f( size_t ) > posFunc,
+                  std::function< cv::Scalar( size_t ) > colorFunc = nullptr,
+                  const vec_scalar_t& groupsColor                 = vec_scalar_t() );
 #endif
 }
 }

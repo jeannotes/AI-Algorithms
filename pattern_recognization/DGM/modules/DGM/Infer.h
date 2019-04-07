@@ -22,10 +22,10 @@ class CInfer {
 		* @brief Constructor
 		* @param graph The graph
 		*/
-    DllExport CInfer( CGraph& graph )
+    CInfer( CGraph& graph )
         : m_graph( graph ) {}
-    CInfer( const CInfer& )     = delete;
-    DllExport virtual ~CInfer() = default;
+    CInfer( const CInfer& ) = delete;
+    virtual ~CInfer()       = default;
     const CInfer& operator=( const CInfer& ) = delete;
 
     /**
@@ -36,7 +36,7 @@ class CInfer {
 		* @note This function must not to be linear, \a i.e. \f$ infer(\alpha\times N)\not\equiv\alpha\times infer(N) \f$
 		* @note This function substitutes the graph nodes' potentials with estimated marginal potentials
 		*/
-    DllExport virtual void infer( unsigned int nIt = 1 ) = 0;
+    virtual void infer( unsigned int nIt = 1 ) = 0;
     /**
 		* @brief Approximate decoding
 		* @details This function calls first inference @ref infer() and then, using resulting marginal probabilities, estimates the most
@@ -58,20 +58,20 @@ class CInfer {
 		*	inferer->decode() == decoder->decode();		// This statement is not always true!
 		* @endcode
 		*/
-    DllExport vec_byte_t decode( unsigned int nIt = 0, Mat& lossMatrix = EmptyMat );
+    vec_byte_t decode( unsigned int nIt = 0, Mat& lossMatrix = EmptyMat );
     /**
 		* @brief Returns the confidence of the perdiction
 		* @details This function calculates the confidence values for the predicted states (classes) in the graph via CInfer::decode().
 		* The confidence values lie in range [0; 1].
 		* @return The confidence values for each node of graph.
 		*/
-    DllExport vec_float_t getConfidence( void ) const;
+    vec_float_t getConfidence( void ) const;
     /**
 		* @brief Returns the potnetials for the selected state (class)
 		* @param state The state (class) of interest
 		* @return The potential values for each node of the graph.
 		*/
-    DllExport vec_float_t getPotentials( byte state ) const;
+    vec_float_t getPotentials( byte state ) const;
 
   protected:
     /**

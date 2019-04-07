@@ -53,7 +53,7 @@ class CTrainNodeCvANN : public CTrainNode {
 		* @param nFeatures Number of features
 		* @param params ANN parameters (Ref. @ref TrainNodeCvANNParams)
 		*/
-    DllExport CTrainNodeCvANN( byte nStates, word nFeatures, TrainNodeCvANNParams params = TRAIN_NODE_CV_ANN_PARAMS_DEFAULT );
+    CTrainNodeCvANN( byte nStates, word nFeatures, TrainNodeCvANNParams params = TRAIN_NODE_CV_ANN_PARAMS_DEFAULT );
     /**
 		* @brief Constructor
 		* @param nStates Number of states (classes)
@@ -62,21 +62,21 @@ class CTrainNodeCvANN : public CTrainNode {
 		* > Default value \b 0 means using all the samples.<br>
 		* > If another value is specified, the class for training will use \b maxSamples random samples from the whole amount of samples, added via addFeatureVec() function
 		*/
-    DllExport CTrainNodeCvANN( byte nStates, word nFeatures, size_t maxSamples );
-    DllExport virtual ~CTrainNodeCvANN( void );
+    CTrainNodeCvANN( byte nStates, word nFeatures, size_t maxSamples );
+    virtual ~CTrainNodeCvANN( void );
 
-    DllExport void reset( void );
-    DllExport void save( const std::string& path, const std::string& name = std::string(), short idx = -1 ) const;
-    DllExport void load( const std::string& path, const std::string& name = std::string(), short idx = -1 );
+    void reset( void );
+    void save( const std::string& path, const std::string& name = std::string(), short idx = -1 ) const;
+    void load( const std::string& path, const std::string& name = std::string(), short idx = -1 );
 
-    DllExport void addFeatureVec( const Mat& featureVector, byte gt );
+    void addFeatureVec( const Mat& featureVector, byte gt );
 
-    DllExport void train( bool doClean = false );
+    void train( bool doClean = false );
 
   protected:
-    DllExport void saveFile( FILE* pFile ) const {}
-    DllExport void loadFile( FILE* pFile ) {}
-    DllExport void calculateNodePotentials( const Mat& featureVector, Mat& potential, Mat& mask ) const;
+    void saveFile( FILE* pFile ) const {}
+    void loadFile( FILE* pFile ) {}
+    void calculateNodePotentials( const Mat& featureVector, Mat& potential, Mat& mask ) const;
 
   private:
     void init( TrainNodeCvANNParams params );   // This function is called by both constructors

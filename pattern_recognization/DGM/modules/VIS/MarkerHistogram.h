@@ -25,7 +25,7 @@ class CMarkerHistogram : public CMarker {
 		* @param vFeatureNames Optional list of feature names. 
 		* For optimal performance, each feature name should have maximal 17 symbols.
 		*/
-    DllExport CMarkerHistogram( const CTrainNode& nodeTrainer, default_pallete palette = DEF_PALETTE_12, vec_string_t vFeatureNames = vec_string_t() )
+    CMarkerHistogram( const CTrainNode& nodeTrainer, default_pallete palette = DEF_PALETTE_12, vec_string_t vFeatureNames = vec_string_t() )
         : CMarker( palette )
         , m_nodeTrainer( nodeTrainer )
         , m_vFeatureNames( vFeatureNames ) {}
@@ -37,23 +37,23 @@ class CMarkerHistogram : public CMarker {
 		* @param vFeatureNames Optional list of feature names.
 		* For optimal performance, each feature name should have maximal 17 symbols.
 		*/
-    DllExport CMarkerHistogram( const CTrainNode& nodeTrainer, const vec_nColor_t& vPalette, vec_string_t vFeatureNames = vec_string_t() )
+    CMarkerHistogram( const CTrainNode& nodeTrainer, const vec_nColor_t& vPalette, vec_string_t vFeatureNames = vec_string_t() )
         : CMarker( vPalette )
         , m_nodeTrainer( nodeTrainer )
         , m_vFeatureNames( vFeatureNames ) {}
-    DllExport virtual ~CMarkerHistogram( void ) = default;
+    virtual ~CMarkerHistogram( void ) = default;
 
     /**
 		* @brief Draws a figure with the visualization of feature densitiy distributions.
 		* @return Figure with visualized histograms of the feature distributions.
 		*/
-    DllExport Mat drawHistogram( void ) const { return drawHistogram( CV_RGB( 0, 0, 0 ) ); }
+    Mat drawHistogram( void ) const { return drawHistogram( CV_RGB( 0, 0, 0 ) ); }
     /**
 		* @brief Draws a figure with the visualization of 2-dimensional node potentials histogram.
 		* @note Used for test purposes. Capable to visualize only 2-dimensional feature space.
 		* @return Figure with visualized histogram.
 		*/
-    DllExport Mat drawHistogram2D( void ) const { return drawHistogram2D( CV_RGB( 0, 0, 0 ) ); }
+    Mat drawHistogram2D( void ) const { return drawHistogram2D( CV_RGB( 0, 0, 0 ) ); }
     /**
 		* @brief Draws a figure with the visualization of 2-dimensional classification map.
 		* @details This function calls the underlying node trainer to classify the area of 256 x 256 pixels,
@@ -64,17 +64,17 @@ class CMarkerHistogram : public CMarker {
 		* @param Z The value of partition function for calling the CTrainNode::getNodePotentials() function.
 		* @return Figure with visualized classification map.
 		*/
-    DllExport Mat drawClassificationMap2D( float Z ) const;
+    Mat drawClassificationMap2D( float Z ) const;
     /**
 		* @brief Visualizes the feature densitiy distributions in a separate window with user interaction.
 		* @details This function creates an OpenCV window with the visualized histograms.
 		* Click on the color box for specific state (class) visualuzation.
 		*/
-    DllExport void showHistogram( void );
+    void showHistogram( void );
     /**
 		* @brief Closes the histogram window
 		*/
-    DllExport void close( void ) const;
+    void close( void ) const;
 
   private:
     /**
@@ -84,14 +84,14 @@ class CMarkerHistogram : public CMarker {
 		* @param color Color of a pixel from the resulting histogram. This optional parameter is used for active user interaction.
 		* @return Figure with visualized histograms of the feature distributions.
 		*/
-    DllExport Mat drawHistogram( Scalar color ) const;
+    Mat drawHistogram( Scalar color ) const;
     /**
 		* @brief Draws the figure with the visualization of 2-dimensional node potentials histogram.
 		* @note Used for test purposes. Capable to visualize only 2-dimensional feature space.
 		* @param color Color of a pixel from the resulting histogram. This optional parameter is used for active user interaction.
 		* @return Figure with visualized classification map.
 		*/
-    DllExport Mat drawHistogram2D( Scalar color ) const;
+    Mat drawHistogram2D( Scalar color ) const;
     /**
 		* @brief Retrieves a chosen by an user state, from the color.
 		* @param color Color of a pixel from the histogram figure. 

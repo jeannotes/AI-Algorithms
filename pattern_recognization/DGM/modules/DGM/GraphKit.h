@@ -26,10 +26,10 @@ class CGraphExt;
 	*/
 class CGraphKit {
   public:
-    DllExport CGraphKit()                   = default;
-    DllExport CGraphKit( const CGraphKit& ) = delete;
-    DllExport virtual ~CGraphKit()          = default;
-    DllExport const CGraphKit& operator=( const CGraphKit& ) = delete;
+    CGraphKit()                   = default;
+    CGraphKit( const CGraphKit& ) = delete;
+    virtual ~CGraphKit()          = default;
+    const CGraphKit& operator=( const CGraphKit& ) = delete;
 
     /**
 		* @brief Factory method returning graph kit object
@@ -38,21 +38,21 @@ class CGraphKit {
 		* @param nStates The number of States (classes)
 		* @return Tne pointer to the concrete implementation of the graph kit class
 		*/
-    DllExport static std::shared_ptr< CGraphKit > create( GraphType graphType, byte nStates );
+    static std::shared_ptr< CGraphKit > create( GraphType graphType, byte nStates );
     /**
 		* @brief Returns the graph object 
 		* @return The reference to the graph object
 		*/
-    DllExport virtual CGraph& getGraph() = 0;
+    virtual CGraph& getGraph() = 0;
     /**
 		* @brief Returns the inference / decoding object
 		* @return The reference to the inference / decoding object
 		*/
-    DllExport virtual CInfer& getInfer() = 0;
+    virtual CInfer& getInfer() = 0;
     /**
 		* @brief Returns the graph extension object
 		* @return The reference to the graph extension object
 		*/
-    DllExport virtual CGraphExt& getGraphExt() = 0;
+    virtual CGraphExt& getGraphExt() = 0;
 };
 }

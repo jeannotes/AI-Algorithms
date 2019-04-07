@@ -19,10 +19,10 @@ class CPrior : public virtual CBaseRandomModel {
 		* @param nStates Number of states (classes).
 		* @param type Type of the random model (Ref. @ref RandomModelType)
 		*/
-    DllExport CPrior( byte nStates, RandomModelType type );
-    DllExport ~CPrior( void );
+    CPrior( byte nStates, RandomModelType type );
+    ~CPrior( void );
 
-    DllExport void reset( void );
+    void reset( void );
 
     /**
 		* @brief Returns the prior probabilies.
@@ -31,18 +31,18 @@ class CPrior : public virtual CBaseRandomModel {
 		* @param weight The weighting parameter
 		* @returns 1D (nStates) for node, 2D (nStates x nStates) for edge or 3D (nStates x nStates x nStates) for triplet Mat of type CV_32FC1 with prior probabilies.
 		*/
-    DllExport Mat getPrior( float weight = 1.0f ) const;
+    Mat getPrior( float weight = 1.0f ) const;
 
   protected:
-    DllExport virtual void saveFile( FILE* pFile ) const;
-    DllExport virtual void loadFile( FILE* pFile );
+    virtual void saveFile( FILE* pFile ) const;
+    virtual void loadFile( FILE* pFile );
     /**
 		* @brief Calculates the prior probabilies.
 		* @details This function returns the normalized class co-occurance histogram, which ought to be build during the training phase with help of the "addGroundTruth()" functionality,
 		* implemented in derived classes. 
 		* @returns 1D (nStates) for node, 2D (nStates x nStates) for edge or 3D (nStates x nStates x nStates) for triplet Mat of type CV_32FC1 with prior probabilies.		
 		*/
-    DllExport virtual Mat calculatePrior( void ) const = 0;
+    virtual Mat calculatePrior( void ) const = 0;
 
   protected:
     Mat m_histogramPrior;   ///< The class cooccurance histogram

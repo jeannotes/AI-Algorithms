@@ -34,7 +34,7 @@ void fillGraph( IGraphPairwise& graph ) {
     // Setting the edges potentials
     sqrt( edgePot, edgePot );
     // graph.setEdges( std::nullopt, edgePot );
-    graph.setEdges(std::experimental::fundamentals_v1::nullopt, edgePot );
+    graph.setEdges( std::experimental::fundamentals_v1::nullopt, edgePot );
 }
 
 // Constructor

@@ -29,11 +29,11 @@ class CCoordinate : public ILocalFeatureExtractor {
 		* @brief Constructor.
 		* @param img Input image.
 		*/
-    DllExport CCoordinate( const Mat& img )
+    CCoordinate( const Mat& img )
         : ILocalFeatureExtractor( img ) {}
-    DllExport virtual ~CCoordinate( void ) {}
+    virtual ~CCoordinate( void ) {}
 
-    DllExport virtual Mat get( void ) const { return get( m_img ); }
+    virtual Mat get( void ) const { return get( m_img ); }
 
     /**
 		* @brief Extracts a coordinate feature.
@@ -42,7 +42,7 @@ class CCoordinate : public ILocalFeatureExtractor {
 		* @param type Type of the coordinate feature (Ref. @ref coordinateType).
 		* @return The coordinate feature image of type \b CV_8UC1.
 		*/
-    DllExport static Mat get( const Mat& img, coordinateType type = COORDINATE_ORDINATE );
+    static Mat get( const Mat& img, coordinateType type = COORDINATE_ORDINATE );
 };
 }
 }

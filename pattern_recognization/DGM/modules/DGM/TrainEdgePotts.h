@@ -23,18 +23,18 @@ class CTrainEdgePotts : public CTrainEdge {
 		* @param nStates Number of states (classes)
 		* @param nFeatures Number of features
 		*/
-    DllExport CTrainEdgePotts( byte nStates, word nFeatures )
+    CTrainEdgePotts( byte nStates, word nFeatures )
         : CBaseRandomModel( nStates )
         , CTrainEdge( nStates, nFeatures ) {}
-    DllExport virtual ~CTrainEdgePotts( void ) {}
+    virtual ~CTrainEdgePotts( void ) {}
 
-    DllExport virtual void reset( void ) {}
+    virtual void reset( void ) {}
 
-    DllExport virtual void addFeatureVecs( const Mat& featureVector1, byte gt1, const Mat& featureVector2, byte gt2 ) {}
+    virtual void addFeatureVecs( const Mat& featureVector1, byte gt1, const Mat& featureVector2, byte gt2 ) {}
 
   protected:
-    DllExport virtual void saveFile( FILE* pFile ) const {}
-    DllExport virtual void loadFile( FILE* pFile ) {}
+    virtual void saveFile( FILE* pFile ) const {}
+    virtual void loadFile( FILE* pFile ) {}
     /**
 		* @brief Returns the data-independent edge potentials
 		* @details This function returns matrix with diagonal elements equal to parameter \f$\vec{\theta}\f$ provided through argument \b params; 
@@ -48,6 +48,6 @@ class CTrainEdgePotts : public CTrainEdge {
 		* or from \a nStates parameters, specifying smoothness strength for each state (class) individually.
 		* @return The edge potential matrix: Mat(size: nStates x nStates; type: CV_32FC1)
 		*/
-    DllExport virtual Mat calculateEdgePotentials( const Mat& featureVector1, const Mat& featureVector2, const vec_float_t& vParams ) const;
+    virtual Mat calculateEdgePotentials( const Mat& featureVector1, const Mat& featureVector2, const vec_float_t& vParams ) const;
 };
 }

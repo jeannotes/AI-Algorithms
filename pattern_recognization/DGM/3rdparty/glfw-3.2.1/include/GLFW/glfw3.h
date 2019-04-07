@@ -191,7 +191,7 @@ extern "C" {
  */
 #if defined(_WIN32) && defined(_GLFW_BUILD_DLL)
  /* We are building GLFW as a Win32 DLL */
- #define GLFWAPI __declspec(dllexport)
+ #define GLFWAPI __declspec(  )
 #elif defined(_WIN32) && defined(GLFW_DLL)
  /* We are calling GLFW as a Win32 DLL */
  #define GLFWAPI __declspec(dllimport)

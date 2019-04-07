@@ -21,11 +21,11 @@ class CMessagePassing : public CInfer {
 		* @brief Constructor
 		* @param graph The graph
 		*/
-    DllExport CMessagePassing( CGraphPairwise& graph )
+    CMessagePassing( CGraphPairwise& graph )
         : CInfer( graph ) {}
-    DllExport virtual ~CMessagePassing( void ) {}
+    virtual ~CMessagePassing( void ) {}
 
-    DllExport virtual void infer( unsigned int nIt = 1 );
+    virtual void infer( unsigned int nIt = 1 );
 
   protected:
     /**

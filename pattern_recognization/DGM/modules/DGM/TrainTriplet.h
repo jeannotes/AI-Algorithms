@@ -15,30 +15,30 @@ namespace DirectGraphicalModels
 	*/
 class CTrainTriplet : public ITrain, private CPriorTriplet {
   public:
-    DllExport CTrainTriplet( byte nStates, byte nFeatures )
+    CTrainTriplet( byte nStates, byte nFeatures )
         : CBaseRandomModel( nStates )
         , ITrain( nStates, nFeatures )
         , CPriorTriplet( nStates ) {}
-    DllExport ~CTrainTriplet( void ) {}
+    ~CTrainTriplet( void ) {}
 
-    DllExport void reset( void ) { CPriorTriplet::reset(); }
+    void reset( void ) { CPriorTriplet::reset(); }
 
-    DllExport void train( bool doClean = false ) {}
+    void train( bool doClean = false ) {}
 
-    DllExport Mat getTripletPotentials( const Mat& featureVector1, const Mat& featureVector2, const Mat& featureVector3 ) const;
+    Mat getTripletPotentials( const Mat& featureVector1, const Mat& featureVector2, const Mat& featureVector3 ) const;
 
   protected:
     /**
 		* @todo Implement save() function
 		* @warning This function is not implemented
 		*/
-    DllExport void saveFile( FILE* pFile ) const { DGM_WARNING( "Save function is not implemented yet!" ); }
+    void saveFile( FILE* pFile ) const { DGM_WARNING( "Save function is not implemented yet!" ); }
     /**
 		* @todo Implement load() function
 		* @warning This function is not implemented
 		*/
-    DllExport void loadFile( FILE* pFile ) { DGM_WARNING( "Load function is not implemented yet!" ); }
+    void loadFile( FILE* pFile ) { DGM_WARNING( "Load function is not implemented yet!" ); }
 
-    DllExport void calculateTripletPotentials( const Mat& featureVector1, const Mat& featureVector2, const Mat& featureVector3 ) const;
+    void calculateTripletPotentials( const Mat& featureVector1, const Mat& featureVector2, const Mat& featureVector3 ) const;
 };
 }

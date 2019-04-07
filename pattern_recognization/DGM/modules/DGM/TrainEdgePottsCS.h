@@ -39,11 +39,11 @@ class CTrainEdgePottsCS : public CTrainEdgePotts {
 		* @param nFeatures Number of features	
 		* @param penApproach Flag specifying the penalization approach for the edge potential matrix (Ref. @ref ePotPenalApproach)
 		*/
-    DllExport CTrainEdgePottsCS( byte nStates, word nFeatures, ePotPenalApproach penApproach = eP_APP_PEN_EXP )
+    CTrainEdgePottsCS( byte nStates, word nFeatures, ePotPenalApproach penApproach = eP_APP_PEN_EXP )
         : CBaseRandomModel( nStates )
         , CTrainEdgePotts( nStates, nFeatures )
         , m_penApproach( penApproach ) {}
-    DllExport virtual ~CTrainEdgePottsCS( void ) {}
+    virtual ~CTrainEdgePottsCS( void ) {}
 
   protected:
     /**
@@ -61,7 +61,7 @@ class CTrainEdgePottsCS : public CTrainEdgePotts {
 		* @return The edge potential matrix: Mat(size: nStates x nStates; type: CV_32FC1)
 		* > If \b featureVector1 or \b featureVector2 is empty, the function returns the test-data-independent Potts potential: @ref CTrainEdgePotts::calculateEdgePotentials()
 		*/
-    DllExport virtual Mat calculateEdgePotentials( const Mat& featureVector1, const Mat& featureVector2, const vec_float_t& vParams ) const;
+    virtual Mat calculateEdgePotentials( const Mat& featureVector1, const Mat& featureVector2, const vec_float_t& vParams ) const;
 
   private:
     ePotPenalApproach m_penApproach;

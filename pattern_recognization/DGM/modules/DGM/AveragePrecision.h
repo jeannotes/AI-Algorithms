@@ -34,5 +34,5 @@ namespace DirectGraphicalModels
 	* @param state The state (class) for which the Average Precision is calculated
 	* @returns The Average Precision value
 	*/
-DllExport float getAveragePrecision( const vec_byte_t& predictions, const vec_float_t& potentials, const vec_byte_t& gt, byte state );
+float getAveragePrecision( const vec_byte_t& predictions, const vec_float_t& potentials, const vec_byte_t& gt, byte state );
 }

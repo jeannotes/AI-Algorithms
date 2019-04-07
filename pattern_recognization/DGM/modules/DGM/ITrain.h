@@ -19,10 +19,10 @@ class ITrain : public virtual CBaseRandomModel {
 		* @param nStates Number of states (classes)
 		* @param nFeatures Number of features
 		*/
-    DllExport ITrain( byte nStates, word nFeatures )
+    ITrain( byte nStates, word nFeatures )
         : CBaseRandomModel( nStates )
         , m_nFeatures( nFeatures ) {}
-    DllExport virtual ~ITrain( void ) = default;
+    virtual ~ITrain( void ) = default;
 
     /**
 		* @brief Random model training
@@ -30,12 +30,12 @@ class ITrain : public virtual CBaseRandomModel {
 		* @note This function \b must be called inbetween the training and classification phases
 		* @param doClean Flag indicating if the memory, keeping the trining data should be released after training
 		*/
-    DllExport virtual void train( bool doClean = false ) = 0;
+    virtual void train( bool doClean = false ) = 0;
     /**
 		* @brief Returns number of features
 		* @return Number of features
 		*/
-    DllExport word getNumFeatures( void ) const { return m_nFeatures; }
+    word getNumFeatures( void ) const { return m_nFeatures; }
 
   private:
     word m_nFeatures;   ///< The number of features (length of the feature vector)

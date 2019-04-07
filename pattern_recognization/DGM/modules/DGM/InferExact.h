@@ -20,10 +20,10 @@ class CInferExact : public CInfer, private CDecodeExact {
 		* @brief Constructor
 		* @param graph The graph
 		*/
-    DllExport CInferExact( IGraphPairwise& graph )
+    CInferExact( IGraphPairwise& graph )
         : CInfer( graph )
         , CDecodeExact( graph ) {}
-    DllExport virtual ~CInferExact( void ) = default;
+    virtual ~CInferExact( void ) = default;
 
     /**
 		* @brief Exact inference
@@ -39,7 +39,7 @@ class CInferExact : public CInfer, private CDecodeExact {
 		* @param nIt is not used 
 		* @note This function changes the graph nodes' potentials
 		*/
-    DllExport virtual void infer( unsigned int nIt = 0 );
+    virtual void infer( unsigned int nIt = 0 );
 
     using CInfer::decode;
 };

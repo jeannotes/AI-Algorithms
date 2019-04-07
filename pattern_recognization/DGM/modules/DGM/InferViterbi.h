@@ -18,8 +18,8 @@ class CInferViterbi : public CInferLBP {
 		* @brief Constructor
 		* @param graph The graph
 		*/
-    DllExport CInferViterbi( CGraphPairwise& graph )
+    CInferViterbi( CGraphPairwise& graph )
         : CInferLBP( graph ) { setMaxSum( true ); }
-    DllExport virtual ~CInferViterbi( void ){};
+    virtual ~CInferViterbi( void ){};
 };
 }

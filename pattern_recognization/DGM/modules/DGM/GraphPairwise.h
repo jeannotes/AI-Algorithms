@@ -84,38 +84,38 @@ class CGraphPairwise : public IGraphPairwise {
 		* @brief Constructor
 		* @param nStates the number of States (classes)
 		*/
-    DllExport CGraphPairwise( byte nStates )
+    CGraphPairwise( byte nStates )
         : IGraphPairwise( nStates )
         , m_IDx( 0 ) {}
-    DllExport virtual ~CGraphPairwise( void ) = default;
+    virtual ~CGraphPairwise( void ) = default;
 
     // CGraph
-    DllExport void reset( void ) override;
-    DllExport size_t addNode( const Mat& pot = EmptyMat ) override;
-    DllExport void setNode( size_t node, const Mat& pot ) override;
-    DllExport void getNode( size_t node, Mat& pot ) const override;
-    DllExport void getChildNodes( size_t node, vec_size_t& vNodes ) const override;
-    DllExport void getParentNodes( size_t node, vec_size_t& vNodes ) const override;
-    DllExport size_t getNumNodes( void ) const override { return m_vNodes.size(); }
-    DllExport size_t getNumEdges( void ) const override { return m_vEdges.size(); }
+    void reset( void ) override;
+    size_t addNode( const Mat& pot = EmptyMat ) override;
+    void setNode( size_t node, const Mat& pot ) override;
+    void getNode( size_t node, Mat& pot ) const override;
+    void getChildNodes( size_t node, vec_size_t& vNodes ) const override;
+    void getParentNodes( size_t node, vec_size_t& vNodes ) const override;
+    size_t getNumNodes( void ) const override { return m_vNodes.size(); }
+    size_t getNumEdges( void ) const override { return m_vEdges.size(); }
 
-    //     DllExport virtual void      marginalize(const vec_size_t &nodes);
+    //        virtual void      marginalize(const vec_size_t &nodes);
 
-    DllExport void addEdge( size_t srcNode, size_t dstNode, byte group, const Mat& pot ) override;
-    DllExport void setEdge( size_t srcNode, size_t dstNode, const Mat& pot ) override;
-    DllExport void setEdges( std::experimental::optional< byte > group, const Mat& pot ) override;
-    DllExport void getEdge( size_t srcNode, size_t dstNode, Mat& pot ) const override;
-    DllExport void setEdgeGroup( size_t srcNode, size_t dstNode, byte group ) override;
-    DllExport byte getEdgeGroup( size_t srcNode, size_t dstNode ) const override;
-    DllExport void removeEdge( size_t srcNode, size_t dstNode ) override;
-    DllExport bool isEdgeExists( size_t srcNode, size_t dstNode ) const override;
+    void addEdge( size_t srcNode, size_t dstNode, byte group, const Mat& pot ) override;
+    void setEdge( size_t srcNode, size_t dstNode, const Mat& pot ) override;
+    void setEdges( std::experimental::optional< byte > group, const Mat& pot ) override;
+    void getEdge( size_t srcNode, size_t dstNode, Mat& pot ) const override;
+    void setEdgeGroup( size_t srcNode, size_t dstNode, byte group ) override;
+    byte getEdgeGroup( size_t srcNode, size_t dstNode ) const override;
+    void removeEdge( size_t srcNode, size_t dstNode ) override;
+    bool isEdgeExists( size_t srcNode, size_t dstNode ) const override;
 
   private:
     /**
 		* @brief Removes the specified edge
 		* @param edge index of the edge
 		*/
-    DllExport void removeEdge( size_t edge );
+    void removeEdge( size_t edge );
 
   private:
     size_t m_IDx;          // = 0;	Primary Key

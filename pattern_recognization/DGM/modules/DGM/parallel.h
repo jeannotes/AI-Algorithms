@@ -109,7 +109,7 @@ inline void ppl_gemm( const Mat& A, const Mat& B, float alpha, const Mat& C, flo
 	* @param beta weight of src3.
 	* @param res output matrix; it has the proper size and the same type as input matrices.
 	*/
-DllExport inline void gemm( const Mat& A, const Mat& B, float alpha, const Mat& C, float beta, Mat& res ) {
+inline void gemm( const Mat& A, const Mat& B, float alpha, const Mat& C, float beta, Mat& res ) {
 #ifdef ENABLE_AMP
     if ( C.empty() )
         impl::amp_gemm( A, B, alpha, res );
@@ -219,7 +219,7 @@ inline void parallel_quick_sort( Mat& m, int x, int begin, int end, int threshol
 	* @param x The dimension along which the matrix is sorted.
 	*/
 template < typename T >
-DllExport inline void sortRows( Mat& m, int x ) {
+inline void sortRows( Mat& m, int x ) {
     DGM_ASSERT( x < m.cols );
 #ifdef ENABLE_PPL
     const int nCores = MAX( 1, concurrency::CurrentScheduler::Get()->GetNumberOfVirtualProcessors() );
@@ -264,7 +264,7 @@ inline void deepSort( Mat& m, int depth, int begin, int end ) {
 	* @param[in, out] m The input/output data, which rows should be sorted.
 	*/
 template < typename T >
-DllExport inline void sortRows( Mat& m ) {
+inline void sortRows( Mat& m ) {
     deepSort< T >( m, 0, 0, m.rows - 1 );
 }
 
@@ -277,7 +277,7 @@ DllExport inline void sortRows( Mat& m ) {
 	* @param[in,out] m The input/output data, which rows should be shffled.
 	* @todo Eliminate the bias, caused by parallel processing.
 	*/
-DllExport inline void shuffleRows( Mat& m ) {
+inline void shuffleRows( Mat& m ) {
 #ifdef ENABLE_PPL
     // int nCores = MAX(1, std::thread::hardware_concurrency());
     int nCores = MAX( 1, concurrency::CurrentScheduler::Get()->GetNumberOfVirtualProcessors() );

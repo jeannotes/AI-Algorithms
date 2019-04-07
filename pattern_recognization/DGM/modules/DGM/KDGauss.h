@@ -31,22 +31,22 @@ class CKDGauss {
 		* @brief Constructor
 		* @param k Dimensions
 		*/
-    DllExport CKDGauss( dword k );
+    CKDGauss( dword k );
     /**
 		* @brief Constructor
 		* @details The dimension of the Gauss function will be derived from the dimension \a k of the argument \f$\mu\f$
 		* @param mu The mean vector \f$\mu\f$ : Mat(size: k x 1; type: CV_XXC1)
 		*/
-    DllExport CKDGauss( const Mat& mu );
+    CKDGauss( const Mat& mu );
     /**
 		* @brief Copy constructor
 		*/
-    DllExport CKDGauss( const CKDGauss& rhs );
+    CKDGauss( const CKDGauss& rhs );
 
     /**
 		* @brief Copy operator
 		*/
-    DllExport CKDGauss& operator=( const CKDGauss& rhs );
+    CKDGauss& operator=( const CKDGauss& rhs );
     /**
 		* @brief Compound merge operator
 		* @details This operator merges two Gaussian distributions together:
@@ -60,7 +60,7 @@ class CKDGauss {
 		* @endcode
 		* In this case \f$n_2 = 1\f$ and \f$\Sigma_2 = 0\f$.
 		*/
-    DllExport CKDGauss& operator+=( const CKDGauss& rhs );
+    CKDGauss& operator+=( const CKDGauss& rhs );
     /**
 		* @brief Compound merge operator
 		* @details This operator is equivalent to
@@ -70,19 +70,19 @@ class CKDGauss {
 		* while(point) estGaussian += point;   // estimated Gauss function is updated
 		* @endcode
 		*/
-    DllExport CKDGauss& operator+=( const Mat& point );
+    CKDGauss& operator+=( const Mat& point );
 
     /**
 		* @brief Clears class variables
 		* @details Allows to re-use the class
 		*/
-    DllExport void clear( void );
+    void clear( void );
     /**
 		* @brief Checks weather the Gaussian function is approximated
 		* @retval TRUE if the Gaussian had at least 1 point for approximation, or
 		* @retval FALSE otherwise
 		*/
-    DllExport bool empty( void ) const { return ( m_nPoints == 0 ); }
+    bool empty( void ) const { return ( m_nPoints == 0 ); }
 
     ///@{
     /// @name Accessors
@@ -90,32 +90,32 @@ class CKDGauss {
 		* @brief Sets the number of approximation points.
 		* @param nPoints the number of sample points, used for the approximation.
 		*/
-    DllExport void setNumPoints( long nPoints ) { m_nPoints = nPoints; }
+    void setNumPoints( long nPoints ) { m_nPoints = nPoints; }
     /**
 		* @brief Returns the number of approximation points.
 		* @return The number of sample points, used for the approximation.
 		*/
-    DllExport size_t getNumPoints( void ) const { return m_nPoints; }
+    size_t getNumPoints( void ) const { return m_nPoints; }
     /**
 		* @brief Sets \f$\mu\f$.
 		* @param mu the mean vector \f$\mu\f$ : Mat(size: k x 1; type: CV_64FC1)
 		*/
-    DllExport void setMu( Mat& mu );
+    void setMu( Mat& mu );
     /**
 		* @brief Returns \f$\mu\f$.
 		* @return the mean vector \f$\mu\f$: Mat(size: k x 1; type: CV_64FC1)
 		*/
-    DllExport Mat getMu( void ) const { return m_mu.clone(); }
+    Mat getMu( void ) const { return m_mu.clone(); }
     /**
 		* @brief Sets \f$\Sigma\f$.
 		* @param sigma the covariance matrix \f$\Sigma\f$: Diagonal Mat(size: k x k; type: CV_64FC1)
 		*/
-    DllExport void setSigma( Mat& sigma );
+    void setSigma( Mat& sigma );
     /**
 		* @brief Returns \f$\Sigma\f$.
 		* @return the covariance matrix \f$\Sigma\f$: Mat(size: k x k; type: CV_64FC1)
 		*/
-    DllExport Mat getSigma( void ) const { return m_sigma.clone(); }
+    Mat getSigma( void ) const { return m_sigma.clone(); }
     ///@}
 
     ///@{
@@ -136,12 +136,12 @@ class CKDGauss {
 		* \f$ \hat{\Sigma} = \frac{n\Sigma + (p-\hat{\mu})(p-\hat{\mu})^\top}{n + 1} \f$.
 		* For large \f$n\f$ this approximation is equevalent to the original update rool.
 		*/
-    DllExport void addPoint( const Mat& point, bool approximate = false );
+    void addPoint( const Mat& point, bool approximate = false );
     /**
 		* @brief Returns \f$\alpha\f$.
 		* @return The Gaussian coefficient \f$\alpha\f$.
 		*/
-    DllExport long double getAlpha( void ) const;
+    long double getAlpha( void ) const;
     /**
 		* @brief Returns unscaled value of the Gaussian function
 		* @details This function returns unscaled value of the Gaussian function, \a i.e. \f$ \exp\big( -\frac{1}{2}(x-\mu)^T\Sigma^{-1}(x-\mu)\big) \f$. In order to
@@ -163,13 +163,13 @@ class CKDGauss {
 		* @param aux3 Auxilary variable
 		* @return unscaled value of the Gaussian function
 		*/
-    DllExport double getValue( Mat& x, Mat& aux1 = EmptyMat, Mat& aux2 = EmptyMat, Mat& aux3 = EmptyMat ) const;
+    double getValue( Mat& x, Mat& aux1 = EmptyMat, Mat& aux2 = EmptyMat, Mat& aux3 = EmptyMat ) const;
     /**
 		* @brief Returns a random vector (sample) from multivariate normal distribution
 		* @details The implementation is based on the paper <a target=blank href="ftp://ftp.dca.fee.unicamp.br/pub/docs/vonzuben/ia013_2s09/material_de_apoio/gen_rand_multivar.pdf">Generating Random Vectors from the Multivariate Normal Distribution</a>
 		* @return n-dimensional point (sample): Mat(size: k x 1; type: CV_64FC1)
 		*/
-    DllExport Mat getSample( void ) const;
+    Mat getSample( void ) const;
     ///@}
 
     ///@{
@@ -180,14 +180,14 @@ class CKDGauss {
 		* @param x A k-dimensional point (sample): Mat(size: k x 1; type: CV_64FC1)
 		* @return The Euclidian distance: \f$D_E(x)\f$
 		*/
-    DllExport double getEuclidianDistance( const Mat& x ) const;
+    double getEuclidianDistance( const Mat& x ) const;
     /**
 		* @brief Returns the Mahalanobis distance between argument point \b x and the center of multivariate normal distribution \f$\mathcal{N}(\mu,\Sigma)\f$.
 		* @details The Mahalanobis distance is calculated by the formula: \f$D_M(\mathcal{N};x)=\sqrt{ (x-\mu)^\top\Sigma^{-1}(x-\mu) }\f$
 		* @param x n-dimensional point (sample): Mat(size: k x 1; type: CV_64FC1)
 		* @return the Mahalanobis distance: \f$D_M(x)\f$
 		*/
-    DllExport double getMahalanobisDistance( const Mat& x ) const;
+    double getMahalanobisDistance( const Mat& x ) const;
     /**
 		* @brief Returns the Kullback-Leiber divergence from the multivariate normal distribution \f$\mathcal{N}(\mu,\Sigma)\f$ to argument multivariate normal distribution \f$\mathcal{N}_x(\mu_x,\Sigma_x)\f$.
 		* @details The Kullback-Leiber divergence (or relative entropy) is calculated by the formula: \f$D_{KL}(\mathcal{N};\mathcal{N}_x)=\frac{1}{2}\Big( tr(\Sigma^{-1}_{x}\Sigma) +
@@ -198,7 +198,7 @@ class CKDGauss {
 		* @param x multivariate normal distribution \f$\mathcal{N}_x(\mu_x,\Sigma_x)\f$ of the dimension \a k.
 		* @return the Kullback-Leiber divergence: \f$D_{KL}(\mathcal{N}_x)\f$
 		*/
-    DllExport double getKullbackLeiberDivergence( const CKDGauss& x ) const;
+    double getKullbackLeiberDivergence( const CKDGauss& x ) const;
     ///@}
 
   private:

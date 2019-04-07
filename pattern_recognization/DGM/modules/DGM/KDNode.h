@@ -21,7 +21,7 @@ class CKDNode : public std::enable_shared_from_this< CKDNode > {
 		* @param key The node key (k-d point): Mat(size: 1 x k; type: CV_8UC1))
 		* @param value The node value
 		*/
-    DllExport CKDNode( Mat& key, byte value )
+    CKDNode( Mat& key, byte value )
         : CKDNode( key, value, lvalue_cast( std::make_pair( Mat(), Mat() ) ), 0, 0, nullptr, nullptr ) {}
     /**
 		* @brief Branch node constructor
@@ -33,26 +33,26 @@ class CKDNode : public std::enable_shared_from_this< CKDNode > {
 		* @param left The pointer to the root of the \a left sub-tree. 
 		* @param right The pointer to the root of the \a right sub-tree.
 		*/
-    DllExport CKDNode( pair_mat_t& boundingBox, byte splitVal, int splitDim, std::shared_ptr< CKDNode > left, std::shared_ptr< CKDNode > right )
+    CKDNode( pair_mat_t& boundingBox, byte splitVal, int splitDim, std::shared_ptr< CKDNode > left, std::shared_ptr< CKDNode > right )
         : CKDNode( EmptyMat, 0, boundingBox, splitVal, splitDim, left, right ) {}
     // Copy constructor
-    DllExport CKDNode( const CKDNode& ) = delete;
+    CKDNode( const CKDNode& ) = delete;
     // Destructor
-    DllExport ~CKDNode( void ){};
+    ~CKDNode( void ){};
     // Assignment operator
-    DllExport bool operator=( const CKDNode ) = delete;
+    bool operator=( const CKDNode ) = delete;
 
     /**
 		* @brief Saves the state of the node to the file
 		* @param pFile The pointer to the file, opened for writing
 		*/
-    DllExport void save( FILE* pFile ) const;
+    void save( FILE* pFile ) const;
     /**
 		* @brief Checks whether the node is either leaf or brach node
 		* @retval true if the node is a leaf-node
 		* @retval false if the node is a branch-node
 		*/
-    DllExport bool isLeaf( void ) const { return ( !m_pLeft && !m_pRight ); }
+    bool isLeaf( void ) const { return ( !m_pLeft && !m_pRight ); }
     /**
 		* @brief Auxiliary recursive method for finding the k-nearest (in terms of the Euclidian distance between the keys) \b nearestNeighbors nodes.
 		* @param[in] key The search key (k-d point): Mat(size: 1 x k; type: CV_8UC1))
@@ -61,47 +61,47 @@ class CKDNode : public std::enable_shared_from_this< CKDNode > {
 		* @param[in,out] searchRadius The radius of a k-d sphere, within which the nodes are searched
 		* @param[out] nearestNeighbors The resulting nearest nodes. The amount of nodes is <= \b maxNeighbors.
 		*/
-    DllExport void findNearestNeighbors( const Mat& key, size_t maxNeighbors, pair_mat_t& searchBox, float& searchRadius, std::vector< std::shared_ptr< const CKDNode > >& nearestNeighbors ) const;
+    void findNearestNeighbors( const Mat& key, size_t maxNeighbors, pair_mat_t& searchBox, float& searchRadius, std::vector< std::shared_ptr< const CKDNode > >& nearestNeighbors ) const;
     /**
 		* @brief Returns the key of the leaf-node (k-d point)
 		* @returns The key of the node: Mat(size: 1 x k; type: CV_8UC1)
 		*/
-    DllExport Mat getKey( void ) const { return m_key; }
+    Mat getKey( void ) const { return m_key; }
     /**
 		* @brief Returns the value of the leaf-node
 		* @retval The value of the node
 		*/
-    DllExport byte getValue( void ) const { return m_value; }
+    byte getValue( void ) const { return m_value; }
     /**
 		* @brief Returns the spatial bounding box, containing all the keys for the current branch.
 		* @returns The bounding box (pair<Mat, Mat>(minCoordinates, maxCoordinates))
 		*/
-    DllExport pair_mat_t getBoundingBox( void ) const { return isLeaf() ? std::make_pair( m_key, m_key ) : m_boundingBox; }
+    pair_mat_t getBoundingBox( void ) const { return isLeaf() ? std::make_pair( m_key, m_key ) : m_boundingBox; }
     /**
 		* @brief Returns the split value of the brach-node
 		* @details The split value is a threshold in which the split of the k-d space is performed.
 		* @returns The split value
 		*/
-    DllExport byte getSplitVal( void ) const { return m_splitVal; }
+    byte getSplitVal( void ) const { return m_splitVal; }
     /**
 		* @brief Returns the split dimension of the branch-node
 		* @details The split dimension is the dimension in which the split of the k-d space is performed. 
 		* @returns The split dimension: (a value from the interval [0; k))
 		*/
-    DllExport int getSplitDim( void ) const { return m_splitDim; }
+    int getSplitDim( void ) const { return m_splitDim; }
     /**
 		* @brief  Returns the pointer to the \a left child
 		* @returns The pointer to the root-node of the \a left sub-tree
 		*/
-    DllExport std::shared_ptr< CKDNode > Left( void ) const { return m_pLeft; }
+    std::shared_ptr< CKDNode > Left( void ) const { return m_pLeft; }
     /**
 		* @brief Returns the pointer to the \a right child
 		* @returns The pointer to the root-node of the \a right sub-tree
 		*/
-    DllExport std::shared_ptr< CKDNode > Right( void ) const { return m_pRight; }
+    std::shared_ptr< CKDNode > Right( void ) const { return m_pRight; }
 
   private:
-    DllExport CKDNode( Mat& key, byte value, pair_mat_t& boundingBox, byte splitVal, int splitDim, std::shared_ptr< CKDNode > left, std::shared_ptr< CKDNode > right );
+    CKDNode( Mat& key, byte value, pair_mat_t& boundingBox, byte splitVal, int splitDim, std::shared_ptr< CKDNode > left, std::shared_ptr< CKDNode > right );
 
   private:
     Mat m_key;

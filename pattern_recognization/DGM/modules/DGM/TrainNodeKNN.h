@@ -46,7 +46,7 @@ class CTrainNodeKNN : public CTrainNode {
 		* @param nFeatures Number of features
 		* @param params k-Nearest Neighbors parameters (Ref. @ref TrainNodeKNNParams)
 		*/
-    DllExport CTrainNodeKNN( byte nStates, word nFeatures, TrainNodeKNNParams params = TRAIN_NODE_KNN_PARAMS_DEFAULT );
+    CTrainNodeKNN( byte nStates, word nFeatures, TrainNodeKNNParams params = TRAIN_NODE_KNN_PARAMS_DEFAULT );
     /**
 		* @brief Constructor
 		* @param nStates Number of states (classes)
@@ -55,20 +55,20 @@ class CTrainNodeKNN : public CTrainNode {
 		* > Default value \b 0 means using all the samples.<br>
 		* > If another value is specified, the class for training will use \b maxSamples random samples from the whole amount of samples, added via addFeatureVec() function
 		*/
-    DllExport CTrainNodeKNN( byte nStates, word nFeatures, size_t maxSamples );
-    DllExport ~CTrainNodeKNN( void );
+    CTrainNodeKNN( byte nStates, word nFeatures, size_t maxSamples );
+    ~CTrainNodeKNN( void );
 
-    DllExport void reset( void );
-    DllExport void save( const std::string& path, const std::string& name = std::string(), short idx = -1 ) const;
-    DllExport void load( const std::string& path, const std::string& name = std::string(), short idx = -1 );
+    void reset( void );
+    void save( const std::string& path, const std::string& name = std::string(), short idx = -1 ) const;
+    void load( const std::string& path, const std::string& name = std::string(), short idx = -1 );
 
-    DllExport void addFeatureVec( const Mat& featureVector, byte gt );
-    DllExport void train( bool doClean = false );
+    void addFeatureVec( const Mat& featureVector, byte gt );
+    void train( bool doClean = false );
 
   protected:
-    DllExport void saveFile( FILE* pFile ) const {}
-    DllExport void loadFile( FILE* pFile ) {}
-    DllExport void calculateNodePotentials( const Mat& featureVector, Mat& potential, Mat& mask ) const;
+    void saveFile( FILE* pFile ) const {}
+    void loadFile( FILE* pFile ) {}
+    void calculateNodePotentials( const Mat& featureVector, Mat& potential, Mat& mask ) const;
 
   protected:
     CKDTree* m_pTree;                     ///< k-D Tree

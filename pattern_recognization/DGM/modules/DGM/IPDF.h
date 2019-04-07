@@ -17,38 +17,38 @@ class IPDF : public CBaseRandomModel {
     friend class CTrainNodeBayes;
 
   public:
-    DllExport IPDF( void )
+    IPDF( void )
         : CBaseRandomModel( 0 )
         , m_nPoints( 0 ) {}
-    DllExport virtual ~IPDF( void ) {}
+    virtual ~IPDF( void ) {}
 
     /**
 		* @brief Adds a sample point for PDF estimation.
 		* @param point The sample point.
 		*/
-    DllExport virtual void addPoint( Scalar point ) = 0;
+    virtual void addPoint( Scalar point ) = 0;
     /**
 		* @brief Returns the probability density value for the argument \b point.
 		* @param point The sample point.
 		* @returns The corresponding probaility density value.
 		*/
-    DllExport virtual double getDensity( Scalar point ) = 0;
+    virtual double getDensity( Scalar point ) = 0;
     /**
 		* @brief Returns the lower argument boundary of the PDF
 		* @returns The lower bound
 		*/
-    DllExport virtual Scalar min( void ) const = 0;
+    virtual Scalar min( void ) const = 0;
     /**
 		* @brief Returns the upper argument boundary of the PDF
 		* @returns The upper bound
 		*/
-    DllExport virtual Scalar max( void ) const = 0;
+    virtual Scalar max( void ) const = 0;
     /**
 		* @brief Checks weather the PDF was estimated.
 		* @retval true if at least one sample was added with the addPoint() function.
 		* @retval false otherwise
 		*/
-    DllExport bool isEstimated( void ) { return m_nPoints != 0; }
+    bool isEstimated( void ) { return m_nPoints != 0; }
 
   protected:
     long m_nPoints;   ///< The number of samples, added with the addPoint() function
