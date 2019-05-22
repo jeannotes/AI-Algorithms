@@ -8,6 +8,7 @@ from __future__ import print_function
 import os
 import sys
 import numpy as np
+sys.path.remove('/opt/ros/kinetic/lib/python2.7/dist-packages')
 import cv2
 import psutil
 from PIL import Image
@@ -117,10 +118,9 @@ class kitti_object_video(object):
 
 def viz_kitti_video():
     video_path = os.path.join(ROOT_DIR, 'dataset/2011_09_26/')
-    dataset = kitti_object_video(\
-        os.path.join(video_path, '2011_09_26_drive_0023_sync/image_02/data'),
-        os.path.join(video_path, '2011_09_26_drive_0023_sync/velodyne_points/data'),
-        video_path)
+    dataset = kitti_object_video('/home/jean/Downloads/2011_09_26/2011_09_26_drive_0005_sync/image_02/data',
+        '/home/jean/Downloads/2011_09_26/2011_09_26_drive_0005_sync/velodyne_points/data',
+        '/home/jean/Downloads/2011_09_26/2011_09_26_drive_0005_sync/2011_09_26')
     print(len(dataset))
     for i in range(len(dataset)):
         img = dataset.get_image(0)
@@ -151,11 +151,11 @@ def show_image_with_boxes(img, objects, calib, show3d=True):
         box3d_pts_32d = calib.project_velo_to_image(box3d_pts_3d_velo)
 
         img3 = utils.draw_projected_box3d(img3, box3d_pts_32d)
-    #print("img1:", img1.shape)
+    print("img1:", img1.shape)
     Image.fromarray(img1).show()
     print("img3:",img3.shape)
     Image.fromarray(img3).show()
-    show3d=False
+    # show3d=False
     if show3d:
         print("img2:",img2.shape)
         Image.fromarray(img2).show()
@@ -174,16 +174,17 @@ def get_lidar_in_image_fov(pc_velo, calib, xmin, ymin, xmax, ymax,
         return imgfov_pc_velo
 
 def show_lidar_with_boxes(pc_velo, objects, calib, img_fov=False, img_width=None,
-        img_height=None, objects_pred=None):
+        img_height=None, objects_pred=None, image_name = None):
     ''' Show all LiDAR points.
         Draw 3d box in LiDAR point cloud (in velo coord system) '''
     if 'mlab' not in sys.modules: import mayavi.mlab as mlab
     from viz_util import draw_lidar_simple, draw_lidar, draw_gt_boxes3d
 
     print(('All point num: ', pc_velo.shape[0]))
-    fig = mlab.figure(figure=None, bgcolor=(0,0,0),
+    fig = mlab.figure(figure= image_name, bgcolor=(0,0,0),
         fgcolor=None, engine=None, size=(1000, 500))
     if img_fov:
+        # just filter those point in image field
         pc_velo = get_lidar_in_image_fov(pc_velo, calib, 0, 0,
             img_width, img_height)
         print(('FOV point num: ', pc_velo.shape[0]))
@@ -304,7 +305,7 @@ def show_lidar_topview_with_boxes(pc_velo, objects, calib, objects_pred=None):
 
 def dataset_viz(root_dir, args):
     dataset = kitti_object(root_dir)
-    data_list = [1]
+    data_list = [1,2]
     for data_idx in data_list:#range(len(dataset))
         #print("=====================>"+str(data_idx))
         # Load data from dataset
@@ -324,22 +325,22 @@ def dataset_viz(root_dir, args):
         #print(('Image shape: ', img.shape))
         pc_velo = dataset.get_lidar(data_idx)[:,0:4]
         calib = dataset.get_calibration(data_idx)
-        if args.stat:
-            stat_lidar_with_boxes(pc_velo, objects, calib)
-            continue
-        objects[0].print_object()
+        # if args.stat:
+        #     stat_lidar_with_boxes(pc_velo, objects, calib)
+        #     continue
         # Draw lidar top view
-        #show_lidar_topview_with_boxes(pc_velo, objects, calib, objects_pred)
+        show_lidar_topview_with_boxes(pc_velo, objects, calib, objects_pred)
         pc_velo= pc_velo[:,0:3]
         # Draw 2d and 3d boxes on image
-        show_image_with_boxes(img, objects, calib, True)
+        # show_image_with_boxes(img, objects, calib, True)
         # Draw 3d box in LiDAR point cloud
-        show_lidar_with_boxes(pc_velo, objects, calib, True, img_width, img_height, objects_pred)
+        # show_lidar_with_boxes(pc_velo, objects, calib, False, img_width, img_height, objects_pred, 'image 1')
+        # show_lidar_with_boxes(pc_velo, objects, calib, True, img_width, img_height, objects_pred, 'image 2')
         # Show LiDAR points on image.
-        #show_lidar_on_image(pc_velo, img, calib, img_width, img_height)
+        # show_lidar_on_image(pc_velo, img, calib, img_width, img_height)
         input_str=raw_input()
 
-        mlab.close(all=True)
+        # mlab.close(all=True)
         for proc in psutil.process_iter():
             if proc.name() == "display":
                 proc.kill()
@@ -359,4 +360,5 @@ if __name__=='__main__':
     if args.pred:
         assert os.path.exists(args.dir+"/training/pred")
 
-    dataset_viz(args.dir, args)
+    # dataset_viz(args.dir, args)
+    viz_kitti_video()
