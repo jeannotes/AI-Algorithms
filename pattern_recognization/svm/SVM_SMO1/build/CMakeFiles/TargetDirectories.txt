@@ -1,3 +1,0 @@
-/home/jean/Documents/AI-Algorithms/pattern_recognization/svm/SVM_SMO1/build/CMakeFiles/edit_cache.dir
-/home/jean/Documents/AI-Algorithms/pattern_recognization/svm/SVM_SMO1/build/CMakeFiles/rebuild_cache.dir
-/home/jean/Documents/AI-Algorithms/pattern_recognization/svm/SVM_SMO1/build/CMakeFiles/binary.dir
